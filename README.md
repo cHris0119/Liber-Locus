@@ -2,10 +2,23 @@
 
 Instalación
 
-Preparar entorno virtual(solo si es primera vez)
-pip install virtualenv
-virtualenv venv venv
-Para iniciar proyecto F1 y y utilizar venv
+<ul>
+  Preparar entorno virtual(solo si es primera vez)
+  <li>
+    pip install virtualenv
+  </li>
+  <li>
+    virtualenv venv venv
+  </li>
+  <li>
+    Para iniciar proyecto F1 y y utilizar venv
+  </li>
+</ul>
+
+
+
+
+
 
 Ejecuta
 npm install
