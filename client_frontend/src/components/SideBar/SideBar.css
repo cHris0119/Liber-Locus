@@ -1,0 +1,32 @@
+.title{
+  color: #fff;
+}
+
+.sidebar-container {
+  background-color: #241400;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 15%;
+  height: 100vh;
+  text-align: center;
+  padding: 1rem 0 4rem 0;
+  gap: 1rem;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  min-height: 620px;
+}
+
+@media screen and (max-width: 1270px) {
+  .sidebar-container {
+    width: 5rem;
+  }
+}
+
+@media screen and (max-height: 600px) {
+  .sidebar-container {
+    justify-content: center;
+    gap: .5rem;
+  }
+}

@@ -1,5 +1,10 @@
 html{
-    background-color: #202b38;
-    color: #fff;
+    background-color: #E6DFD8;
+    color: #000;
     font-family: system-ui, sans-serif;
+}
+
+*, *::before, *::after{
+    margin: 0;
+    box-sizing: border-box;
 }

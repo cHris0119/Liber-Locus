@@ -1,0 +1,46 @@
+.account-container{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+.account{
+    cursor: pointer;
+    width: 90%;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 1rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-radius: 8px;
+}
+.account-img{
+    border-radius:50%;
+    width: 30px;
+    height: 30px;
+    background-color: lightblue;
+}
+
+.userName{
+    color: #fff;
+    font-weight: bold;
+}
+
+.account:hover{
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+@media screen and (max-width: 1270px) {
+    .account{
+        justify-content: center;
+        align-items: center;
+        background-color: transparent;
+        
+    }
+
+    .account-img{
+        border-radius:50%;
+        width: 40px;
+        height: 40px;
+        background-color: lightblue;
+    }
+  }

@@ -1,16 +1,24 @@
-import { Link } from "react-router-dom"
+import AccountButton from "../AccountButton/AccountButton";
+import "./SideBar.css";
+import NavBar from "../NavBar/NavBar";
+import useSize from "../../hooks/useSize";
 
 const Sidebar = () => {
+  const isOpen = useSize();
+
+
+  
+
   return (
-    <aside>
-      <h1>Liber Locus</h1>
-      <ul>
-        <li><Link to='/' >Home</Link></li>
-        <li><Link to='/marketplace' >Marketplace</Link></li>
-      </ul>
+    <aside className='sidebar-container'>
+      {isOpen ? <h1 className="title">Liber Locus</h1> : <h1>LL</h1> }
+      
+      <NavBar isOpen={isOpen} />
+      <AccountButton isOpen={isOpen} />
+      
 
-      </aside>
-  )
-}
+    </aside>
+  );
+};
 
-export default Sidebar
+export default Sidebar;
