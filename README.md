@@ -6,7 +6,7 @@ Preparar entorno virtual(solo si es primera vez)
 
 -    pip install virtualenv
 
--   virtualenv venv venv
+-    python -m venv venv
 
 -    Para iniciar proyecto F1 y utilizar venv como terminal
 
