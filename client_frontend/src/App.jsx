@@ -1,5 +1,5 @@
 import "./App.css";
-import Sidebar from "./components/SideBar/Sidebar";
+import Sidebar from "./components/SideBar/SideBar";
 import RoutesList from "../RoutesList";
 
 function App() {

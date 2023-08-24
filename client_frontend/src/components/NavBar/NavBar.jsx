@@ -1,11 +1,12 @@
 import { linksNav, linksConfig } from "../../services/linksArray";
 import { NavLink } from "react-router-dom";
 import "./NavBar.css";
+import AccountButton from "../AccountButton/AccountButton";
 
 // eslint-disable-next-line react/prop-types
 const NavBar = ({isOpen}) => {
   return (
-    <>
+    <div className="navbars-container">
       <ul className="navbar">
         {linksNav.map((link) => (
           <li key={link.label}>
@@ -21,7 +22,7 @@ const NavBar = ({isOpen}) => {
         ))}
       </ul>
 
-      <ul className="navbar">
+      <ul className="navbar none">
         {linksConfig.map((link) => (
           <li key={link.label}>
             <NavLink className="link" to={link.to}>
@@ -34,7 +35,9 @@ const NavBar = ({isOpen}) => {
           </li>
         ))}
       </ul>
-    </>
+
+      <AccountButton isOpen={isOpen} />
+    </div>
   );
 };
 

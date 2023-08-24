@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const useSize = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -10,6 +10,10 @@ const useSize = () => {
       setIsOpen(true);
     }
   };
+
+  useEffect(()=>{
+    handleResize()
+  },[])
 
   window.addEventListener("resize", handleResize);
 

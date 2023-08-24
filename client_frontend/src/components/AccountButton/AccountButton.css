@@ -1,3 +1,5 @@
+
+
 .account-container{
     display: flex;
     justify-content: center;
@@ -15,8 +17,8 @@
 }
 .account-img{
     border-radius:50%;
-    width: 30px;
-    height: 30px;
+    width: 2rem;
+    height: 2rem;
     background-color: lightblue;
 }
 
@@ -26,10 +28,10 @@
 }
 
 .account:hover{
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(240, 240, 240, 0.8);
 }
 
-@media screen and (max-width: 1270px) {
+@media screen and (max-width: 1265px) {
     .account{
         justify-content: center;
         align-items: center;
@@ -41,6 +43,22 @@
         border-radius:50%;
         width: 40px;
         height: 40px;
-        background-color: lightblue;
     }
+  }
+
+  @media screen and (max-width: 767px) {
+    .account-container{
+        width: 20%;
+        height: 100%;
+     
+    }
+    .account-img{
+        border-radius:50%;
+        width: 1.8rem;
+        min-width: 1.8rem;
+        height: 1.8rem;
+        margin-bottom: 5px;
+    }
+
+    
   }
