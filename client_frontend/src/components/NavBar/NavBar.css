@@ -1,13 +1,4 @@
-.navbars-container{
- 
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-}
 .navbar {
-
   padding: 0;
   gap: 1rem;
   display: flex;
@@ -21,7 +12,6 @@ ul > li {
   display: flex;
   width: 90%;
   justify-content: center;
-
 }
 
 li > a {
@@ -30,7 +20,6 @@ li > a {
   padding: 0.5rem 1rem;
   text-decoration: none;
   color: inherit;
-  
 }
 
 .link {
@@ -40,7 +29,6 @@ li > a {
   font-size: 1.1rem;
   transition: all 0.1s;
   color: #fff;
-
 }
 
 .link:hover {
@@ -56,6 +44,13 @@ svg {
   font-weight: bold;
 }
 
+.navbar-modal{
+
+  height: 100%;
+  background-color: rgb(101, 43, 43);
+
+}
+
 @media screen and (max-width: 1265px) {
   .link {
     justify-content: center;
@@ -63,15 +58,6 @@ svg {
 }
 
 @media screen and (max-width: 767px) {
-  .navbars-container{
-   margin-top: 5px;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: start;
-    
-  }
   .navbar {
     width: 80%;
     height: 100%;
@@ -88,14 +74,13 @@ svg {
     display: flex;
     width: 15%;
     justify-content: center;
-   
   }
 
-  .none{
+  .none {
     display: none;
   }
 
-  svg{
+  svg {
     font-size: 1.8rem;
   }
 }

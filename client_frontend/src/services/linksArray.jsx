@@ -46,3 +46,16 @@ export const linksConfig = [
     icon: <FiLogOut />,
   },
 ];
+
+export const linksModal = [
+  {
+    label: "Configu",
+    to: "/configuracion",
+    icon: <AiFillSetting />,
+  },
+  {
+    label: "Configuracion",
+    to: "/configuracion",
+    icon: <AiFillSetting />,
+  },
+];

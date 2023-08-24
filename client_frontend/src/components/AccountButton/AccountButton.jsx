@@ -1,4 +1,7 @@
 import "./AccountButton.css";
+import NavBar from "../NavBar/NavBar";
+import { linksModal } from "../../services/linksArray";
+
 
 // eslint-disable-next-line react/prop-types
 const AccountButton = ({isOpen}) => {
@@ -12,6 +15,10 @@ const AccountButton = ({isOpen}) => {
           : undefined
         }
         
+      </div>
+
+      <div className="modal">
+        <NavBar links={linksModal} isOpen={true} styles='navbar-modal' />
       </div>
     </div>
   );

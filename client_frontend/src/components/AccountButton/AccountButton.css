@@ -1,6 +1,7 @@
 
 
 .account-container{
+    position: relative;
     display: flex;
     justify-content: center;
     width: 100%;
@@ -29,6 +30,16 @@
 
 .account:hover{
     background-color: rgba(240, 240, 240, 0.8);
+}
+
+.modal{
+    position: absolute;
+    left: calc(100% + .5rem);
+    bottom: 0;
+    width: 15rem;
+    height: 20rem;
+    background-color: lightblue;
+
 }
 
 @media screen and (max-width: 1265px) {

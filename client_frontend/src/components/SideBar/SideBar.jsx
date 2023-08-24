@@ -1,7 +1,7 @@
 
 import "./SideBar.css";
-import NavBar from "../NavBar/NavBar";
 import useSize from "../../hooks/useSize";
+import NavBarContainer from "../NavBarContainer/NavBarContainer";
 
 const Sidebar = () => {
   const isOpen = useSize();
@@ -13,7 +13,7 @@ const Sidebar = () => {
     <aside className='sidebar-container'>
       {isOpen ? <h1 className="title">Liber Locus</h1> : <h1 className="title">LL</h1> }
       
-      <NavBar isOpen={isOpen} />
+      <NavBarContainer isOpen={isOpen} />
       
       
 
