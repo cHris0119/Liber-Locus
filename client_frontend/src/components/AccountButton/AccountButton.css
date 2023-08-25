@@ -1,75 +1,88 @@
-
-
-.account-container{
-    position: relative;
-    display: flex;
-    justify-content: center;
-    width: 100%;
+.account-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
-.account{
-    cursor: pointer;
-    width: 90%;
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 1rem 1rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    border-radius: 8px;
+.account {
+  cursor: pointer;
+  width: 90%;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 1rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 8px;
+  transition: all 0.1s;
 }
-.account-img{
-    border-radius:50%;
-    width: 2rem;
-    height: 2rem;
-    background-color: lightblue;
-}
-
-.userName{
-    color: #fff;
-    font-weight: bold;
+.account-img {
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  background-color: lightblue;
 }
 
-.account:hover{
-    background-color: rgba(240, 240, 240, 0.8);
+.userName {
+  color: #fff;
+  font-weight: bold;
+  user-select: none;
 }
 
-.modal{
-    position: absolute;
-    left: calc(100% + .5rem);
-    bottom: 0;
-    width: 15rem;
-    height: 20rem;
-    background-color: lightblue;
+.account:hover {
+  background-color: rgba(240, 240, 240, 0.1);
+}
 
+.account:active .userName{
+    transform: scale(.95);
+}
+
+.modal {
+  position: absolute;
+  left: calc(100% + 0.5rem);
+  bottom: 0;
+  width: 15rem;
+  height: 20rem;
 }
 
 @media screen and (max-width: 1265px) {
-    .account{
-        justify-content: center;
-        align-items: center;
-        background-color: transparent;
-        
-    }
-
-    .account-img{
-        border-radius:50%;
-        width: 40px;
-        height: 40px;
-    }
+  .account {
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
   }
 
-  @media screen and (max-width: 767px) {
-    .account-container{
-        width: 20%;
-        height: 100%;
-     
-    }
-    .account-img{
-        border-radius:50%;
-        width: 1.8rem;
-        min-width: 1.8rem;
-        height: 1.8rem;
-        margin-bottom: 5px;
-    }
-
-    
+  .account-img {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
   }
+}
+
+@media screen and (max-width: 767px) {
+  .account-container {
+    width: 20%;
+    height: 100%;
+    justify-content: flex-start;
+    padding-left: 2%;
+  }
+  .account {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .account-img {
+    border-radius: 50%;
+    width: 1.8rem;
+    min-width: 1.8rem;
+    height: 1.8rem;
+    margin-bottom: 5px;
+  }
+  .account:hover {
+    background-color: transparent;
+    transform: scale(.95);
+  }
+  .modal{
+    display: none;
+  }
+}

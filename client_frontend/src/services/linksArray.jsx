@@ -1,8 +1,14 @@
-import { AiFillHome, AiFillShop, AiFillNotification,AiFillSetting } from "react-icons/ai";
+import {
+  AiFillHome,
+  AiFillShop,
+  AiFillNotification,
+  AiFillSetting,
+  AiFillShopping,
+} from "react-icons/ai";
 import { BsFillPeopleFill } from "react-icons/bs";
 import { MdReviews } from "react-icons/md";
 import { FiLogOut } from "react-icons/fi";
-
+import { BiSolidUser, BiCommentError } from "react-icons/bi";
 
 export const linksNav = [
   {
@@ -38,7 +44,6 @@ export const linksConfig = [
     label: "Configuracion",
     to: "/configuracion",
     icon: <AiFillSetting />,
-
   },
   {
     label: "Salir",
@@ -49,13 +54,18 @@ export const linksConfig = [
 
 export const linksModal = [
   {
-    label: "Configu",
-    to: "/configuracion",
-    icon: <AiFillSetting />,
+    label: "Perfil",
+    to: "/perfil",
+    icon: <BiSolidUser />,
   },
   {
-    label: "Configuracion",
-    to: "/configuracion",
-    icon: <AiFillSetting />,
+    label: "Mis compras",
+    to: "/compras",
+    icon: <AiFillShopping />,
+  },
+  {
+    label: "Reportar un problema",
+    to: "/reportError",
+    icon: <BiCommentError />,
   },
 ];
