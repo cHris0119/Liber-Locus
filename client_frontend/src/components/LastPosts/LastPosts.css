@@ -1,7 +1,6 @@
 .flex-container{
     width: 90%;
-  
-    background-color: #8C6F5E;
+    background-color: #391F00;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -22,9 +21,15 @@
     grid-template-columns: repeat(auto-fit,minmax(250px, 1fr));
     justify-content: center;
     align-items: center;
-    gap: 1rem;
+    gap: 2rem;
     padding: 1rem;
 }
+
+.verDetalles{
+    position: absolute;
+    visibility: hidden;
+}
+
 
 .card-info{
     height: 350px;
@@ -36,7 +41,47 @@
     border-radius: 10px 10px 5px 5px;
     cursor: pointer;
     gap: 1rem;
+    
 }
+
+.lastPost-Card{
+    display: block;
+    position: relative;
+    z-index: 1;
+    
+}
+
+.lastPost-Card:hover .verDetalles-container{
+    position: absolute;
+    border-radius: 10px 10px 5px 5px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 350px;
+    margin: auto;
+    z-index: 500;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.lastPost-Card:hover .verDetalles{
+    visibility: visible;
+    z-index: 1000;
+    position: relative;
+    background-color:#8C7A69 ;
+    width: 80%;
+    text-align: center;
+    padding: 1rem;
+    color: #011F26;
+    outline: none;
+    border: none;
+    font-weight: bold;
+}
+
 
 .cardImg-container{
     width: 100%;
@@ -70,7 +115,7 @@
 
 .card-description p {
     font-weight: bold;
-    color: #DD9776;
+    color: #E16A00;
     font-size: 1.5rem;
 }
 

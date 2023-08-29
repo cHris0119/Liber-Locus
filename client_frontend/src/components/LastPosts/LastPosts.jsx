@@ -19,13 +19,16 @@ const LastPosts = () => {
                 <div className="card-details">
                   <div className="card-description">
                     <h3>{book.name}</h3>
-                    <p>CLP {book.price}</p>
+                    <p>{book.price} CLP</p>
                   </div>
                   <div className="category-container">
                     <span>{book.category}</span>
                   </div>
                 </div>
 
+              </div>
+              <div className="verDetalles-container">
+                <span className='verDetalles'>Ver detalles</span>
               </div>
 
             </article>

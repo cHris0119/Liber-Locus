@@ -1,6 +1,6 @@
 {"Books": [
     {"id": 1, "name": "Dracula", "price": 1000, "category": "Terror"},
     {"id": 2, "name": "Batman", "price": 5000, "category": "Terror"},
-    {"id": 3, "name": "Orgullo y prejuicio", "price": 1500, "category": "Terror"},
-    {"id": 4, "name": "Papelucho", "price": 3000, "category": "Terror"}
+    {"id": 3, "name": "Orgullo y prejuicio", "price": 1500, "category": "Romance"},
+    {"id": 4, "name": "Papelucho", "price": 3000, "category": "Infantil"}
     ]}
