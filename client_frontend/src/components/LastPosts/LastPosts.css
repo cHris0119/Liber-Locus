@@ -1,17 +1,17 @@
 .flex-container{
     width: 90%;
-    background-color: #391F00;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
+    padding: 0 2rem;
     gap: 1rem;
 }
 
 .flex-container h2{
-    width: 100%;
-    color: #ffffff;
+    width: 90%;
+    padding: 0 1rem;
+    color: #000;
     font-size: 2rem;
 }
 
@@ -25,156 +25,15 @@
     padding: 1rem;
 }
 
-.verDetalles{
-    position: absolute;
-    visibility: hidden;
-}
 
-
-.card-info{
-    height: 350px;
-    background-color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: .8rem;
-    border-radius: 10px 10px 5px 5px;
-    cursor: pointer;
-    gap: 1rem;
-    
-}
-
-.lastPost-Card{
-    display: block;
-    position: relative;
-    z-index: 1;
-    
-}
-
-.lastPost-Card:hover .verDetalles-container{
-    position: absolute;
-    border-radius: 10px 10px 5px 5px;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 350px;
-    margin: auto;
-    z-index: 500;
-    background-color: rgba(0, 0, 0, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-}
-
-.lastPost-Card:hover .verDetalles{
-    visibility: visible;
-    z-index: 1000;
-    position: relative;
-    background-color:#8C7A69 ;
-    width: 80%;
-    text-align: center;
-    padding: 1rem;
-    color: #011F26;
-    outline: none;
-    border: none;
-    font-weight: bold;
-}
-
-
-.cardImg-container{
-    width: 100%;
-    height: 60%;
-    background-color: #D9D9D9;
-    padding: 1rem;
-    border-radius: 10px 10px 10px 10px;
-}
-
-.card-details{
-    width: 100%;
-    height: 40%;
-    display: flex;
-    flex-direction: row;
-}
-
-.card-description{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    padding: 1rem .5rem;
-    width: 65%;
-    gap: 1rem;
-}
-
-.card-description h3{
-    width: 90%;
-    font-size: 1.4rem;
-   
-}
-
-.card-description p {
-    font-weight: bold;
-    color: #E16A00;
-    font-size: 1.5rem;
-}
-
-.category-container{
-
-    display: flex;
-    width: 40%;
-    padding: 1rem;
-    justify-content: end;
-    align-items: flex-end;
-}
-
-.category-container span{
-    border: 2px solid #000;
-    padding: 4px 6px;
-    border-radius: 5px; 
-    font-weight: bold;
-}
 
 
 @media screen and (max-width: 767px) {
-
     .lastPost-container{
-        /* background-color: #8C6F5E; */
-        grid-template-columns: repeat(auto-fit,minmax(150px, 300px ));
-    }
-  
-    .card-details{
-        flex-direction: column;
-    }
-
-    .card-description{
-        display: flex;
-        align-items: center;
-        padding: 1rem;        
-        flex-direction: row;
         width: 100%;
-        height: 50%;
-     
-        gap: 2rem;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit,minmax(150px, 1fr ));
     }
-
-    .card-description h3{
-        width: 60%;
-        font-size: 1.1rem;
-       
-    }
-    .card-description p {
-        font-weight: bold;
-        color: #DD9776;
-        width: 50%;
-       
-        font-size: 1rem;
-    }
-    .category-container{
-      
-        width: 100%;
-    }
-    
   }
 
 

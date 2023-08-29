@@ -1,0 +1,83 @@
+
+.suscriptions-container{
+    width: 90%;
+}
+.suscriptions-container h2{
+    font-size: 2rem;
+    padding: 0 0 2rem 0;
+    text-align: center;
+}
+.suscriptions-grid{
+    width: 100%;
+    display: grid;
+    place-content: center;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 320px));
+    gap: 4rem;
+    padding: 1rem;
+}
+
+.suscription{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    gap: 1rem;
+    padding: 1rem 0;
+    height: 400px;
+    border-radius: 15px;
+}
+
+.suscription-details{
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.suscription-details h3{
+    font-size: 1.3rem;
+    
+}
+
+.suscription-details p{
+    font-size: 2rem;
+    font-weight:bolder;
+}
+
+.benefits-container{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+.benefits{
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+}
+.benefits p{
+    font-weight: 400;
+    font-size: 1.5rem;
+}
+
+.suscription-button{
+    background-color: #323232;
+    color: #eee;
+    width: 90%;
+    outline: none;
+    border: none;
+    padding: 1rem;
+    border-radius: 15px;
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+.suscription-button:hover{
+    cursor: pointer;
+    background-color: rgba(25, 25, 25, 1);
+}
