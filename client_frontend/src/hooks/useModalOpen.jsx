@@ -1,17 +1,17 @@
-import useNavOpen from "./useNavOpen";
-import { useState, useEffect } from "react";
+import useNavOpen from './useNavOpen'
+import { useState, useEffect } from 'react'
 
 const useModalOpen = () => {
-    const [modalOpen, setModalOpen] = useState(false);
-    const NavOpen = useNavOpen();
+  const [modalOpen, setModalOpen] = useState(false)
+  const NavOpen = useNavOpen()
 
   const handleModal = () => {
     setModalOpen(!modalOpen)
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     setModalOpen(false)
-  },[NavOpen])
+  }, [NavOpen])
   return [modalOpen, handleModal]
 }
 

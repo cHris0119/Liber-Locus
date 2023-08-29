@@ -1,8 +1,8 @@
 const Marketplace = () => {
   return (
-    <div>
-      <h1>Marketplace</h1>
-    </div>
+    <>
+      <h1>marketplace</h1>
+    </>
   )
 }
 

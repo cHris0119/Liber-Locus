@@ -1,28 +1,23 @@
-import "./AccountButton.css";
-import NavBar from "../NavBar/NavBar";
-import { linksModal } from "../../services/linksArray";
+import './AccountButton.css'
+import NavBar from '../NavBar/NavBar'
+import { linksModal } from '../../services/linksArray'
 
-
-
-
-// eslint-disable-next-line react/prop-types
 const AccountButton = ({ NavOpen, modalOpen, handleModal }) => {
-  
-
-  
   return (
-    <div onClick={()=> handleModal()} className="account-container">
+    <div onClick={() => handleModal()} className="account-container">
       <div className="account">
         <div className="account-img"></div>
         {NavOpen ? <p className="userName">Nombre usuario</p> : undefined}
       </div>
-      {modalOpen ? (
-        <div className="modal">
-          <NavBar links={linksModal} NavOpen={true} styles="navbar-modal"  />
-        </div>
-      ) : undefined}
+      {modalOpen
+        ? (
+          <div className="modal">
+            <NavBar links={linksModal} NavOpen={true} styles="navbar-modal" />
+          </div>
+        )
+        : undefined}
     </div>
-  );
-};
+  )
+}
 
-export default AccountButton;
+export default AccountButton

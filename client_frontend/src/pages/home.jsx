@@ -1,8 +1,11 @@
+import HeroSection from '../components/HeroSection/HeroSection'
+import LastPosts from '../components/LastPosts/LastPosts'
 
 const Home = () => {
   return (
-    <div>
-      <h1>Inicio</h1>
+    <div className='home'>
+      <HeroSection />
+      <LastPosts />
     </div>
   )
 }

@@ -1,13 +1,13 @@
-import "./SideBar.css";
-import useNavOpen from "../../hooks/useNavOpen";
-import NavBarContainer from "../NavBarContainer/NavBarContainer";
-import NavBar from "../NavBar/NavBar";
-import AccountButton from "../AccountButton/AccountButton";
-import { linksConfig, linksNav } from "../../services/linksArray";
+import './SideBar.css'
+import useNavOpen from '../../hooks/useNavOpen'
+import NavBarContainer from '../NavBarContainer/NavBarContainer'
+import NavBar from '../NavBar/NavBar'
+import AccountButton from '../AccountButton/AccountButton'
+import { linksConfig, linksNav } from '../../services/linksArray'
 
 // eslint-disable-next-line react/prop-types
 const Sidebar = ({ handleModal, modalOpen }) => {
-  const NavOpen = useNavOpen();
+  const NavOpen = useNavOpen()
 
   return (
     <aside className="sidebar-container">
@@ -26,7 +26,7 @@ const Sidebar = ({ handleModal, modalOpen }) => {
         />
       </NavBarContainer>
     </aside>
-  );
-};
+  )
+}
 
-export default Sidebar;
+export default Sidebar

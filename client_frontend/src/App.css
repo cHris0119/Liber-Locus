@@ -1,15 +1,23 @@
 .main{
-    display: flex;
-    justify-content: center;
-    align-items: center;
     height: 100vh;
-    padding-left: 15%;
+    padding-left: 15rem;
+}
+
+.home{
+    height: 100%;
+    width: 100%;
+}
+
+@media screen and (max-width: 1265px) {
+    .main{
+        padding-left: 5rem;
+    }
 }
 
 @media screen and (max-width: 767px) {
     .main{
         padding-left: 0;
-        padding-bottom: 5rem;
+        
     }
 }
 

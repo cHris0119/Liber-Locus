@@ -1,23 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
 
 const useNavOpen = () => {
-  const [NavOpen, setNavOpen] = useState(true);
+  const [NavOpen, setNavOpen] = useState(true)
 
   const handleResize = () => {
     if (window.innerWidth < 1265) {
-      setNavOpen(false);
+      setNavOpen(false)
     } else {
-      setNavOpen(true);
+      setNavOpen(true)
     }
-  };
+  }
 
   useEffect(() => {
-    handleResize();
-  }, []);
+    handleResize()
+  }, [])
 
-  window.addEventListener("resize", handleResize);
+  window.addEventListener('resize', handleResize)
 
-  return NavOpen;
-};
+  return NavOpen
+}
 
-export default useNavOpen;
+export default useNavOpen
