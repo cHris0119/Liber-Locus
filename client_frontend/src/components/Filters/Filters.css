@@ -1,0 +1,22 @@
+.filters-container{
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+
+.filters-container > select {
+    padding: 10px;
+    border: none;
+    display: flex;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.filter:hover{
+    cursor: pointer;
+}
+
+
+

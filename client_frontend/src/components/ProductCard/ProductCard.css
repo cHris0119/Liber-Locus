@@ -74,6 +74,9 @@
     .card-details{
         flex-direction: column;
     }
+    .lastPost-Card:hover{
+        transform: none;
+    }
 
     .card-description{
         display: flex;

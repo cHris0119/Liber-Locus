@@ -4,7 +4,7 @@ import lastPostBooks from '../../mocks/lastPostsMock.json'
 import ProductCard from '../ProductCard/ProductCard'
 
 const LastPosts = () => {
-  const lastPost = lastPostBooks.Books
+  const lastPost = lastPostBooks.Books.slice(0, 4)
 
   return (
     <HomeSection>

@@ -1,0 +1,29 @@
+.market-header{
+    background-color:#676c7f ;
+    padding: 1rem;
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.publishBook{
+    border: none;
+    flex: 1;
+    padding: 10px 20px;
+    background-color: #132031;
+    color: #fff;
+    font-weight: 600;
+}
+
+.publishBook:hover{
+    cursor: pointer;
+    transform: scale(1.030);
+}
+
+@media screen and (max-width: 767px) {
+    .publishBook{
+    flex-basis: 100%;
+    }
+  }

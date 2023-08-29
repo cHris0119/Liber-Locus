@@ -13,7 +13,7 @@ const TrendForum = () => {
           {forums.map((forum) => (
             <article className='forum-card' key={forum.id}>
               <h4>{forum.name}</h4>
-              <span>{'>'}</span>
+              <span>{'+'}</span>
             </article>
           ))}
         </div>

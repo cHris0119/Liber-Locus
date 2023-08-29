@@ -5,7 +5,7 @@ import Suscriptions from '../components/Suscriptions/Suscriptions'
 
 const Home = () => {
   return (
-    <div className='home'>
+    <div className='mainContent'>
       <HeroSection />
       <LastPosts />
       <TrendForum />
