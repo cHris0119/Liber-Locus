@@ -1,5 +1,5 @@
 {"Suscriptions": [
-    {"id": 1, "duration": "1 mes", "price": 2000},
-    {"id": 2, "duration": "6 meses", "price": 12000},
-    {"id": 3, "duration": "1 año", "price": 24000}
+    {"id": 1, "duration": "1 mes", "price": "2.000"},
+    {"id": 2, "duration": "6 meses", "price": "12.000"},
+    {"id": 3, "duration": "1 año", "price": "24.000"}
     ]}

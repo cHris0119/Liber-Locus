@@ -10,9 +10,14 @@
 
 .flex-container h2{
     width: 90%;
-    padding: 0 1rem;
-    color: #000;
+    text-align: center;
+    text-transform: uppercase;
+    border-bottom: 2px solid #fff;
+    border-top: 2px solid #fff;
     font-size: 2rem;
+    padding: 1rem;
+    color: #fff;
+    
 }
 
 .lastPost-container{
@@ -32,7 +37,17 @@
     .lastPost-container{
         width: 100%;
         gap: 1rem;
-        grid-template-columns: repeat(auto-fit,minmax(150px, 1fr ));
+        grid-template-columns: repeat(auto-fit,minmax(200px, 1fr ));
+    }
+
+    .flex-container{
+        width: 90%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+        gap: 1rem;
     }
   }
 

@@ -6,7 +6,7 @@ const TrendForum = () => {
   const forums = trendForum.Forum
 
   return (
-    <HomeSection styles='home-forum'>
+    <HomeSection>
       <div className="trendForum-container">
         <h2>Foros populares</h2>
         <div className="forums-container">

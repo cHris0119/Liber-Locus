@@ -6,6 +6,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+
     padding: .8rem;
     border-radius: 10px 10px 5px 5px;
     cursor: pointer;
@@ -28,41 +29,30 @@
 .card-details{
     width: 100%;
     height: 40%;
+    padding: 10px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .card-description{
     display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    padding: 1rem .5rem;
-    width: 65%;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
     gap: 1rem;
 }
 
-.card-description h3{
-    width: 90%;
-    font-size: 1.4rem;
-   
-}
 
 .card-description p {
     font-weight: bold;
     color: #E16A00;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
 }
 
-.category-container{
-
-    display: flex;
-    width: 40%;
-    padding: 1rem;
-    justify-content: end;
-    align-items: flex-end;
-}
-
-.category-container span{
+.card-description span{
     border: 2px solid #000;
     padding: 4px 6px;
     border-radius: 5px; 
@@ -72,37 +62,26 @@
 @media screen and (max-width: 767px) {
   
     .card-details{
+      
         flex-direction: column;
+        height: auto;
+        text-align: center;
+        gap: 1rem;
     }
+
     .lastPost-Card:hover{
         transform: none;
     }
 
     .card-description{
         display: flex;
-        align-items: center;
-        padding: 2rem .5rem;        
         flex-direction: column;
         width: 100%;
-        height: 50%;
-        gap: 5px;
-    }
-
-    .card-description h3{
-        width: 100%;
-        font-size: 1.1rem;
-       
-    }
-    .card-description p {
-        font-weight: bold;
-        color: #DD9776;
-        width: 100%;
-       
-        font-size: 1rem;
-    }
-    .category-container{
-        width: 100%;
-        padding: 1rem 0 0 0;
+        height: 100%;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        gap: 1rem;
     }
     
   }

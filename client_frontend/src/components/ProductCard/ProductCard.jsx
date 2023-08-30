@@ -9,11 +9,11 @@ const ProductCard = ({ books }) => {
               <img src="" alt={book.name} />
             </div>
             <div className="card-details">
-              <div className="card-description">
+              <div className="card-name">
                 <h3>{book.name}</h3>
-                <p>{book.price} CLP</p>
               </div>
-              <div className="category-container">
+              <div className="card-description">
+                <p>{book.price} CLP</p>
                 <span>{book.category}</span>
               </div>
             </div>

@@ -2,6 +2,7 @@ import './App.css'
 import Sidebar from './components/SideBar/SideBar'
 import RoutesList from './routes/RoutesList'
 import useModalOpen from './hooks/useModalOpen'
+import ScrollToTop from './services/ScrollToTop'
 
 function App () {
   const [modalOpen, handleModal] = useModalOpen()
@@ -19,6 +20,7 @@ function App () {
       >
         <RoutesList />
       </main>
+      <ScrollToTop />
     </div>
   )
 }

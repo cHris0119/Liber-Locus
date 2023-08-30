@@ -5,7 +5,7 @@ const Marketplace = () => {
   return (
     <div className="mainContent" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
-      <h1 style={{ textAlign: 'center' }}>MARKETPLACE</h1>
+      <h1 style={{ color: '#fff', textAlign: 'center', borderBottom: '2px solid #fff', paddingBottom: '20px', display: 'inline-block' }}>MARKETPLACE</h1>
 
       <MarketplaceHeader />
       <PostList />

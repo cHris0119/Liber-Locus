@@ -51,6 +51,7 @@ svg {
   padding: 1rem .5rem 0 .5rem;
   border-radius: .5rem;
   user-select: none;
+  display: flex;
 
 }
 

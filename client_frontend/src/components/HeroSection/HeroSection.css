@@ -1,16 +1,15 @@
 .home-hero{
-    background-color: #fff;
-    box-shadow: 3px 0 5px #aaa;
-
+    height: 100vh;
 }
 
 .hero-left{
     width:70%;
     max-width: 1000px;
-    background-color: #8C6F5E;
+    background-color: #eee;
+    border-radius: 10px;
     display: flex;
     flex-direction: column;
-    gap: 3rem;
+    gap: 2rem;
     padding: 2rem;
 }
 
@@ -19,7 +18,7 @@
     font-weight: bold;
     font-size: 1.5rem;
     line-height: 2rem;
-    color: #eee;
+    color: #000;
 }
 
 .hero-button{
@@ -28,9 +27,11 @@
     padding: 1rem;
     outline: none;
     border: none;
+    font-size: 1.1rem;
+    font-weight: 600;
     color: #fff;
     letter-spacing: 1px;
-    background-color: #404040;
+    background-color: #2d181d;
 }
 
 .hero-button:hover{
@@ -41,7 +42,7 @@
 
 .home-title{
     font-size: 4rem;
-    color: #fff;
+    color: #000;
     margin: 0;
 }
 

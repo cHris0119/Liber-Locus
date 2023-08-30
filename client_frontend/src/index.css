@@ -1,7 +1,7 @@
 html{
-    background-color: #FFFAF5;
+    background: linear-gradient(to right,#1e130c,#9a8478);
     color: #000;
-    font-family: 'Roboto',system-ui, sans-serif;
+    font-family: 'Poppins',system-ui, sans-serif;
 }
 
 *, *::before, *::after{

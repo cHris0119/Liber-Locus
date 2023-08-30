@@ -40,8 +40,9 @@
   position: absolute;
   left: calc(100% + 0.5rem);
   bottom: 0;
-  width: 15rem;
+  width: 16rem;
   height: 20rem;
+  text-align: left;
 }
 
 @media screen and (max-width: 1265px) {
