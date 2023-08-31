@@ -9,7 +9,7 @@ const ProductCard = ({ books }) => {
           <article className='lastPost-Card'>
             <div className="card-info">
               <div className="cardImg-container">
-                <img src="" alt={book.name} />
+                <img className='cardImg' src='https://prodimage.images-bn.com/pimages/9781435159570_p0_v1_s1200x630.jpg' alt={book.name} />
               </div>
               <div className="card-details">
                 <div className="card-name">

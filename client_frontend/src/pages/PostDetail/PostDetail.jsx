@@ -1,6 +1,8 @@
 import { useParams } from 'react-router-dom'
 import booksList from '../../mocks/lastPostsMock.json'
 import './PostDetail.css'
+import BackButton from '../../components/BackButton/BackButton'
+import QuestionsPost from '../../components/QuestionsPost/QuestionsPost'
 
 const PostDetail = () => {
   const books = booksList.Books
@@ -9,29 +11,28 @@ const PostDetail = () => {
   const selectedBook = books.find(book => book.id === Number(postId))
 
   return (
-    <div className='productDetail-container'>
-      <div className="productDetails">
-
+    <>
+      <div className='productDetail-container'>
+        <BackButton />
         <div className="productImg-container">
-          <img className='productImg' src="" alt={selectedBook.name} />
+          <img className='productImg' src="https://prodimage.images-bn.com/pimages/9781435159570_p0_v1_s1200x630.jpg" alt={selectedBook.name} />
         </div>
         <div className="productInfo">
           <ul className='productInfo-names'>
-            <li>{selectedBook.name}</li>
-            <li>{selectedBook.category}</li>
-            <li>{selectedBook.price} CLP</li>
-            <li>Vendedor: Juan</li>
+            <li className='productCategory'>{selectedBook.category}</li>
+            <li className='productName'>{selectedBook.name}</li>
+            <li className='productPrice'>{selectedBook.price} CLP</li>
+            <li className='productSeller'>Vendedor: Juan</li>
+            <li className='productDescription'><p>Buen libro, buena historia, bla bla bla.</p></li>
           </ul>
-          <button className='buyButton'>Comprar</button>
+          <div className="buyButton-container">
+            <button className='buyButton'>Comprar</button>
+          </div>
         </div>
-        <div className="description">
-        </div>
-
       </div>
 
-      <p >Lorem ipsum, dolor sit amet consectetur adipisicing elit. Necessitatibus repellendus, quis cum optio enim impedit earum modi ea alias! Optio nam alias iure repellendus mollitia sapiente voluptatem perspiciatis vitae minus.</p>
-
-    </div>
+      <QuestionsPost />
+    </>
   )
 }
 
