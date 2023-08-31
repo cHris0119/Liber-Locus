@@ -1,0 +1,10 @@
+.productDetail-container{
+    width: 100%;
+    height: 100vh;
+    margin: 0 auto;
+    background-color: lightblue;
+}
+
+.productDetails{
+    height: 100%;
+}
