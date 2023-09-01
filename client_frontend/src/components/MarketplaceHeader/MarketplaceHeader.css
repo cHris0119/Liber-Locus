@@ -11,15 +11,21 @@
 }
 
 .publishBook{
-    border: none;
+    display: flex;
     flex: 1;
+}
+
+
+.publishBook-button{
+    width: 100%;
+    border: none;
     padding: 10px 20px;
     background-color: #524644;
     color: #fff;
     font-weight: 600;
 }
 
-.publishBook:hover{
+.publishBook-button:hover{
     cursor: pointer;
     transform: scale(1.010);
 }
