@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, NavLink } from 'react-router-dom'
 import booksList from '../../mocks/lastPostsMock.json'
 import './PostDetail.css'
 import BackButton from '../../components/BackButton/BackButton'
@@ -26,7 +26,7 @@ const PostDetail = () => {
             <li className='productDescription'><p>Buen libro, buena historia, bla bla bla.</p></li>
           </ul>
           <div className="buyButton-container">
-            <button className='buyButton'>Comprar</button>
+            <NavLink className='link-buyButton' to={`/detalleEnvio/${postId}`}><button className='buyButton' >Comprar</button></NavLink>
           </div>
         </div>
       </div>
