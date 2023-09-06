@@ -4,6 +4,7 @@ import Marketplace from '../pages/Marketplace'
 import PostDetail from '../pages/PostDetail/PostDetail'
 import PublishBookForm from '../components/PublishBookForm/PublishBookForm'
 import ShippingDetail from '../pages/ShippingDetail/ShippingDetail'
+import { PaymentSelection } from '../pages/PaymentSelection/PaymentSelection'
 
 const RoutesList = () => {
   return (
@@ -13,9 +14,10 @@ const RoutesList = () => {
       <Route path="/foro" element={<h1>Foro</h1>} />
       <Route path="/reseña" element={<h1>Reseñas</h1>} />
       <Route path="/notificaciones" element={<h1>Notificaciones</h1>} />
-      <Route path="/detallePost/:postId" element={<PostDetail />} />
       <Route path="/publicarLibro" element={<PublishBookForm />} />
+      <Route path="/detallePost/:postId" element={<PostDetail />} />
       <Route path="/detalleEnvio/:postId" element={<ShippingDetail />} />
+      <Route path="/seleccionPago/:postId" element={<PaymentSelection />} />
       <Route path="*" element={<h1>Not found</h1>} />
     </Routes>
   )

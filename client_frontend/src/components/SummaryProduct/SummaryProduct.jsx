@@ -1,12 +1,16 @@
 import './SummaryProduct.css'
+import booksList from '../../mocks/lastPostsMock.json'
 
-const SummaryProduct = ({ book }) => {
+const SummaryProduct = ({ bookId }) => {
+  const books = booksList.Books
+  const selectedBook = books.find(book => book.id === Number(bookId))
+
   return (
     <ul className='summaryProduct-container'>
       <h3>Resumen de compra</h3>
       <div className="summaryProduct-detail">
-        <li>{book.name}</li>
-        <li>{book.price} CLP</li>
+        <li>{selectedBook.name}</li>
+        <li>{selectedBook.price} CLP</li>
       </div>
       <div className="summaryProduct-seller">
         <li>Vendedor: Juan lopez</li>

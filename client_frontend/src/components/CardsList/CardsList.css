@@ -1,0 +1,53 @@
+.card-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: 500;
+    padding: 1rem 0;
+}
+
+.cardDetails{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.cardDetails input{
+    width: 20px; 
+    height: 20px;
+    cursor: pointer;
+}
+
+.card-actions{
+    display: flex;
+    gap: 1rem;
+}
+
+.card-actions > button,
+.card-actions > button > a{
+    border: none;
+    color: #000;
+    font-weight: 500;
+    text-decoration: none;
+    cursor:pointer
+}
+
+.card-actions > button:hover{
+    color: red;
+}
+
+.card-actions > button > a:hover{
+    color: blue;
+}
+
+@media screen and (max-width: 1265px) {
+    .card-container{
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .card-actions{
+        gap: 5px;
+    }
+  }
