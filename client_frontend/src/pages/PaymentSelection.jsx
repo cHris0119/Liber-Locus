@@ -5,7 +5,7 @@ import SelectPayment from '../components/SelectPayment/SelectPayment'
 
 import styles from '../styles/PaymentSelection.module.css'
 
-export const PaymentSelection = () => {
+const PaymentSelection = () => {
   const { postId } = useParams()
   return (
     <div className={styles.paymentDetailContainer}>
@@ -28,3 +28,5 @@ export const PaymentSelection = () => {
     </div>
   )
 }
+
+export default PaymentSelection

@@ -1,12 +1,13 @@
 import { Route, Routes } from 'react-router-dom'
+
 import Home from '../pages/Home'
 import Marketplace from '../pages/Marketplace'
 import PostDetail from '../pages/PostDetail'
-import PublishBookForm from '../components/PublishBookForm/PublishBookForm'
 import ShippingDetail from '../pages/ShippingDetail'
-import { PaymentSelection } from '../pages/PaymentSelection'
+import PaymentSelection from '../pages/PaymentSelection'
+import PublishBookForm from '../components/PublishBookForm/PublishBookForm'
 
-const RoutesList = () => {
+const PrivateRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
@@ -23,4 +24,4 @@ const RoutesList = () => {
   )
 }
 
-export default RoutesList
+export default PrivateRoutes
