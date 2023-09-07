@@ -1,0 +1,24 @@
+.homeSection{
+    width: 100%;
+    display: flex;
+    padding: 1rem 0 1rem 0;
+    justify-content: center;
+}
+
+.sectionContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    justify-content: center;  
+}
+
+.homeHero{
+    height: 100vh;
+}
+
+@media screen and (max-width: 767px) {
+    .sectionContainer{
+        padding-bottom: 3.5rem;
+    }
+}

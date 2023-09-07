@@ -2,20 +2,6 @@
     height: 100vh;
     padding: 0 0 0 15rem;
 }
-
-.mainContent{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-.mainContent > section:nth-child(4){
-    padding: 0 0 4.5rem 0;
-}
-
-
-
 @media screen and (max-width: 1265px) {
     .main{
         padding-left: 5rem;

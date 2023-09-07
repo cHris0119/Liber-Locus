@@ -3,7 +3,7 @@ import PostList from '../components/PostList/PostList'
 
 const Marketplace = () => {
   return (
-    <div className="mainContent" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
       <h1 style={{ color: '#fff', textAlign: 'center', borderBottom: '2px solid #fff', paddingBottom: '20px', display: 'inline-block' }}>MARKETPLACE</h1>
 

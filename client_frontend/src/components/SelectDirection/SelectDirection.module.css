@@ -1,0 +1,71 @@
+.selectDirectionContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    width: 90%;
+}
+
+.selectDirectionContainer h2{
+    color: #fff;
+}
+
+.directionContainer{
+    background-color: #eee;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.directionMain{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    color: #000;
+}
+
+.directionHeader{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.directionHeader p{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.directionHeader span{
+    font-size: 2rem;
+    color: rgba(0, 0, 200, 1);
+}
+
+.directionContent p{
+    font-weight: 500;
+}
+
+.directionFooter{
+    padding: 1.5rem 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
+    background-color: #eee;
+    display: flex;
+    align-items: center;
+    border-radius: 0 0 10px 10px;
+}
+
+.linkEditDirection{
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: rgba(0, 0, 200, 1);
+}
+
+.linkEditDirection:hover{
+    color: rgba(0, 0, 200, 1);
+}
+

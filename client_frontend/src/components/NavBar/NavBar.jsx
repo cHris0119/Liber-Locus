@@ -1,29 +1,28 @@
-import './NavBar.css'
 import { NavLink } from 'react-router-dom'
 
-const NavBar = ({ links, NavOpen, styles }) => {
-  const RenderLinks = ({ links }) => {
-    return (
-      <>
-        {/* eslint-disable-next-line react/prop-types */}
-        {links.map((link) => (
-          <li key={link.label}>
-            <NavLink
-              className={({ isActive }) => `link${isActive ? ' active' : ''}`}
-              to={link.to}
-            >
-              <div className="linkIcon">{link.icon}</div>
-              {NavOpen ? <span>{link.label}</span> : undefined}
-            </NavLink>
-          </li>
-        ))}
-      </>
-    )
-  }
+import styles from './NavBar.module.css'
 
+const RenderLinks = ({ links, NavOpen }) => {
   return (
-    <ul className={`navbar ${styles || ''}`}>
-      <RenderLinks links={links} />
+    <>
+      {links.map((link) => (
+        <li key={link.label} className={styles['Navbar-li']}>
+          <NavLink className={styles.Link}
+            to={link.to}
+          >
+            <div className={styles.Svg}>{link.icon}</div>
+            {NavOpen ? <span>{link.label}</span> : undefined}
+          </NavLink>
+        </li>
+      ))}
+    </>
+  )
+}
+
+const NavBar = ({ links, style, NavOpen }) => {
+  return (
+    <ul className={`${styles.Navbar} ${style && styles[style]}`}>
+      <RenderLinks links={links} NavOpen={NavOpen} />
     </ul>
   )
 }

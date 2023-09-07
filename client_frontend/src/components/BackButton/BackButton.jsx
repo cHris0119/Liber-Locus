@@ -1,13 +1,14 @@
 import { useNavigate } from 'react-router-dom'
-import './BackButton.css'
 import { AiFillBackward } from 'react-icons/ai'
+
+import styles from './BackButton.module.css'
 
 const BackButton = () => {
   const navigate = useNavigate()
 
   return (
     <>
-      <button className='backButton' onClick={() => navigate(-1)} ><AiFillBackward/></button>
+      <button className={styles.backButton} onClick={() => navigate(-1)} ><AiFillBackward/></button>
     </>
   )
 }

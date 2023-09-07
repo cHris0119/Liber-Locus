@@ -1,8 +1,8 @@
-import './InputLabelBook.css'
+import styles from './InputLabelBook.module.css'
 
 export const SelectLabelBook = ({ inputId, label }) => {
   return (
-    <div className="inputLabel-container">
+    <div className={styles.inputLabelContainer}>
       <label htmlFor={inputId}>{label}</label>
       <select>
         <option value="Terror">Terror</option>
@@ -14,7 +14,7 @@ export const SelectLabelBook = ({ inputId, label }) => {
 
 export const InputLabelBook = ({ label, inputId, placeholder }) => {
   return (
-    <div className="inputLabel-container">
+    <div className={styles.inputLabelContainer}>
       <label htmlFor={inputId}>{label}</label>
       <input type="text" id={inputId} name={inputId} placeholder={placeholder} />
     </div>

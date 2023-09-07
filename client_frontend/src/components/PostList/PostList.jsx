@@ -1,6 +1,7 @@
-import './PostList.css'
 import ProductCard from '../ProductCard/ProductCard'
 import booksLists from '../../mocks/lastPostsMock.json'
+
+import styles from './PostList.module.css'
 
 const PostList = () => {
   const posts = booksLists.Books
@@ -10,7 +11,7 @@ const PostList = () => {
   return (
     <>
       {hasPost
-        ? (<div className="postList-container">
+        ? (<div className={styles.postListContainer}>
           <ProductCard books={posts} />
         </div>)
         : (<h2>Cargando...</h2>)

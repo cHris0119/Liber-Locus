@@ -1,27 +1,28 @@
-import './PublishBookForm.css'
 import BackButton from '../BackButton/BackButton'
 import InputFormBook from '../InputFormBook/InputFormBook'
 
+import styles from './PublishBookForm.module.css'
+
 const PublishBookForm = () => {
   return (
-    <div className="publishBookForm-container">
+    <div className={styles.publishBookFormContainer}>
 
       <BackButton />
 
-      <form className='publishBookForm'>
+      <form className={styles.publishBookForm}>
 
-        <div className='publishBookForm-flex'>
+        <div className={styles.publishBookFormFlex}>
 
           <InputFormBook />
 
-          <div className='publishBookForm-down'>
+          <div className={styles.publishBookFormDown}>
             <label htmlFor="FormDescriptionBook">Descripción libro</label>
             <textarea placeholder='Escribe aquí...'></textarea>
           </div>
 
         </div>
-        <div className="publishBook-button-container">
-          <input className='publishBookButton' type="submit" value='PUBLICAR' />
+        <div className={styles.publishBookButtonContainer}>
+          <input className={styles.publishBookButton} type="submit" value='PUBLICAR' />
         </div>
       </form>
 

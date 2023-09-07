@@ -1,0 +1,49 @@
+.shippingDetailContainer{
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    position: relative;
+    justify-content: space-between;
+    flex-direction: column;
+    display: flex;
+}
+
+.continuarBtnContainer{
+    width: 90%;
+    padding: 1rem;
+    text-align: end;
+}
+
+.continuarBtn{
+    padding: 15px;
+    width: 50%;
+    border: none;
+    font-weight: 600;
+    background-color: #2d181d;
+    color: #fff;
+    border-radius: 5px;
+}
+
+
+
+.continuarBtn:hover{
+    cursor: pointer;
+    background-color: #2d181dcd;
+}
+
+.shippingDirectionContainer{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+@media screen and (min-width: 1265px) {
+    .shippingDetailContainer{
+        justify-content: space-between;
+        flex-direction: row;
+        padding: 1rem;
+    }
+  }

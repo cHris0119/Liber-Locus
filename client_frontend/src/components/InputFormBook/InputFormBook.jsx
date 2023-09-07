@@ -1,17 +1,17 @@
-import './InputFormBook.css'
 import { InputLabelBook, SelectLabelBook } from '../InputLabelBook/InputLabelBook'
+import styles from './InputFormBook.module.css'
 
 const InputFormBook = () => {
   return (
-    <div className="publishBookForm-up">
+    <div className={styles.publishBookFormUp}>
 
-      <div className='fileImgBook-container'>
+      <div className={styles.fileImgBookContainer}>
         <input type="file" />
       </div>
 
-      <div className="publishBookForm-up-info">
+      <div className={styles.publishBookFormUpInfo}>
 
-        <div className="publishBookForm-up-info-1">
+        <div className={styles.publishBookFormUpInfo1}>
           <InputLabelBook
             label='Nombre del libro'
             inputId='FormNameBook'
@@ -24,7 +24,7 @@ const InputFormBook = () => {
           />
         </div>
 
-        <div className="publishBookForm-up-info-2">
+        <div className={styles.publishBookFormUpInfo2}>
           <InputLabelBook
             label='Precio del libro'
             inputId='FormPriceBook'

@@ -1,16 +1,17 @@
 import HomeSection from '../HomeSection/HomeSection'
-import './LastPosts.css'
 import lastPostBooks from '../../mocks/lastPostsMock.json'
 import ProductCard from '../ProductCard/ProductCard'
+
+import styles from './LastPosts.module.css'
 
 const LastPosts = () => {
   const lastPost = lastPostBooks.Books.slice(0, 4)
 
   return (
     <HomeSection>
-      <div className="flex-container">
+      <div className={styles.flexContainer}>
         <h2>Últimas publicaciones</h2>
-        <div className="lastPost-container">
+        <div className={styles.lastPostContainer}>
           <ProductCard books={lastPost} />
         </div>
 

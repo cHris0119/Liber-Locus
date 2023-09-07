@@ -1,9 +1,9 @@
-import './HomeSection.css'
+import styles from './HomeSection.module.css'
 
-const HomeSection = ({ children, styles }) => {
+const HomeSection = ({ children, style }) => {
   return (
-    <section className={`home-section ${styles || ''}`}>
-      <div className="section-container">
+    <section className={`${styles.homeSection} ${style && styles[style]}`}>
+      <div className={styles.sectionContainer}>
         {children}
       </div>
     </section>

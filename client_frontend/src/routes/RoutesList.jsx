@@ -1,10 +1,10 @@
 import { Route, Routes } from 'react-router-dom'
 import Home from '../pages/Home'
 import Marketplace from '../pages/Marketplace'
-import PostDetail from '../pages/PostDetail/PostDetail'
+import PostDetail from '../pages/PostDetail'
 import PublishBookForm from '../components/PublishBookForm/PublishBookForm'
-import ShippingDetail from '../pages/ShippingDetail/ShippingDetail'
-import { PaymentSelection } from '../pages/PaymentSelection/PaymentSelection'
+import ShippingDetail from '../pages/ShippingDetail'
+import { PaymentSelection } from '../pages/PaymentSelection'
 
 const RoutesList = () => {
   return (

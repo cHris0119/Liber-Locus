@@ -5,12 +5,12 @@ import Suscriptions from '../components/Suscriptions/Suscriptions'
 
 const Home = () => {
   return (
-    <div className='mainContent'>
+    <>
       <HeroSection />
       <LastPosts />
       <TrendForum />
       <Suscriptions />
-    </div>
+    </>
   )
 }
 

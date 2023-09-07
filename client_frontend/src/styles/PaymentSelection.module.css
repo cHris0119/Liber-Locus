@@ -1,0 +1,75 @@
+.paymentDetailContainer{
+    height: 100%;
+    background-color: lightblue;
+    align-items: center;
+    position: relative;
+    justify-content: space-between;
+    flex-direction: column;
+    width: 100%;
+    display: flex;
+}
+
+.paymentContainer{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.pagarBtnContainer{
+    width: 90%;
+    padding: 1rem 0;
+    text-align: end;
+}
+
+.pagarBtn{
+    padding: 15px;
+    width: 30%;
+    border: none;
+    font-weight: 600;
+    background-color: #2d181d;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+}
+
+.pagarBtn::before{
+    content: 'Pagar';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    left: 0;
+    border-radius: 5px;
+    background-color: #000000;
+    width: 0%;
+    overflow: hidden;
+    height: 100%;
+    position: absolute;
+    z-index: 999;
+}
+
+.pagarBtn:focus::before{
+    animation: changeColor 0.5s forwards;
+}
+
+@keyframes changeColor {
+    0% {
+        width: 0%;
+    }
+    100% {
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 1265px) {
+    .paymentDetailContainer{
+        justify-content: space-between;
+        flex-direction: row;
+        padding: 1rem;
+    }
+  }

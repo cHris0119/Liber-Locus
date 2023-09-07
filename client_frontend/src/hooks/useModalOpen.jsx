@@ -12,6 +12,7 @@ const useModalOpen = () => {
   useEffect(() => {
     setModalOpen(false)
   }, [NavOpen])
+
   return [modalOpen, handleModal]
 }
 

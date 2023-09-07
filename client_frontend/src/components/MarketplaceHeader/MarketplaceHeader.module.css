@@ -1,0 +1,41 @@
+.marketHeader{
+    background-color:#f3f3f3;
+    border-radius: 10px;
+    padding: 1rem;
+    display: flex;
+    gap: 1rem;
+    margin: 0 auto;
+    width: calc(90% - 2rem);
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.publishBook{
+    display: flex;
+    flex: 1;
+}
+
+
+.publishBookButton{
+    width: 100%;
+    border: none;
+    padding: 10px 20px;
+    background-color: #524644;
+    color: #fff;
+    font-weight: 600;
+}
+
+.publishBookButton:hover{
+    cursor: pointer;
+    transform: scale(1.010);
+}
+
+@media screen and (max-width: 767px) {
+    .marketHeader{
+        width: 90%;
+      
+    }
+    .publishBook{
+    flex-basis: 100%;
+    }
+  }

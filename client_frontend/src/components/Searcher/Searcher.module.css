@@ -1,0 +1,43 @@
+.formSearch{
+    display: flex;
+    flex: 3;
+    justify-content: center;
+    align-items: center;
+}
+
+.formSearch > input[type="text"]{
+    border: none;
+    flex: 3;
+    padding: 10px 15px;
+    outline: none;
+    font-size: 1.2rem;
+    background-color: #524644;
+    color: #fff;
+}
+
+.formSearch > input[type="text"]::placeholder{
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.formSearch > input[type="submit"]{
+    border: none;
+    background-color: #322528;
+    color: #d3d3d3;
+    flex: 1;
+    font-weight: 500;
+    padding: 10px;
+    font-size: 1.2rem;
+
+}
+
+.formSearch > input[type="submit"]:hover{
+    cursor: pointer;
+}
+
+@media screen and (max-width: 767px) {
+    .formSearch{
+        width: 100%;
+       
+    }
+  
+  }

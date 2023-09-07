@@ -1,0 +1,42 @@
+.summaryProductContainer{
+    background-color: #eee;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 1rem;
+}
+
+.summaryProductContainer h3{
+    text-align: left;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, .5);
+}
+
+.summaryProductDetail{
+    padding: 1rem;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.summaryProductSeller{
+    padding: 1rem;
+    list-style: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgba(0, 0, 0, .8);
+}
+
+@media screen and (min-width: 1265px) {
+    .summaryProductContainer{
+        background-color: #eee;
+        display: flex;
+        flex-direction: column;
+        width: 50%;
+        height: 80%;
+    
+    }
+  }

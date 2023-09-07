@@ -1,25 +1,26 @@
-import './SelectDirection.css'
 import { NavLink } from 'react-router-dom'
+
+import styles from './SelectDirection.module.css'
 
 const SelectDirection = () => {
   return (
-    <div className='selectDirection-container'>
+    <div className={styles.selectDirectionContainer}>
 
       <h2>Selecciona tu dirección</h2>
 
-      <div className='direction-container'>
-        <div className='direction-main'>
-          <header className="direction-header">
+      <div className={styles.directionContainer}>
+        <div className={styles.directionMain}>
+          <header className={styles.directionHeader}>
             <p>Enviar a domicilio</p>
             <p>$ 3.000 <span>{'>'}</span></p>
           </header>
-          <main className="direction-content">
+          <main className={styles.directionMain}>
             <p>Dirección falsa 1234</p>
           </main>
         </div>
 
-        <footer className="direction-footer">
-          <NavLink className='link-editDirection'>Editar o elegir otro domicilio</NavLink>
+        <footer className={styles.directionFooter}>
+          <NavLink className={styles.linkEditDirection}>Editar o elegir otro domicilio</NavLink>
         </footer>
       </div>
 
