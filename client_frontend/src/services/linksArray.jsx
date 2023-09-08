@@ -7,8 +7,7 @@ import {
 } from 'react-icons/ai'
 import { BsFillPeopleFill } from 'react-icons/bs'
 import { MdReviews } from 'react-icons/md'
-import { FiLogOut } from 'react-icons/fi'
-import { BiSolidUser, BiCommentError } from 'react-icons/bi'
+import { BiSolidUser } from 'react-icons/bi'
 
 export const linksNav = [
   {
@@ -39,19 +38,6 @@ export const linksNav = [
   }
 ]
 
-export const linksConfig = [
-  {
-    label: 'Configuracion',
-    to: '/configuracion',
-    icon: <AiFillSetting />
-  },
-  {
-    label: 'Salir',
-    to: '/logout',
-    icon: <FiLogOut />
-  }
-]
-
 export const linksModal = [
   {
     label: 'Perfil',
@@ -59,13 +45,18 @@ export const linksModal = [
     icon: <BiSolidUser />
   },
   {
+    label: 'Configuracion',
+    to: '/configuracion',
+    icon: <AiFillSetting />
+  },
+  {
     label: 'Mis compras',
     to: '/compras',
     icon: <AiFillShopping />
-  },
-  {
-    label: 'Reportar un problema',
-    to: '/reportError',
-    icon: <BiCommentError />
   }
+  // {
+  //   label: 'Reportar un problema',
+  //   to: '/reportError',
+  //   icon: <BiCommentError />
+  // },
 ]

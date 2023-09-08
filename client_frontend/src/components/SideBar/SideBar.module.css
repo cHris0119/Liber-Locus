@@ -1,4 +1,4 @@
-.Sidebar-container {
+.sidebarContainer {
   background-color:#1c1e21  ;
   position: fixed;
   top: 0;
@@ -12,13 +12,13 @@
 }
 
 @media screen and (max-width: 1265px) {
-  .Sidebar-container {
+  .sidebarContainer {
     width: 5rem;
   }
 }
 
 @media screen and (max-height: 600px) {
-  .Sidebar-container {
+  .sidebarContainer {
     justify-content: center;
     
     gap: 0.5rem;
@@ -26,7 +26,7 @@
 }
 
 @media screen and (max-width: 767px) {
-  .Sidebar-container {
+  .sidebarContainer {
     top: auto;
     bottom: 0;
     left: 0;

@@ -6,6 +6,7 @@ import styles from '../styles/PaymentSelection.module.css'
 export const PaymentSelection = () => {
   const { postId } = useParams()
   return (
+
     <div className={styles.paymentDetailContainer}>
       <BackButton />
 
@@ -24,5 +25,6 @@ export const PaymentSelection = () => {
       <SummaryProduct bookId={postId} />
 
     </div>
+
   )
 }

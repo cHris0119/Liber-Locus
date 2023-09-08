@@ -7,6 +7,7 @@ export const ShippingDetail = () => {
   const { postId } = useParams()
 
   return (
+
     <div className={styles.shippingDetailContainer}>
       <BackButton />
 

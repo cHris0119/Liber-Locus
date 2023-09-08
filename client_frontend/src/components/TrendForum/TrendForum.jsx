@@ -8,8 +8,10 @@ export const TrendForum = () => {
 
   return (
     <HomeSection>
+
       <div className={styles.trendForumContainer}>
         <h2>Foros populares</h2>
+
         <div className={styles.forumsContainer}>
           {forums.map((forum) => (
             <article className={styles.forumCard} key={forum.id}>
@@ -18,6 +20,7 @@ export const TrendForum = () => {
             </article>
           ))}
         </div>
+
       </div>
     </HomeSection>
   )

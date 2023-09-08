@@ -4,11 +4,13 @@ import styles from './SelectDirection.module.css'
 
 export const SelectDirection = () => {
   return (
+
     <div className={styles.selectDirectionContainer}>
 
       <h2>Selecciona tu dirección</h2>
 
       <div className={styles.directionContainer}>
+
         <div className={styles.directionMain}>
           <header className={styles.directionHeader}>
             <p>Enviar a domicilio</p>
@@ -22,8 +24,10 @@ export const SelectDirection = () => {
         <footer className={styles.directionFooter}>
           <NavLink className={styles.linkEditDirection}>Editar o elegir otro domicilio</NavLink>
         </footer>
+
       </div>
 
     </div>
+
   )
 }

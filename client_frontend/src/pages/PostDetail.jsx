@@ -16,6 +16,8 @@ export const PostDetail = () => {
         <div className={styles.productImgContainer}>
           <img className={styles.productImg} src="https://prodimage.images-bn.com/pimages/9781435159570_p0_v1_s1200x630.jpg" alt={selectedBook.name} />
         </div>
+
+        {/* Este div tiene que ser un componente. */}
         <div className={styles.productInfo}>
           <ul className={styles.productInfoNames}>
             <li className={styles.productCategory}>{selectedBook.category}</li>

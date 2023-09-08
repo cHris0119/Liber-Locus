@@ -7,8 +7,10 @@ export const Suscriptions = () => {
   const suscriptions = SuscriptionsMock.Suscriptions
   return (
     <HomeSection>
+
       <div className={styles.suscriptionsContainer}>
         <h2>Suscripciones</h2>
+
         <div className={styles.suscriptionsGrid}>
           {suscriptions.map((suscription) => (
             <article className={styles.suscription} key={suscription.id}>

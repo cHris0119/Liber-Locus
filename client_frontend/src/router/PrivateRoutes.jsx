@@ -8,11 +8,16 @@ const PrivateRoutes = () => {
   const [modalOpen, handleModal] = useModalOpen()
   return (
     <>
-      <Sidebar handleModal={handleModal} modalOpen={modalOpen} />
+
+      <Sidebar
+        handleModal={handleModal}
+        modalOpen={modalOpen} /
+      >
 
       <main
         onClick={() => modalOpen && handleModal()}
-        className="main">
+        className="main"
+      >
 
         <Routes>
           <Route path="home" element={<Home />} />
@@ -29,6 +34,7 @@ const PrivateRoutes = () => {
         </Routes>
 
       </main>
+
       <ScrollToTop />
 
     </>
