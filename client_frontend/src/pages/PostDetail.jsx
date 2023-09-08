@@ -1,11 +1,10 @@
 import { useParams, NavLink } from 'react-router-dom'
 import booksList from '../mocks/lastPostsMock.json'
-import BackButton from '../components/BackButton/BackButton'
-import QuestionsPost from '../components/QuestionsPost/QuestionsPost'
+import { BackButton, QuestionsPost } from '../components/'
 
 import styles from '../styles/PostDetail.module.css'
 
-const PostDetail = () => {
+export const PostDetail = () => {
   const books = booksList.Books
   const { postId } = useParams()
   const selectedBook = books.find(book => book.id === Number(postId))
@@ -35,5 +34,3 @@ const PostDetail = () => {
     </>
   )
 }
-
-export default PostDetail

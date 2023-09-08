@@ -2,7 +2,7 @@ import booksList from '../../mocks/lastPostsMock.json'
 
 import styles from './SummaryProduct.module.css'
 
-const SummaryProduct = ({ bookId }) => {
+export const SummaryProduct = ({ bookId }) => {
   const books = booksList.Books
   const selectedBook = books.find(book => book.id === Number(bookId))
 
@@ -19,5 +19,3 @@ const SummaryProduct = ({ bookId }) => {
     </ul>
   )
 }
-
-export default SummaryProduct

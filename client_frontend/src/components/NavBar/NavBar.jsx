@@ -19,12 +19,10 @@ const RenderLinks = ({ links, NavOpen }) => {
   )
 }
 
-const NavBar = ({ links, style, NavOpen }) => {
+export const NavBar = ({ links, style, NavOpen }) => {
   return (
     <ul className={`${styles.Navbar} ${style && styles[style]}`}>
       <RenderLinks links={links} NavOpen={NavOpen} />
     </ul>
   )
 }
-
-export default NavBar

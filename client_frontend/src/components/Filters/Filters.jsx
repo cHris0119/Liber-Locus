@@ -1,6 +1,6 @@
 import styles from './Filters.module.css'
 
-const Filters = () => {
+export const Filters = () => {
   return (
 
     <div className={styles.filtersContainer}>
@@ -21,5 +21,3 @@ const Filters = () => {
 
   )
 }
-
-export default Filters

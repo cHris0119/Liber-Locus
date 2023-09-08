@@ -1,9 +1,9 @@
-import HomeSection from '../HomeSection/HomeSection'
+import { HomeSection } from '../'
 import trendForum from '../../mocks/trendForum.json'
 
 import styles from './TrendForum.module.css'
 
-const TrendForum = () => {
+export const TrendForum = () => {
   const forums = trendForum.Forum
 
   return (
@@ -22,5 +22,3 @@ const TrendForum = () => {
     </HomeSection>
   )
 }
-
-export default TrendForum

@@ -1,9 +1,9 @@
-import HomeSection from '../HomeSection/HomeSection'
+import { HomeSection } from '../'
 import SuscriptionsMock from '../../mocks/suscriptionsMock.json'
 
 import styles from './Suscriptions.module.css'
 
-const Suscriptions = () => {
+export const Suscriptions = () => {
   const suscriptions = SuscriptionsMock.Suscriptions
   return (
     <HomeSection>
@@ -40,5 +40,3 @@ const Suscriptions = () => {
     </HomeSection>
   )
 }
-
-export default Suscriptions

@@ -1,6 +1,6 @@
 import styles from './HomeSection.module.css'
 
-const HomeSection = ({ children, style }) => {
+export const HomeSection = ({ children, style }) => {
   return (
     <section className={`${styles.homeSection} ${style && styles[style]}`}>
       <div className={styles.sectionContainer}>
@@ -9,5 +9,3 @@ const HomeSection = ({ children, style }) => {
     </section>
   )
 }
-
-export default HomeSection

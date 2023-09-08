@@ -1,10 +1,9 @@
-import Filters from '../Filters/Filters'
-import Searcher from '../Searcher/Searcher'
+import { Filters, Searcher } from '../'
 import { NavLink } from 'react-router-dom'
 
 import styles from './MarketplaceHeader.module.css'
 
-const MarketplaceHeader = () => {
+export const MarketplaceHeader = () => {
   return (
     <div className={styles.marketHeader}>
       <Filters />
@@ -15,5 +14,3 @@ const MarketplaceHeader = () => {
     </div>
   )
 }
-
-export default MarketplaceHeader

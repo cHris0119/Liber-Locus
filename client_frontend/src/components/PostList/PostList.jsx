@@ -1,13 +1,11 @@
-import ProductCard from '../ProductCard/ProductCard'
+import { ProductCard } from '../'
 import booksLists from '../../mocks/lastPostsMock.json'
 
 import styles from './PostList.module.css'
 
-const PostList = () => {
+export const PostList = () => {
   const posts = booksLists.Books
   const hasPost = posts.length > 0
-
-  console.log(posts)
   return (
     <>
       {hasPost
@@ -20,5 +18,3 @@ const PostList = () => {
     </>
   )
 }
-
-export default PostList

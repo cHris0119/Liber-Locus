@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom'
 
 import styles from './SelectDirection.module.css'
 
-const SelectDirection = () => {
+export const SelectDirection = () => {
   return (
     <div className={styles.selectDirectionContainer}>
 
@@ -27,5 +27,3 @@ const SelectDirection = () => {
     </div>
   )
 }
-
-export default SelectDirection

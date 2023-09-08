@@ -1,11 +1,9 @@
-import BackButton from '../components/BackButton/BackButton'
 import { NavLink, useParams } from 'react-router-dom'
-import SummaryProduct from '../components/SummaryProduct/SummaryProduct'
-import SelectPayment from '../components/SelectPayment/SelectPayment'
+import { BackButton, SummaryProduct, SelectPayment } from '../components/'
 
 import styles from '../styles/PaymentSelection.module.css'
 
-const PaymentSelection = () => {
+export const PaymentSelection = () => {
   const { postId } = useParams()
   return (
     <div className={styles.paymentDetailContainer}>
@@ -28,5 +26,3 @@ const PaymentSelection = () => {
     </div>
   )
 }
-
-export default PaymentSelection

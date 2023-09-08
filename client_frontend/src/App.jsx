@@ -1,39 +1,13 @@
-import { useState } from 'react'
-import Sidebar from './components/SideBar/SideBar'
-import PrivateRoutes from './routes/PrivateRoutes'
-import PublicRoutes from './routes/PublicRoutes'
-import useModalOpen from './hooks/useModalOpen'
-import ScrollToTop from './services/ScrollToTop'
+import PublicRoutes from './router/PublicRoutes'
 
 import './App.css'
 
-function App () {
-  const [modalOpen, handleModal] = useModalOpen()
-  const [isAuth, setIsAuth] = useState(false)
-
+export default function App () {
   return (
     <div className="app">
 
-      {isAuth
-        ? (
-          <>
-            <Sidebar handleModal={handleModal} modalOpen={modalOpen} />
-            <main
-              onClick={() => modalOpen && handleModal()}
-              className="main">
-              <PrivateRoutes />
-            </main>
-            <ScrollToTop />
-          </>
-        )
-        : (
-          <div>
-            <button onClick={() => setIsAuth(!isAuth)}>Ir a home</button>
-            <PublicRoutes />
-          </div>
-        )}
+      <PublicRoutes />
 
     </div>
   )
 }
-export default App

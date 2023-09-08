@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import styles from './ProductCard.module.css'
 
-const ProductCard = ({ books }) => {
+export const ProductCard = ({ books }) => {
   return (
     <>
       {books.map((book) => (
@@ -29,5 +29,3 @@ const ProductCard = ({ books }) => {
     </>
   )
 }
-
-export default ProductCard

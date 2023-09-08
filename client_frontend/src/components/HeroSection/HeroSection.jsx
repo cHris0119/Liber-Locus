@@ -1,8 +1,8 @@
-import HomeSection from '../HomeSection/HomeSection'
+import { HomeSection } from '../'
 
 import styles from './HeroSection.module.css'
 
-const HeroSection = () => {
+export const HeroSection = () => {
   return (
     <HomeSection style='homeHero'>
       <div className={styles.heroLeft}>
@@ -14,5 +14,3 @@ const HeroSection = () => {
 
   )
 }
-
-export default HeroSection

@@ -1,7 +1,7 @@
-import { InputLabelBook, SelectLabelBook } from '../InputLabelBook/InputLabelBook'
+import { InputLabelBook, SelectLabelBook } from '../'
 import styles from './InputFormBook.module.css'
 
-const InputFormBook = () => {
+export const InputFormBook = () => {
   return (
     <div className={styles.publishBookFormUp}>
 
@@ -23,7 +23,6 @@ const InputFormBook = () => {
             placeholder='Ej: Bram Stoker'
           />
         </div>
-
         <div className={styles.publishBookFormUpInfo2}>
           <InputLabelBook
             label='Precio del libro'
@@ -40,5 +39,3 @@ const InputFormBook = () => {
 
   )
 }
-
-export default InputFormBook

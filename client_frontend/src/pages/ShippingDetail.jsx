@@ -1,11 +1,9 @@
 import { useParams, NavLink } from 'react-router-dom'
-import SelectDirection from '../components/SelectDirection/SelectDirection'
-import BackButton from '../components/BackButton/BackButton'
-import SummaryProduct from '../components/SummaryProduct/SummaryProduct'
+import { SelectDirection, BackButton, SummaryProduct } from '../components/'
 
 import styles from '../styles/ShippingDetail.module.css'
 
-const ShippingDetail = () => {
+export const ShippingDetail = () => {
   const { postId } = useParams()
 
   return (
@@ -29,5 +27,3 @@ const ShippingDetail = () => {
     </div>
   )
 }
-
-export default ShippingDetail

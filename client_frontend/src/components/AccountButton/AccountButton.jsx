@@ -1,9 +1,9 @@
-import NavBar from '../NavBar/NavBar'
+import { NavBar } from '../'
 import { linksModal } from '../../services/linksArray'
 
 import styles from './AccountButton.module.css'
 
-const AccountButton = ({ NavOpen, modalOpen, handleModal }) => {
+export const AccountButton = ({ NavOpen, modalOpen, handleModal }) => {
   return (
     <div onClick={() => handleModal()} className={styles['Account-container']}>
       <div className={styles.Account}>
@@ -20,5 +20,3 @@ const AccountButton = ({ NavOpen, modalOpen, handleModal }) => {
     </div>
   )
 }
-
-export default AccountButton

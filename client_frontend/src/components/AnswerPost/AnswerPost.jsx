@@ -23,7 +23,7 @@ const RenderQuestions = () => {
   )
 }
 
-const AnswerPost = () => {
+export const AnswerPost = () => {
   return (
     <div className={styles.answerContainer}>
       <h3 style={{ color: '#fff' }} >Ultimas respuestas</h3>
@@ -31,5 +31,3 @@ const AnswerPost = () => {
     </div>
   )
 }
-
-export default AnswerPost

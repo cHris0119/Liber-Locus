@@ -1,10 +1,9 @@
-import HomeSection from '../HomeSection/HomeSection'
+import { HomeSection, ProductCard } from '../'
 import lastPostBooks from '../../mocks/lastPostsMock.json'
-import ProductCard from '../ProductCard/ProductCard'
 
 import styles from './LastPosts.module.css'
 
-const LastPosts = () => {
+export const LastPosts = () => {
   const lastPost = lastPostBooks.Books.slice(0, 4)
 
   return (
@@ -19,5 +18,3 @@ const LastPosts = () => {
     </HomeSection>
   )
 }
-
-export default LastPosts

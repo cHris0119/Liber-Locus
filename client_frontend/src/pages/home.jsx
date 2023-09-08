@@ -1,9 +1,6 @@
-import HeroSection from '../components/HeroSection/HeroSection'
-import LastPosts from '../components/LastPosts/LastPosts'
-import TrendForum from '../components/TrendForum/TrendForum'
-import Suscriptions from '../components/Suscriptions/Suscriptions'
+import { HeroSection, LastPosts, TrendForum, Suscriptions } from '../components/index'
 
-const Home = () => {
+export const Home = () => {
   return (
     <>
       <HeroSection />
@@ -13,5 +10,3 @@ const Home = () => {
     </>
   )
 }
-
-export default Home

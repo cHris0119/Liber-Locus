@@ -1,6 +1,6 @@
 import styles from './Searcher.module.css'
 
-const Searcher = () => {
+export const Searcher = () => {
   return (
 
     <form className={styles.formSearch}>
@@ -10,5 +10,3 @@ const Searcher = () => {
 
   )
 }
-
-export default Searcher

@@ -1,7 +1,6 @@
-import MarketplaceHeader from '../components/MarketplaceHeader/MarketplaceHeader'
-import PostList from '../components/PostList/PostList'
+import { MarketplaceHeader, PostList } from '../components'
 
-const Marketplace = () => {
+export const Marketplace = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
@@ -12,5 +11,3 @@ const Marketplace = () => {
     </div>
   )
 }
-
-export default Marketplace

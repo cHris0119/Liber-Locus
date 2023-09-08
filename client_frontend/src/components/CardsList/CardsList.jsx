@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 
 import styles from './CardsList.module.css'
 
-const CardsList = () => {
+export const CardsList = () => {
   const cards = cardsMock.Cards
   return (
     <>
@@ -28,5 +28,3 @@ const CardsList = () => {
     </>
   )
 }
-
-export default CardsList

@@ -1,9 +1,9 @@
-import CardsList from '../CardsList/CardsList'
 import { NavLink } from 'react-router-dom'
+import { CardsList } from '../'
 
 import styles from './SelectPayment.module.css'
 
-const SelectPayment = () => {
+export const SelectPayment = () => {
   return (
     <div className={styles.selectPaymentContainer}>
 
@@ -21,5 +21,3 @@ const SelectPayment = () => {
     </div>
   )
 }
-
-export default SelectPayment

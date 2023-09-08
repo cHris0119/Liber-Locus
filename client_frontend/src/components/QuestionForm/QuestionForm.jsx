@@ -1,6 +1,6 @@
 import styles from './QuestionForm.module.css'
 
-const QuestionForm = () => {
+export const QuestionForm = () => {
   return (
     <div className={styles.questionFormContainer}>
       <h3 style={{ color: '#fff' }}>Pregunta al vendedor</h3>
@@ -11,5 +11,3 @@ const QuestionForm = () => {
     </div>
   )
 }
-
-export default QuestionForm

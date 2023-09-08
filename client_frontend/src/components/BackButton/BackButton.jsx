@@ -3,7 +3,7 @@ import { AiFillBackward } from 'react-icons/ai'
 
 import styles from './BackButton.module.css'
 
-const BackButton = () => {
+export const BackButton = () => {
   const navigate = useNavigate()
 
   return (
@@ -12,5 +12,3 @@ const BackButton = () => {
     </>
   )
 }
-
-export default BackButton

@@ -1,9 +1,8 @@
-import BackButton from '../BackButton/BackButton'
-import InputFormBook from '../InputFormBook/InputFormBook'
+import { BackButton, InputFormBook } from '../'
 
 import styles from './PublishBookForm.module.css'
 
-const PublishBookForm = () => {
+export const PublishBookForm = () => {
   return (
     <div className={styles.publishBookFormContainer}>
 
@@ -29,5 +28,3 @@ const PublishBookForm = () => {
     </div>
   )
 }
-
-export default PublishBookForm

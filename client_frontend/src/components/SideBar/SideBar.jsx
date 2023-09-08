@@ -1,11 +1,10 @@
 import useNavOpen from '../../hooks/useNavOpen'
-import NavBar from '../NavBar/NavBar'
-import AccountButton from '../AccountButton/AccountButton'
+import { NavBar, AccountButton } from '../'
 import { linksConfig, linksNav } from '../../services/linksArray'
 
 import styles from './SideBar.module.css'
 
-const Sidebar = ({ handleModal, modalOpen }) => {
+export const Sidebar = ({ handleModal, modalOpen }) => {
   const NavOpen = useNavOpen()
 
   return (
@@ -23,5 +22,3 @@ const Sidebar = ({ handleModal, modalOpen }) => {
     </aside>
   )
 }
-
-export default Sidebar
