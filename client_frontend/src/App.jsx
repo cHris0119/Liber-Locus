@@ -1,13 +1,14 @@
-import PublicRoutes from './router/PublicRoutes'
+import { AuthProvider } from './auth/'
+import AppRouter from './router/AppRouter'
 
 import './App.css'
 
 export default function App () {
   return (
-    <div className="app">
+    <AuthProvider>
 
-      <PublicRoutes />
+      <AppRouter />
 
-    </div>
+    </AuthProvider>
   )
 }

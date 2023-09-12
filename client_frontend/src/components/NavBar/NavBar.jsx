@@ -30,7 +30,7 @@ const RenderLinks = ({ links, NavOpen }) => {
 export const NavBar = ({ links, style, NavOpen, modal = false }) => {
   return (
 
-    <ul className={`${styles.navbar} ${style && styles[style]}`}>
+    <ul className={ style ? style && styles[style] : styles.navbar }>
 
       <RenderLinks links={links} NavOpen={NavOpen} />
 

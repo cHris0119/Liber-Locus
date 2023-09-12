@@ -50,7 +50,8 @@
   border-radius: .5rem;
   user-select: none;
   display: flex;
-
+  gap: 1rem;
+  flex-direction: column;
 }
 
 .navbarModal>li{
@@ -96,6 +97,20 @@
 
   .svg {
     font-size: 1.8rem;
+  }
+  .navbarModal{
+    background-color: #1c1e21;
+    height: 100%;
+    width: 100%;
+    align-items: flex-start;
+    justify-content: start;
+    padding: 1rem .5rem 0 .5rem;
+    border-radius: .5rem;
+    user-select: none;
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+    padding: 1rem;
   }
 
 }

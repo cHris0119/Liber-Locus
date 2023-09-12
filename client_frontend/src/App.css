@@ -1,18 +1,19 @@
-.main{
+.main {
     height: 100vh;
-    padding: 0 0 0 15rem;
+    margin: 0 0 0 15rem;
 }
+
 @media screen and (max-width: 1265px) {
-    .main{
-        padding-left: 5rem;
+    .main {
+    margin: 0 0 0 5rem;
+
     }
 }
 
 @media screen and (max-width: 767px) {
-    .main{
-        padding: 0 0 3.5rem 0;
+    .main {
+    margin: 0 0 3.5rem 0;
+
     }
-  
+
 }
-
-

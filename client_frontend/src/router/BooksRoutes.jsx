@@ -1,10 +1,10 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { Home, Marketplace, PaymentSelection, PostDetail, ShippingDetail } from '../pages/'
-import { PublishBookForm, Sidebar } from '../components/'
+import { Home, Marketplace, PaymentSelection, PostDetail, ShippingDetail } from '../pages'
+import { PublishBookForm, Sidebar } from '../components'
 import useModalOpen from '../hooks/useModalOpen'
 import ScrollToTop from '../services/ScrollToTop'
 
-const PrivateRoutes = () => {
+export const BooksRoutes = () => {
   const [modalOpen, handleModal] = useModalOpen()
   return (
     <>
@@ -40,5 +40,3 @@ const PrivateRoutes = () => {
     </>
   )
 }
-
-export default PrivateRoutes
