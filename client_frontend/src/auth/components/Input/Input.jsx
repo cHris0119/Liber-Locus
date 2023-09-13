@@ -10,13 +10,19 @@ export const Input = ({
 }) => {
   return (
     <div className={styles.inputContainer}>
-      <label htmlFor={name}>{label}</label>
+      <label
+      htmlFor={name}
+      className={styles.labelAuth}
+      >
+        {label}
+      </label>
       <input
         id={name}
         type={type}
         name={name}
         value={value}
         placeholder={placeholder}
+        className={styles.inputAuth}
       />
       {error && <span>{error}</span>}
     </div>

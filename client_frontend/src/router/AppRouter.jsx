@@ -1,5 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
-import { PrivateRoute, PublicRoute, BooksRoutes, AuthRoutes } from './'
+import { PrivateRoute, PublicRoute } from './'
+import { AuthRoutes } from '../auth/routes/AuthRoutes'
+import { BooksRoutes } from '../books/routes/BooksRoutes'
 
 const AppRouter = () => {
   return (

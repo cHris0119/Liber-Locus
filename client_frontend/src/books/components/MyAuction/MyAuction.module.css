@@ -1,0 +1,46 @@
+.myPost{
+    background-color: #efefef;
+    width: 100%;
+    display: flex;
+    border-radius: 10px;
+}
+
+.articleImgContainer{
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 2px solid #00000050;
+}
+
+.articleContent{
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    padding: 0 1rem;
+}
+
+.articleDetails{
+    padding: 10px 5px;
+}
+
+.articleActions{
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 5px;
+    gap: 5px;
+}
+
+.articleActions button{
+    font-size: 14px;
+    padding: 10px;
+    border: none;
+    background-color: #402313;
+    color: white;
+    font-weight: 600;
+    border-radius: 5px;
+}
+
+.articleActions button a{
+    color: white;
+}

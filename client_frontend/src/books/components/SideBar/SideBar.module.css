@@ -1,0 +1,40 @@
+.sidebarContainer {
+  background-color:#1c1e21  ;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 15rem;
+  height: 100vh;
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: column;
+  min-height: 620px;
+  z-index: 999;
+}
+
+@media screen and (max-width: 1265px) {
+  .sidebarContainer {
+    width: 5rem;
+  }
+}
+
+@media screen and (max-height: 600px) {
+  .sidebarContainer {
+    justify-content: center;
+    
+    gap: 0.5rem;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .sidebarContainer {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3.5rem;
+    flex-direction: row;
+    align-items: center;
+    min-height: 3.5rem;
+  }
+}

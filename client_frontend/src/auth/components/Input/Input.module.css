@@ -8,19 +8,19 @@
 
 }
 
-label {
+.labelAuth {
     font-weight: medium;
     font-size: 16px;
     color: #7C838A;
 }
 
-input {
+.inputAuth {
     padding: 1rem;
     border-radius: 10px;
     border: none;
     background-color: #3a4a3f15;
 }
 
-input::placeholder {
+.inputAuth::placeholder {
     color: #3a4a3f45;
 }

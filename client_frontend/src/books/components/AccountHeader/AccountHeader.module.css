@@ -1,0 +1,145 @@
+.accountHeader {
+    width: 70%;
+    background-color: #ddd;
+    display: flex;
+    border-radius: 10px;
+    margin: 0 auto;
+}
+
+.headerLeft {
+    flex-basis: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 2px solid #00000050;
+}
+
+.headerContainerImg {
+    width: 25%;
+    height: 25%;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: lightskyblue;
+}
+
+.headerRight {
+    flex-basis: 60%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    justify-content: space-evenly;
+}
+
+.headerRight h1 {
+    width: fit-content;
+    text-align: center;
+    font-size: 2rem;
+    padding: .5rem 1rem;
+    border-bottom: 2px solid #00000050;
+}
+
+.userFollowers {
+    width: 70%;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 1rem;
+}
+
+.userFollowers p {
+    font-size: 1.4rem;
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.userFollowers span {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.followButton {
+    width: 60%;
+    padding: 1rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    background-color: #402313;
+    color: #fff;
+    cursor: pointer;
+}
+
+.followButton:hover {
+    background-color: #402313d4;
+}
+
+@media screen and (max-width: 1265px) {
+
+    .userFollowers {
+        width: 90%;
+    }
+
+    .userFollowers p {
+        font-size: 1.2rem;
+        align-items: center;
+    }
+
+    .userFollowers span {
+        font-size: 1.4rem;
+    }
+    .headerRight {
+        padding: 1rem;
+        gap: 10px;
+    }
+
+    .headerRight h1 {
+        font-size: 1.5rem;
+        padding: 0;
+    }
+
+    .followButton {
+        width: 70%;
+        padding: 5px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .accountHeader {
+        width: 100%;
+        height: 25vh;
+    }
+
+
+    .userFollowers {
+        width: 100%;
+        flex-direction: column;
+        gap: 0px;
+        padding: 0;
+    }
+
+    .headerRight h1 {
+        font-size: 1rem;
+        padding: 5px 0;
+    }
+
+    .userFollowers p {
+        font-size: 1.1rem;
+        align-items: center;
+    }
+
+    .userFollowers span {
+        font-size: 1.1rem;
+    }
+
+    .followButton {
+        width: 90%;
+        padding: 5px;
+        font-size: 1rem;
+    }
+
+}

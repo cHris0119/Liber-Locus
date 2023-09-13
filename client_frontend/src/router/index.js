@@ -1,5 +1,3 @@
 export * from './AppRouter'
-export * from './BooksRoutes'
 export * from './PrivateRoute'
 export * from './PublicRoute'
-export * from './AuthRoutes'

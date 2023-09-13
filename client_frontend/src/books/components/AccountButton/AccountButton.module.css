@@ -1,0 +1,96 @@
+.Account-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.Account {
+  cursor: pointer;
+  width: 90%;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 1rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 8px;
+  transition: all 0.1s;
+}
+
+.Account-img {
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  background-color: lightblue;
+}
+
+.Username {
+  color: #fff;
+  font-weight: bold;
+  user-select: none;
+}
+
+.Account:hover {
+  background-color: rgba(240, 240, 240, 0.1);
+}
+
+.Account:active .Username {
+  transform: scale(.95);
+}
+
+.Modal {
+  position: absolute;
+  left: calc(100% + 0.5rem);
+  bottom: 0;
+  width: 16rem;
+  height: 20rem;
+  text-align: left;
+
+}
+
+@media screen and (max-width: 1265px) {
+  .Account {
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+  }
+
+  .Account-img {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .Account-container {
+    width: 20%;
+    height: 100%;
+    position: unset;
+  }
+
+  .Account {
+    width: 100%;
+    display: flex;
+  }
+
+  .Account-img {
+    border-radius: 50%;
+    min-width: 2rem;
+    width: 2rem;
+    height: 2rem;
+    margin-bottom: .3rem;
+  }
+
+
+  .Modal {
+    left: initial;
+    right: .5rem;
+    bottom: calc(100% + 0.5rem);
+    position: absolute;
+    width: max-content;
+    height: max-content;
+    text-align: left;
+    
+  }
+}
