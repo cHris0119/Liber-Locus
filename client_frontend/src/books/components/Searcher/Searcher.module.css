@@ -4,6 +4,7 @@
     gap: 10px;
     justify-content: center;
     align-items: center;
+    min-width: 50%;
 }   
 
 .formSearch > input[type="text"]{
@@ -40,7 +41,29 @@
 @media screen and (max-width: 767px) {
     .formSearch{
         width: 100%;
-       
+        gap: 0;
     }
+
+    .formSearch > input[type="text"]{
+        border: none;
+        flex: 2;
+        font-size: 1em;
+        width: 80%;
+        outline: none;
+        padding: 8px;
+        background-color: #524644;
+        color: #fff;
+    }
+
+    .formSearch > input[type="submit"]{
+        flex: 1;
+        font-weight: 500;
+        width: 20%;
+        padding: 8px;
+        font-size: 1em;
+        transition: all .3s;
+    }
+    
+
   
   }
