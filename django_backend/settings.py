@@ -88,7 +88,11 @@ DATABASES = {
     'PORT': os.environ.get('DB_PORT'),
     'USER': os.environ.get('DB_USER'),
     'PASSWORD': os.environ.get('DB_PASSWORD'),
-    'OPTIONS': {'ssl': {'ca': os.environ.get('MYSQL_ATTR_SSL_CA')}}
+    'OPTIONS': 
+        {'ssl': {'ssl-ca': os.environ.get('MYSQL_ATTR_SSL_CA')},
+         'charset': 'utf8mb4',
+         }
+        
   }
 }
 
