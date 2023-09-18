@@ -31,3 +31,11 @@ class user(models.Model):
     def __str__(self):
         self.email
     
+class user_role(models.Model):
+    id = models.IntegerField(primary_key=True)
+    user_id = models.IntegerField()
+    role_id = models.IntegerField()
+     
+    def __str__(self):
+        self.user_id
+        
