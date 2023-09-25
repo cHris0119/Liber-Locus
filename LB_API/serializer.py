@@ -7,3 +7,16 @@ class userSerializer(serializers.ModelSerializer):
         Model = User
         fields = '__all__'
         
+class roleSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        Model: Role
+        fields = '__all__'
+        
+class userRoleSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        Model: UserRole
+        fields = '__all__'
+        
+

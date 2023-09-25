@@ -385,9 +385,6 @@ class Refund(models.Model):
     reason = models.TextField()
     date_refund = models.DateTimeField()
     post_venta = models.ForeignKey(PostVenta, models.DO_NOTHING, db_column='POST_VENTA_id')  # Field name made lowercase.
-    post_venta_state_post_venta = models.ForeignKey(PostVenta, models.DO_NOTHING, db_column='POST_VENTA_STATE_POST_VENTA_id', to_field='STATE_POST_VENTA_id', related_name='refund_post_venta_state_post_venta_set')  # Field name made lowercase.
-    post_venta_branch = models.ForeignKey(PostVenta, models.DO_NOTHING, db_column='POST_VENTA_BRANCH_id', to_field='BRANCH_id', related_name='refund_post_venta_branch_set')  # Field name made lowercase.
-
     class Meta:
         managed = False
         db_table = 'refund'
