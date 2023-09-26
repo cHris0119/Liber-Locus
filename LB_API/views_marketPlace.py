@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from .serializer import BookSerializer, BookCategorySerializer, CommentsSerializer
-from .models import Book, Comments, BookCategory
+from .models import Book, Comments, BookCategory, User, BookState
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response  
@@ -21,18 +21,42 @@ class CommentsView(viewsets.ModelViewSet):
 @api_view(['POST'])
 def book_create(request):
     if request.method == 'POST':
-        serializer = BookSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        data = request.data
+        try:
+            Book.objects.get(name=data['name'])
+            return Response({'error': 'El libro ya existe'})
+        except Book.DoesNotExist:
+            book = Book.objects.create(
+                name=data['name'],
+                price=data['price'],
+                description=data['description'],
+                author=data['author'],
+                book_img=data['book_img'],
+                seller=User.objects.get(id=data['seller']),
+                book_state=BookState.objects.get(id=data['book_state']),
+                valoration=data['valoration'],
+                book_category=BookCategory.objects.get(id=data['book_category'])
+            )
+            book_serialized = BookSerializer(book, many=False)
+            return Response({'BookData': book_serialized.data})
+        except Exception as e:
+            return Response({'error': str(e)})
+
 
 @api_view(['PUT'])
 def book_update(request, pk):
-    book = Book.objects.get(pk=pk)
-    if request.method == 'PUT':
+    try:
+        # Obtén el libro existente por su clave primaria (ID)
+        book = Book.objects.get(pk=pk)
+        # Actualiza los campos del libro con los datos proporcionados en la solicitud
         serializer = BookSerializer(book, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except Book.DoesNotExist:
+        return Response({'error': 'El libro no existe'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

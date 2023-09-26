@@ -13,6 +13,6 @@ urlpatterns = [
     path('gettoken/', views.obtain_auth_token),
     path('login/', vl.loginUser, name='login'),
     path('registerUser/', vl.registerUser, name='registerUser'),
-    path('api/books/create/', views.book_create, name='book_create'),  # Ruta para agregar un libro
-    re_path(r'^api/books/update/(?P<pk>\d+)/$', views.book_update, name='book_update')  # Ruta para actualizar un libro por ID
+    path('api/books/create/', views.book_create, name='book_create'),  # Ruta para agregar un libro (POST)
+    path('api/books/update/<int:pk>/', views.book_update, name='book_update')  # Ruta para actualizar un libro por ID (PUT)
 ]
