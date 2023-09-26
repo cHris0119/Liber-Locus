@@ -41,9 +41,10 @@ def registerUser(request):
 @api_view(['GET'])
 def loginUser(request):
     try:
-        user = User.objects.get(email=request['email'], password=request['password'])
+        pass1 = make_password(request['password'])
+        user = User.objects.get(email=request['email'], password=pass1)
         if user:
-            user1= AdminUser.authenticate(username=request['email'], password=request['password'])
+            user1= AdminUser.authenticate(username=request['email'], password=pass1)
             token = Token.objects.get_or_create(user=user)
             if token:
                 login(request, user1)
