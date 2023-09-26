@@ -1,12 +1,16 @@
 from django.urls import path, include
 from rest_framework import routers
-from LB_API import views
-from rest_framework.authtoken.views import obtain_auth_token
+from LB_API import views as vw
+from LB_API import views_login as vl
+from rest_framework.authtoken import views
+
 
 router = routers.DefaultRouter()
-router.register(r'users', views.userView, 'users')
+router.register(r'users', vw.userView, 'users')
 
 urlpatterns = [
     path("api/", include(router.urls)),
-    path('gettoken/', obtain_auth_token)
+    path('gettoken/', views.obtain_auth_token),
+    path('login/', vl.loginUser, name='login'),
+    path('registerUser/', vl.registerUser, name='registerUser')
 ]
