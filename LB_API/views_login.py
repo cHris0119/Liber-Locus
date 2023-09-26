@@ -38,32 +38,48 @@ def registerUser(request):
             return Response({'UserData': userSerial})
             
             
-@api_view(['GET'])
+@api_view(['POST'])
 def loginUser(request):
-    try:
-        pass1 = make_password(request['password'])
-        user = User.objects.get(email=request['email'], password=pass1)
-        if user:
-            user1= AdminUser.authenticate(username=request['email'], password=pass1)
-            token = Token.objects.get_or_create(user=user)
-            if token:
-                login(request, user1)
-                serial = userSerializer(user, many=False)
-                return Response(serial.data)
-    except:
-        msj = 'el usuario no existe o contraseña incorrecta'
-        return  Response({'error' : msj})
-    
+    if request.method == 'POST':
+        try:
+            pass1 = make_password(request['password'])
+            user = User.objects.get(email=request['email'], password=pass1)
+            if user:
+                user1= authenticate(username=request['email'], password=pass1)
+                token = Token.objects.get_or_create(user=user)
+                if token:
+                    login(request, user1)
+                    serial = userSerializer(user, many=False)
+                    return Response(serial.data)
+                else:
+                    return Response({'error':'Usuario no autorizado'})
+            else:
+                return Response({'error':'El usuario no existe'})
+        except:
+            msj = 'el usuario no existe o contraseña incorrecta'
+            return  Response({'error' : msj})
+
+
+
     
 @api_view(['PUT'])
 def editUser(request, id):
     try:
         user1 = User.objects.get(id=id)
         AdminUser.objects.get(username=user1.email)
+        userSerial = userSerializer(user1, data=request.data)
         if user1:
             token = Token.objects.get(user=user1)
             if token:
-                pass
+                if userSerial.is_valid():
+                    userSerial.save()
+                    return Response({'userData':userSerial})
+                else:
+                    return Response(userSerial.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'error':'El Usuario no esta autenticado'})
+        else:
+            return Response({'error':'El usuario no existe'})
     except:
         return Response({'error':'Ha ocurrido un error'})
 
