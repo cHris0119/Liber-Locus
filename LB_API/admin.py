@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import *
+from django.contrib.auth.models import User as AdminUser
 
 # Register your models here.
 admin.site.register(User)
@@ -33,4 +34,5 @@ admin.site.register(Review)
 admin.site.register(ReviewLike)
 admin.site.register(StatePostVenta)
 admin.site.register(Subscription)
+admin.site.register(AdminUser)
 
