@@ -72,8 +72,6 @@ def loginUser(request):
             msj = 'el usuario no existe o contraseña incorrecta'
             return  JsonResponse({'error' : msj})
 
-
-
     
 @api_view(['PUT'])
 def editUser(request, id):
