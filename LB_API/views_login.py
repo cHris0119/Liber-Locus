@@ -10,51 +10,89 @@ from django.contrib.auth import login, logout, authenticate
 from rest_framework.authtoken.models import Token 
 import time
 from django.http import JsonResponse
-from rest_framework.parsers import JSONParser
+import re
+
+
+def validacionCE(passw):
+    special_characters_pattern = r'[!@#$%^&*()_+{}\[\]:;<>,.?~\\]'
+    
+    if re.search(special_characters_pattern, passw):
+        return True
+    else:
+        return False
+    
+def validacionMAYUS(passw):
+    mayus = r'[ABCDEFGHIJKLMNOPQRSTUVWXYZ]'
+    
+    if re.search(mayus, passw):
+        return True
+    else:
+        return False
+    
+def validacionNum(passw):
+    num = r'[1234567890]'
+    
+    if re.search(num, passw):
+        return True
+    else:
+        return False
 
 # Obtiene la marca de tiempo actual en segundos
 marca_de_tiempo = int(time.time())
+
 
 
 @api_view(['POST'])
 def registerUser(request):
     if request.method == 'POST':
         data = request.data
+        passw = data['password']
         try:
             User.objects.get(email=data['email'])
             return Response({'error': 'El usuario ya existe'}, status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
             try:
-                dir = Direction.objects.get(id=data['numero'])
+                dir = Direction.objects.get(calle = data['calle'], numero = data['numero'])
                 return Response({'error': 'No se pudo agregar la dirección, inténtelo más tarde'}, status=status.HTTP_400_BAD_REQUEST)
             except Direction.DoesNotExist:
                 
+                if len(passw) > 8:
+                    if validacionCE(data['password']):
+                        if validacionMAYUS(data['password']):
+                            if validacionNum(data['password']):
+                                dir = Direction.objects.create(
+                                    id=marca_de_tiempo,
+                                    nombre=data['nombre_dir'],
+                                    calle=data['calle'],
+                                    numero=data['numero'],
+                                    commune=Commune.objects.get(id=data['id_com'])
+                                )
+                
+                                user = User.objects.create(
+                                    id=marca_de_tiempo,
+                                    first_name=data['first_name'],
+                                    last_name=data['last_name'],
+                                    email=data['email'],
+                                    password=make_password(data['password']),
+                                    created_at=datetime.now(),
+                                    direction=Direction.objects.get(id=dir.id),
+                                    user_photo=data['photo_dir'],
+                                    subscription=Subscription.objects.get(id=1)
+                                )
 
-                dir = Direction.objects.create(
-                    id=marca_de_tiempo,
-                    nombre=data['nombre_dir'],
-                    calle=data['calle'],
-                    numero=data['numero'],
-                    commune=Commune.objects.get(id=data['id_com'])
-                )
+                                AdminUser.objects.create(username=data['email'], password=data['password'])
 
-                user = User.objects.create(
-                    id=marca_de_tiempo,
-                    first_name=data['first_name'],
-                    last_name=data['last_name'],
-                    email=data['email'],
-                    password=make_password(data['password']),
-                    created_at=datetime.now(),
-                    direction=Direction.objects.get(id=dir.id),
-                    user_photo=data['photo_dir'],
-                    subscription=Subscription.objects.get(id=1)
-                )
+                                userSerial = userSerializer(user, many=False)
+                                return Response({'success': 'El usuario ha sido creado', 'UserData': { userSerial.data}}, status=status.HTTP_201_CREATED)
+                            else:
+                                return Response({'error': 'La contraseña debe tener al menos un numero'}, status=status.HTTP_400_BAD_REQUEST)
+                        else:
+                            return Response({'error': 'La contraseña debe tener al menos una mayuscula'}, status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        return Response({'error': 'La contraseña debe tener al menos un caracter especial ej(!@#$)'}, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    return Response({'error': 'La contraseña debe tener al menos 8 caracteres'}, status=status.HTTP_400_BAD_REQUEST)
 
-                AdminUser.objects.create(username=data['email'], password=data['password'])
-
-                userSerial = userSerializer(user, many=False)
-                return Response({'success': 'El usuario ha sido creado', 'UserData': userSerial.data}, status=status.HTTP_201_CREATED)
-            
 
 @api_view(['POST'])
 def loginUser(request):
