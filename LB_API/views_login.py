@@ -8,22 +8,35 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User as AdminUser
 from django.contrib.auth import login, logout, authenticate
 from rest_framework.authtoken.models import Token 
+import time
+from django.http import JsonResponse
+
+# Obtiene la marca de tiempo actual en segundos
+marca_de_tiempo = int(time.time())
+
 
 @api_view(['POST'])
 def registerUser(request):
     if request.method == 'POST':
         data = request.data
         try:
-            User.objects.get(email=data['email'])
-            return Response({'error': 'el usuario ya existe'})
+            usuario = User.objects.get(email=data['email'])
+            if usuario:
+                return Response({'error': 'el usuario ya existe'})
+            else:
+                dir = Direction.objects.get(id = data['numero'])
+                if dir:
+                    return Response({'error': 'No se pudo agregar la direccion intentelo mas tarde'})      
         except:
             dir = Direction.objects.create(
+                id = marca_de_tiempo + data['numero'],
                 nombre=data['nombre_dir'],
                 calle=data['calle'],
                 numero=data['numero'],
                 commune=Commune.objects.get(id = data['id_com'])
             )
             user = User.objects.create(
+                id = dir.id - 100,
                 first_name=data['first_name'],
                 last_name=data['last_name'],
                 email=data['email'],
@@ -35,7 +48,7 @@ def registerUser(request):
             )
             AdminUser.objects.create(username=data['email'], password=data['password'])
             userSerial = userSerializer(user, many=False)
-            return Response({'UserData': userSerial})
+            return JsonResponse({'success':'El usuario ah sido creado','UserData': userSerial})
             
             
 @api_view(['POST'])
@@ -57,7 +70,7 @@ def loginUser(request):
                 return Response({'error':'El usuario no existe'})
         except:
             msj = 'el usuario no existe o contraseña incorrecta'
-            return  Response({'error' : msj})
+            return  JsonResponse({'error' : msj})
 
 
 
