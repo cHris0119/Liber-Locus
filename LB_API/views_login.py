@@ -83,7 +83,7 @@ def registerUser(request):
                                 AdminUser.objects.create(username=data['email'], password=data['password'])
 
                                 userSerial = userSerializer(user, many=False)
-                                return Response({'success': 'El usuario ha sido creado', 'UserData': { userSerial.data}}, status=status.HTTP_201_CREATED)
+                                return Response({'success': 'El usuario ha sido creado', 'UserData': {userSerial.data}}, status=status.HTTP_201_CREATED)
                             else:
                                 return Response({'error': 'La contraseña debe tener al menos un numero'}, status=status.HTTP_400_BAD_REQUEST)
                         else:

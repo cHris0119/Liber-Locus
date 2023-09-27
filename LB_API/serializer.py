@@ -4,19 +4,19 @@ from .models import *
 
 class userSerializer(serializers.ModelSerializer):
     class Meta:
-        Model = User
+        model = User
         fields = '__all__'
         
 class roleSerializer(serializers.ModelSerializer):
     
     class Meta:
-        Model: Role
+        model: Role
         fields = '__all__'
         
 class userRoleSerializer(serializers.ModelSerializer):
     
     class Meta:
-        Model: UserRole
+        model: UserRole
         fields = '__all__'
         
 class AnswerSerializer(serializers.ModelSerializer):
