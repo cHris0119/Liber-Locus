@@ -168,3 +168,9 @@ class UserRoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRoom
         fields = '__all__'
+
+class TokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AuthtokenToken
+        fields = '__all__'
+        

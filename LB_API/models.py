@@ -7,6 +7,8 @@ class Answer(models.Model):
     question = models.ForeignKey('Question', models.DO_NOTHING, db_column='QUESTION_id')  # Field name made lowercase.
     user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
 
+    def __str__(self):
+        return self.description
     class Meta:
         managed = False
         db_table = 'answer'
@@ -115,7 +117,14 @@ class AuthUserUserPermissions(models.Model):
         db_table = 'auth_user_user_permissions'
         unique_together = (('user', 'permission'),)
 
+class AuthtokenToken(models.Model):
+    key = models.CharField(primary_key=True, max_length=40)
+    created = models.DateTimeField()
+    user = models.OneToOneField(AuthUser, models.DO_NOTHING)
 
+    class Meta:
+        managed = False
+        db_table = 'authtoken_token'
 class Book(models.Model):
     id = models.IntegerField(primary_key=True)  # The composite primary key (id, BOOK_STATE_id, BOOK_CATEGORY_id) found, that is not supported. The first column is selected.
     name = models.CharField(max_length=60)

@@ -1,15 +1,16 @@
-from .serializer import userSerializer
+from .serializer import userSerializer, TokenSerializer
 from .models import User, UserRole, Role, Direction, Commune, Subscription
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from datetime import datetime
 from rest_framework import status
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import User as AdminUser
 from django.contrib.auth import login, logout, authenticate
 from rest_framework.authtoken.models import Token 
 import time
 from django.http import JsonResponse
+from rest_framework.parsers import JSONParser
 
 # Obtiene la marca de tiempo actual en segundos
 marca_de_tiempo = int(time.time())
@@ -20,59 +21,57 @@ def registerUser(request):
     if request.method == 'POST':
         data = request.data
         try:
-            usuario = User.objects.get(email=data['email'])
-            if usuario:
-                return Response({'error': 'el usuario ya existe'})
-            else:
-                dir = Direction.objects.get(id = data['numero'])
-                if dir:
-                    return Response({'error': 'No se pudo agregar la direccion intentelo mas tarde'})      
-        except:
-            dir = Direction.objects.create(
-                id = marca_de_tiempo + data['numero'],
-                nombre=data['nombre_dir'],
-                calle=data['calle'],
-                numero=data['numero'],
-                commune=Commune.objects.get(id = data['id_com'])
-            )
-            user = User.objects.create(
-                id = dir.id,
-                first_name=data['first_name'],
-                last_name=data['last_name'],
-                email=data['email'],
-                password=make_password(data['password']),
-                created_at=datetime.now(),
-                direction=Direction.objects.get(id = dir.id),
-                user_photo=data['photo_dir'],
-                subscription=Subscription.objects.get(id = 1)
-            )
-            AdminUser.objects.create(username=data['email'], password=data['password'])
-            userSerial = userSerializer(user, many=False)
-            return JsonResponse({'success':'El usuario ah sido creado','UserData': userSerial})
+            User.objects.get(email=data['email'])
+            return Response({'error': 'El usuario ya existe'}, status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            try:
+                dir = Direction.objects.get(id=data['numero'])
+                return Response({'error': 'No se pudo agregar la dirección, inténtelo más tarde'}, status=status.HTTP_400_BAD_REQUEST)
+            except Direction.DoesNotExist:
+                
+
+                dir = Direction.objects.create(
+                    id=marca_de_tiempo,
+                    nombre=data['nombre_dir'],
+                    calle=data['calle'],
+                    numero=data['numero'],
+                    commune=Commune.objects.get(id=data['id_com'])
+                )
+
+                user = User.objects.create(
+                    id=marca_de_tiempo,
+                    first_name=data['first_name'],
+                    last_name=data['last_name'],
+                    email=data['email'],
+                    password=make_password(data['password']),
+                    created_at=datetime.now(),
+                    direction=Direction.objects.get(id=dir.id),
+                    user_photo=data['photo_dir'],
+                    subscription=Subscription.objects.get(id=1)
+                )
+
+                AdminUser.objects.create(username=data['email'], password=data['password'])
+
+                userSerial = userSerializer(user, many=False)
+                return Response({'success': 'El usuario ha sido creado', 'UserData': userSerial.data}, status=status.HTTP_201_CREATED)
             
-            
+
 @api_view(['POST'])
 def loginUser(request):
     if request.method == 'POST':
-        try:
-            pass1 = make_password(request['password'])
-            user = User.objects.get(email=request['email'], password=pass1)
-            if user:
-                user1= authenticate(username=request['email'], password=pass1)
-                token = Token.objects.get_or_create(user=user)
-                if token:
-                    login(request, user1)
-                    serial = userSerializer(user, many=False)
-                    return Response(serial.data)
-                else:
-                    return Response({'error':'Usuario no autorizado'})
-            else:
-                return Response({'error':'El usuario no existe'})
-        except:
-            msj = 'el usuario no existe o contraseña incorrecta'
-            return  JsonResponse({'error' : msj})
+        data = request.data
+        user = authenticate(username=data['email'], password=data['password'])
 
-    
+        if user is not None:
+            # Autenticación exitosa, crea o recupera un token
+            token, created = Token.objects.get_or_create(user=user)
+            serialToken = TokenSerializer(token)
+
+            return Response({'msj': 'Autenticación exitosa', 'token': serialToken.data['key']}, status=status.HTTP_200_OK)
+        else:
+            # Usuario o contraseña incorrecta
+            return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
+
 @api_view(['PUT'])
 def editUser(request, id):
     try:

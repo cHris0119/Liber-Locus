@@ -46,7 +46,9 @@ INSTALLED_APPS = [
     'LB_API',
 ]
 
-
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+]
 
 
 MIDDLEWARE = [
