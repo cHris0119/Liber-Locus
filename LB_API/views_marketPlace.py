@@ -59,4 +59,32 @@ def book_update(request, pk):
     except Book.DoesNotExist:
         return Response({'error': 'El libro no existe'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
-        return Response({'error': 'Ha ocurrido un error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({'error': 'Ha ocurrido un error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)  
+    
+@api_view(['DELETE'])
+def book_delete(id):
+        MisLibros = list(book_delete.objects.filter(id=id).values())
+        if len(MisLibros) > 0:
+            MisLibros.objects.filter(id=id).delete()
+            datos = {'message': "Eliminado"}
+        else:
+            datos = {'message': "El libro fue Eliminado..."}
+        return Response(datos) 
+    
+@api_view(['GET'])    
+def book_get(id=0):
+        if (id > 0):
+            MisLibros = list(book_get.objects.filter(id=id).values())
+            if len(MisLibros) > 0:
+                book_get = MisLibros[0]
+                datos = {'message': "Success", 'Libros': book_get}
+            else:
+                datos = {'message': "Book not found..."}
+            return Response(datos)
+        else:
+            MisLibros = list(book_get.objects.values())
+            if len(MisLibros) > 0:
+                datos = {'message': "Success", 'companies': MisLibros}
+            else:
+                datos = {'message': "Book not found..."}
+            return Response(datos)
