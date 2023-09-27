@@ -36,7 +36,7 @@ def registerUser(request):
                 commune=Commune.objects.get(id = data['id_com'])
             )
             user = User.objects.create(
-                id = dir.id - 100,
+                id = dir.id,
                 first_name=data['first_name'],
                 last_name=data['last_name'],
                 email=data['email'],
