@@ -121,10 +121,10 @@ def editUser(request, id):
                 else:
                     return Response(userSerial.errors, status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response({'error':'El Usuario no esta autenticado'})
+                return Response({'error': 'El Usuario no está autenticado'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
-            return Response({'error':'El usuario no existe'})
-    except:
-        return Response({'error':'Ha ocurrido un error'})
+            return Response({'error': 'El usuario no existe'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
