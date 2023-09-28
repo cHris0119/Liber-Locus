@@ -101,12 +101,12 @@ def loginUser(request):
         user = authenticate(username=data['email'], password=data['password'])
 
         if user is not None:
-            user1 = User.objects.get(email=['email'])
+            user1 = User.objects.get(email=data['email'])
             token, created = Token.objects.get_or_create(user=user)
             serialToken = TokenSerializer(token)
-            serialUser = userSerializer(user1, many=False)
+            serialUser = userSerializer(user1, fields=('id', 'first_name', 'last_name'),many=False)
             login(request, user)
-            return Response({'msj': 'Autenticación exitosa', 'token': serialToken.data['key'], 'userData': serialUser.data['id', 'first_name', 'last_name']}, status=status.HTTP_200_OK)
+            return Response({'msj': 'Autenticación exitosa', 'token': serialToken.data['key'], 'userData': serialUser.data}, status=status.HTTP_200_OK)
         else:
             # Usuario o contraseña incorrecta
             return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)

@@ -12,4 +12,4 @@ from rest_framework.response import Response
 def getCommunes(request):
     comune = Commune.objects.all()
     comunasSerial = CommuneSerializer(comune, many=True)
-    return JsonResponse({'dataCommune': comunasSerial})
+    return Response(comunasSerial.data)
