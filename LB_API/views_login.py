@@ -116,6 +116,26 @@ def loginUser(request):
             # Usuario o contraseña incorrecta
             return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
 
+
+api_view(['POST'])
+def obtainUser(request, token):
+    if request.method == 'POST':
+        token = Token.objects.get(key = token)
+        if token:
+            user = User.objects.get(email = token.user)
+            if user:
+                serialUser = userSerializer(user, many=False)
+                user_data = {
+                    'id': serialUser.data['id'],
+                    'first_name': serialUser.data['first_name'],
+                    'last_name': serialUser.data['last_name']
+                    }
+                return Response({'msj': 'Autenticación exitosa', 'userData': user_data}, status=status.HTTP_200_OK)
+            else:
+                return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            return Response({'msj': 'Usuario no autenticado'}, status=status.HTTP_401_UNAUTHORIZED)
+
 @api_view(['GET'])
 @csrf_exempt
 def logOut(request, id):

@@ -8,6 +8,7 @@ from LB_API import views as v
 
 urlpatterns = [
     path('api/gettoken/', views.obtain_auth_token),
+    path('api/obtainUser/<str:token>', vl.obtainUser, name='obtainUser'),
     path('api/login/', vl.loginUser, name='login'),
     path('api/logout/<int:id>', vl.logOut, name='logout'),
     path('api/registerUser/', vl.registerUser, name='registerUser'),
