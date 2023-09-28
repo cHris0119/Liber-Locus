@@ -4,13 +4,12 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from datetime import datetime
 from rest_framework import status
-from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import User as AdminUser
 from django.contrib.auth import login, logout, authenticate
 from rest_framework.authtoken.models import Token 
 import time
-from django.http import JsonResponse
 import re
+from django.contrib.auth.hashers import make_password, check_password
 
 
 def validacionCE(passw):
@@ -55,7 +54,6 @@ def registerUser(request):
                 dir = Direction.objects.get(calle = data['calle'], numero = data['numero'])
                 return Response({'error': 'No se pudo agregar la dirección, inténtelo más tarde'}, status=status.HTTP_400_BAD_REQUEST)
             except Direction.DoesNotExist:
-                
                 if len(passw) > 8:
                     if validacionCE(data['password']):
                         if validacionMAYUS(data['password']):
@@ -67,7 +65,7 @@ def registerUser(request):
                                     numero=data['numero'],
                                     commune=Commune.objects.get(id=data['id_com'])
                                 )
-                
+                                
                                 user = User.objects.create(
                                     id=marca_de_tiempo,
                                     first_name=data['first_name'],
@@ -79,11 +77,9 @@ def registerUser(request):
                                     user_photo=data['photo_dir'],
                                     subscription=Subscription.objects.get(id=1)
                                 )
-
-                                AdminUser.objects.create(username=data['email'], password=data['password'])
-
+                                AdminUser.objects.create(username=data['email'], password=make_password(data['password']))
                                 userSerial = userSerializer(user, many=False)
-                                return Response({'success': 'El usuario ha sido creado', 'UserData': {userSerial.data}}, status=status.HTTP_201_CREATED)
+                                return Response({'success': 'El usuario ha sido creado', 'UserData': userSerial.data}, status=status.HTTP_201_CREATED)
                             else:
                                 return Response({'error': 'La contraseña debe tener al menos un numero'}, status=status.HTTP_400_BAD_REQUEST)
                         else:
@@ -104,7 +100,7 @@ def loginUser(request):
             # Autenticación exitosa, crea o recupera un token
             token, created = Token.objects.get_or_create(user=user)
             serialToken = TokenSerializer(token)
-
+            login(request, user)
             return Response({'msj': 'Autenticación exitosa', 'token': serialToken.data['key']}, status=status.HTTP_200_OK)
         else:
             # Usuario o contraseña incorrecta
