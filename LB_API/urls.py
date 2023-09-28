@@ -8,8 +8,11 @@ from LB_API import views as v
 
 urlpatterns = [
     path('api/gettoken/', views.obtain_auth_token),
+    path('api/obtainUser/<str:token>', vl.obtainUser, name='obtainUser'),
     path('api/login/', vl.loginUser, name='login'),
     path('api/logout/<int:id>', vl.logOut, name='logout'),
+    path('api/obtainDirection/<int:user_id>/', vl.obtainDirection, name='obtainDirection'),
+    path('api/editDirection/<int:id>', vl.editDirection, name='editDirection'),
     path('api/registerUser/', vl.registerUser, name='registerUser'),
     path('api/editarUser/<int:id>/', vl.editUser, name='editUser'),
     path('api/books/create/', vw.book_create, name='book_create'),  # Ruta para agregar un libro (POST)

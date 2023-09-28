@@ -1,4 +1,4 @@
-from .serializer import userSerializer, TokenSerializer
+from .serializer import userSerializer, TokenSerializer, DirectionSerializer
 from .models import User, UserRole, Role, Direction, Commune, Subscription
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -117,6 +117,26 @@ def loginUser(request):
             # Usuario o contraseña incorrecta
             return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
 
+
+api_view(['POST'])
+def obtainUser(request, token):
+    if request.method == 'POST':
+        token = Token.objects.get(key = token)
+        if token:
+            user = User.objects.get(email = token.user)
+            if user:
+                serialUser = userSerializer(user, many=False)
+                user_data = {
+                    'id': serialUser.data['id'],
+                    'first_name': serialUser.data['first_name'],
+                    'last_name': serialUser.data['last_name']
+                    }
+                return Response({'msj': 'Autenticación exitosa', 'userData': user_data}, status=status.HTTP_200_OK)
+            else:
+                return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            return Response({'msj': 'Usuario no autenticado'}, status=status.HTTP_401_UNAUTHORIZED)
+
 @api_view(['GET'])
 @csrf_exempt
 def logOut(request, id):
@@ -156,4 +176,30 @@ def editUser(request, id):
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+api_view(['POST'])
+def obtainDirection(request, user_id):
+    try:
+        user = User.objects.get(id = user_id)
+        dir = Direction.objects.get(id = user.direction)
+        dirSerial = DirectionSerializer(dir, many=False)
+        return Response({'userData':dirSerial})
+    except user.DoesNotExist:
+        return Response({'error': 'El usuario no existe'}, status=status.HTTP_404_NOT_FOUND)
+    except dir.DoesNotExist:
+        return Response({'error': 'No posee direccion'}, status=status.HTTP_404_NOT_FOUND)
 
+api_view(['POST'])
+def editDirection(request, id):
+    try:
+        dir = User.objects.get(id=id)
+        dirSerial = DirectionSerializer(dir, data=request.data)
+        if dirSerial.is_valid():
+            dirSerial.save()
+            return Response({'userData':dirSerial.data})
+        else:
+            return Response(dirSerial.errors, status=status.HTTP_400_BAD_REQUEST)  
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except dir.DoesNotExist:
+        return Response({'error': 'Direccion no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+        
