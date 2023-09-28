@@ -6,17 +6,6 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response  
 from rest_framework import status
 
-class BookView(viewsets.ModelViewSet):
-    serializer_class = BookSerializer
-    queryset = Book.objects.all() 
-    
-class BookCategoryView(viewsets.ModelViewSet):
-    serializer_class = BookCategorySerializer
-    queryset = BookCategory.objects.all() 
-    
-class CommentsView(viewsets.ModelViewSet):
-    serializer_class = CommentsSerializer
-    queryset = Comments.objects.all()
 
 @api_view(['POST'])
 def book_create(request):
@@ -83,7 +72,7 @@ def book_get(request):
             return Response(datos)
         else:
             __name__ = list(book_get.objects.values())
-            if len(__name__)) > 0:
+            if len(__name__) > 0:
                 datos = {'message': "Success", 'companies': __name__}
             else:
                 datos = {'message': "Book not found..."}
