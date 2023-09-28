@@ -62,29 +62,29 @@ def book_update(request, pk):
         return Response({'error': 'Ha ocurrido un error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)  
     
 @api_view(['DELETE'])
-def book_delete(id):
-        MisLibros = list(book_delete.objects.filter(id=id).values())
-        if len(MisLibros) > 0:
-            MisLibros.objects.filter(id=id).delete()
+def book_delete(request):
+        __name__ = list(book_delete.objects.filter(request=request).values())
+        if len(__name__) > 0:
+            __name__.objects.filter(request=request).delete()
             datos = {'message': "Eliminado"}
         else:
             datos = {'message': "El libro fue Eliminado..."}
         return Response(datos) 
     
 @api_view(['GET'])    
-def book_get(id=0):
-        if (id > 0):
-            MisLibros = list(book_get.objects.filter(id=id).values())
-            if len(MisLibros) > 0:
-                book_get = MisLibros[0]
+def book_get(request):
+        if (request > 0):
+            __name__= list(book_get.objects.filter(request=request).values())
+            if len(__name__) > 0:
+                book_get = __name__[0]
                 datos = {'message': "Success", 'Libros': book_get}
             else:
                 datos = {'message': "Book not found..."}
             return Response(datos)
         else:
-            MisLibros = list(book_get.objects.values())
-            if len(MisLibros) > 0:
-                datos = {'message': "Success", 'companies': MisLibros}
+            __name__ = list(book_get.objects.values())
+            if len(__name__)) > 0:
+                datos = {'message': "Success", 'companies': __name__}
             else:
                 datos = {'message': "Book not found..."}
             return Response(datos)
