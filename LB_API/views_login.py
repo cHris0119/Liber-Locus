@@ -108,7 +108,8 @@ def loginUser(request):
             user_data = {
                 'id': serialUser.data['id'],
                 'first_name': serialUser.data['first_name'],
-                'last_name': serialUser.data['last_name']
+                'last_name': serialUser.data['last_name'],
+                'user_photo': serialUser.data['user_photo']
             }
             login(request, user)
             return Response({'msj': 'Autenticación exitosa', 'token': serialToken.data['key'], 'userData': user_data}, status=status.HTTP_200_OK)
