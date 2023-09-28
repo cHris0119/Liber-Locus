@@ -1,4 +1,4 @@
-from .serializer import userSerializer, TokenSerializer
+from .serializer import userSerializer, TokenSerializer, DirectionSerializer
 from .models import User, UserRole, Role, Direction, Commune, Subscription
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -176,4 +176,30 @@ def editUser(request, id):
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+api_view(['POST'])
+def obtainDirection(request, user_id):
+    try:
+        user = User.objects.get(id = user_id)
+        dir = Direction.objects.get(id = user.direction)
+        dirSerial = DirectionSerializer(dir, many=False)
+        return Response({'userData':dirSerial})
+    except user.DoesNotExist:
+        return Response({'error': 'El usuario no existe'}, status=status.HTTP_404_NOT_FOUND)
+    except dir.DoesNotExist:
+        return Response({'error': 'No posee direccion'}, status=status.HTTP_404_NOT_FOUND)
 
+api_view(['POST'])
+def editDirection(request, id):
+    try:
+        dir = User.objects.get(id=id)
+        dirSerial = DirectionSerializer(dir, data=request.data)
+        if dirSerial.is_valid():
+            dirSerial.save()
+            return Response({'userData':dirSerial.data})
+        else:
+            return Response(dirSerial.errors, status=status.HTTP_400_BAD_REQUEST)  
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except dir.DoesNotExist:
+        return Response({'error': 'Direccion no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+        
