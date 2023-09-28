@@ -9,7 +9,8 @@ from django.contrib.auth import login, logout, authenticate
 from rest_framework.authtoken.models import Token 
 import time
 import re
-from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.hashers import make_password
+from django.views.decorators.csrf import csrf_exempt
 
 
 def validacionCE(passw):
@@ -65,8 +66,8 @@ def registerUser(request):
                                     numero=data['numero'],
                                     commune=Commune.objects.get(id=data['id_com'])
                                 )
-                                
-                                user = User.objects.create(
+                                if dir:
+                                    user = User.objects.create(
                                     id=marca_de_tiempo,
                                     first_name=data['first_name'],
                                     last_name=data['last_name'],
@@ -76,10 +77,12 @@ def registerUser(request):
                                     direction=Direction.objects.get(id=dir.id),
                                     user_photo=data['photo_dir'],
                                     subscription=Subscription.objects.get(id=1)
-                                )
-                                AdminUser.objects.create(username=data['email'], password=make_password(data['password']))
-                                userSerial = userSerializer(user, many=False)
-                                return Response({'success': 'El usuario ha sido creado', 'UserData': userSerial.data}, status=status.HTTP_201_CREATED)
+                                    )
+                                    AdminUser.objects.create(username=data['email'], password=make_password(data['password']))
+                                    userSerial = userSerializer(user, many=False)
+                                    return Response({'success': 'El usuario ha sido creado', 'UserData': userSerial.data}, status=status.HTTP_201_CREATED)
+                                else:
+                                    return Response({'error': 'No se pudo crear la direccion'}, status=status.HTTP_400_BAD_REQUEST)
                             else:
                                 return Response({'error': 'La contraseña debe tener al menos un numero'}, status=status.HTTP_400_BAD_REQUEST)
                         else:
@@ -91,6 +94,7 @@ def registerUser(request):
 
 
 @api_view(['POST'])
+@csrf_exempt
 def loginUser(request):
     if request.method == 'POST':
         data = request.data
@@ -100,14 +104,29 @@ def loginUser(request):
             user1 = User.objects.get(email=['email'])
             token, created = Token.objects.get_or_create(user=user)
             serialToken = TokenSerializer(token)
-            serialUser = userSerializer(user1, fields=('id', 'first_name', 'last_name'),many=False)
+            serialUser = userSerializer(user1, many=False)
             login(request, user)
-            return Response({'msj': 'Autenticación exitosa', 'token': serialToken.data['key'], 'userData': serialUser.data}, status=status.HTTP_200_OK)
+            return Response({'msj': 'Autenticación exitosa', 'token': serialToken.data['key'], 'userData': serialUser.data['id', 'first_name', 'last_name']}, status=status.HTTP_200_OK)
         else:
             # Usuario o contraseña incorrecta
             return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
 
-
+@api_view(['GET'])
+@csrf_exempt
+def logOut(request, id):
+    if request.method == 'GET':
+        user = User.objects.get(id = id)
+        user1 = AdminUser.objects.get(username=user.email)
+        if user1:
+            token = Token.objects.get(user = user.email)
+            if token:
+                token.delete()
+                logout(request, user)
+            else:
+                return Response({'msj': 'No Autorizado para hacer esta acciion'}, status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
+        
 
 
 @api_view(['PUT'])
