@@ -179,3 +179,9 @@ class editUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'user_photo']
+        
+class editDirectionSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Direction
+        fields = ['calle', 'numero', 'commune']

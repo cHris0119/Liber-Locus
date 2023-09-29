@@ -1,4 +1,4 @@
-from .serializer import userSerializer, TokenSerializer, DirectionSerializer, PaymentMethodSerializer, editUserSerializer
+from .serializer import userSerializer, TokenSerializer, editDirectionSerializer,DirectionSerializer, PaymentMethodSerializer, editUserSerializer
 from .models import User, UserRole, Role, Direction, Commune, Subscription, PaymentMethod
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -149,7 +149,6 @@ def logout(request, id):
             token = Token.objects.get(user = user1)
             if token:
                 token.delete()
-       
                 return Response({'msj': 'Usuario deslogeado exitosamente'}, status=status.HTTP_200_OK)
             else:
                 return Response({'msj': 'No Autorizado para hacer esta acciion'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -183,7 +182,7 @@ def editUser(request, id):
 def obtainDirection(request, user_id):
     try:
         user = User.objects.get(id = user_id)
-        id_dir = user['direction']
+        id_dir = user.direction.id
         dir = Direction.objects.get(id = id_dir)
         dirSerial = DirectionSerializer(dir, many=False)
         return Response({'userData':dirSerial.data}, status=status.HTTP_200_OK)
@@ -196,16 +195,23 @@ def obtainDirection(request, user_id):
 
 @api_view(['POST'])
 def editDirection(request, id):
-    try:
-        dir = User.objects.get(id=id)
-        dirSerial = DirectionSerializer(dir, data=request.data)
-        if dirSerial.is_valid():
-            dirSerial.save()
-            return Response({'userData':dirSerial.data}, status=status.HTTP_200_OK)
-        else:
-            return Response(dirSerial.errors, status=status.HTTP_400_BAD_REQUEST)  
-    except Exception as e:
-        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    except dir.DoesNotExist:
-        return Response({'error': 'Direccion no encontrada'}, status=status.HTTP_404_NOT_FOUND)
-
+    if request.method == 'POST':
+        data = request.data
+        try:
+            data_dir = {
+                'calle' : data['calle'],
+                'numero': data['numero'],
+                'commune': data['id_com']
+            }
+            user = User.objects.get(id=id)
+            direction = Direction.objects.get(id=user.direction.id)
+            dirSerial = editDirectionSerializer(direction, data=data_dir)
+            if dirSerial.is_valid():
+                dirSerial.save()
+                return Response({'dirData': dirSerial.data}, status=status.HTTP_200_OK)
+            else:
+                return Response(dirSerial.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Direction.DoesNotExist:
+            return Response({'error': 'Dirección no encontrada'}, status=status.HTTP_404_NOT_FOUND)
