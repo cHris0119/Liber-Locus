@@ -1,4 +1,4 @@
-from .serializer import userSerializer, TokenSerializer, DirectionSerializer, PaymentMethodSerializer
+from .serializer import userSerializer, TokenSerializer, DirectionSerializer, PaymentMethodSerializer, editUserSerializer
 from .models import User, UserRole, Role, Direction, Commune, Subscription, PaymentMethod
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -103,8 +103,8 @@ def loginUser(request):
 
         if user is not None:
             user1 = User.objects.get(email=data['email'])
-            token = Token.objects.get_or_create(user=user)
-            serialToken = TokenSerializer(token)
+            token, created = Token.objects.get_or_create(user=user)
+            serialToken = TokenSerializer(token, many=False)
             serialUser = userSerializer(user1,many=False)
             user_data = {
                 'id': serialUser.data['id'],
@@ -141,7 +141,7 @@ def obtainUser(request, token):
 
 @api_view(['POST'])
 @csrf_exempt
-def logOut(request, id):
+def logout(request, id):
     if request.method == 'POST':
         user = User.objects.get(id = id)
         user1 = AdminUser.objects.get(username=user.email)
@@ -149,7 +149,7 @@ def logOut(request, id):
             token = Token.objects.get(user = user1)
             if token:
                 token.delete()
-                logout(request, user1)
+                logout(request)
                 return Response({'msj': 'Usuario deslogeado exitosamente'}, status=status.HTTP_200_OK)
             else:
                 return Response({'msj': 'No Autorizado para hacer esta acciion'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -162,10 +162,10 @@ def logOut(request, id):
 def editUser(request, id):
     try:
         user1 = User.objects.get(id=id)
-        AdminUser.objects.get(username=user1.email)
-        userSerial = userSerializer(user1, data=request.data)
+        user = AdminUser.objects.get(username=user1.email)
+        userSerial = editUserSerializer(user1, data=request.data)
         if user1:
-            token = Token.objects.get(user=user1)
+            token = Token.objects.get(user=user)
             if token:
                 if userSerial.is_valid():
                     userSerial.save()
@@ -179,7 +179,7 @@ def editUser(request, id):
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@api_view(['POST'])
+@api_view(['GET'])
 def obtainDirection(request, user_id):
     try:
         user = User.objects.get(id = user_id)

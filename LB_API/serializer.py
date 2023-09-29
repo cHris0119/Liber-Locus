@@ -174,3 +174,8 @@ class TokenSerializer(serializers.ModelSerializer):
         model = AuthtokenToken
         fields = '__all__'
         
+class editUserSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'user_photo']
