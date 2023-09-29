@@ -103,7 +103,7 @@ def loginUser(request):
 
         if user is not None:
             user1 = User.objects.get(email=data['email'])
-            token = Token.objects.get_or_create(user=user)
+            token, created  = Token.objects.get_or_create(user=user)
             serialToken = TokenSerializer(token)
             serialUser = userSerializer(user1,many=False)
             user_data = {
