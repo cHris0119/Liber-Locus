@@ -17,8 +17,7 @@ urlpatterns = [
     path('api/editarUser/<int:id>/', vl.editUser, name='editUser'),
     path('api/books/create/', vw.book_create, name='book_create'),  # Ruta para agregar un libro (POST)
     path('api/books/update/<int:pk>/', vw.book_update, name='book_update'),  # Ruta para actualizar un libro por ID (PUT) 
-    path('api/books/delete/int:pk>/', vw.book_delete, name='book_delete'),  
-    # path('api/books/get/<int:pk>/', vw.book_get, name='book_get') ,
-    path('api/communeGet', v.getCommunes, name='communeGet')
-    
+    path('api/books/delete/<int:pk>/', vw.book_delete, name='book_delete'),  
+    path('api/communeGet', v.getCommunes, name='communeGet'),
+    path('api/books/get_all_books/', vw.get_all_books, name='get_all_books')
 ]
