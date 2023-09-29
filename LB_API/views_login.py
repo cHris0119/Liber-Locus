@@ -113,7 +113,7 @@ def loginUser(request):
                 'user_photo': serialUser.data['user_photo']
             }
             login(request, user)
-            return Response({'msj': 'Autenticación exitosa', 'token': serialToken.data['Key'], 'userData': user_data}, status=status.HTTP_200_OK)
+            return Response({'msj': 'Autenticación exitosa', 'token': serialToken.data['key'], 'userData': user_data}, status=status.HTTP_200_OK)
         else:
             # Usuario o contraseña incorrecta
             return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -139,16 +139,17 @@ def obtainUser(request, token):
         except token1.DoesNotExist:
             return Response({'msj': 'Token Invalido'}, status=status.HTTP_401_UNAUTHORIZED)
 
-@api_view(['GET'])
+@api_view(['POST'])
 @csrf_exempt
 def logOut(request, id):
-    if request.method == 'GET':
+    if request.method == 'POST':
         user = User.objects.get(id = id)
+        user1 = AdminUser.objects.get(username=user.email)
         if user:
-            token = Token.objects.get(user = user.email)
+            token = Token.objects.get(user = user1)
             if token:
                 token.delete()
-                logout(request, user)
+                logout(request, user1)
                 return Response({'msj': 'Usuario deslogeado exitosamente'}, status=status.HTTP_200_OK)
             else:
                 return Response({'msj': 'No Autorizado para hacer esta acciion'}, status=status.HTTP_401_UNAUTHORIZED)
