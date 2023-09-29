@@ -117,8 +117,8 @@ def loginUser(request):
             # Usuario o contraseña incorrecta
             return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
 
-
 api_view(['POST'])
+@csrf_exempt
 def obtainUser(request, token):
     if request.method == 'POST':
         token = Token.objects.get(key = token)
