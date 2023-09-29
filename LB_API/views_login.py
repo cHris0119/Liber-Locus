@@ -103,7 +103,7 @@ def loginUser(request):
 
         if user is not None:
             user1 = User.objects.get(email=data['email'])
-            token, created = Token.objects.get_or_create(user=user)
+            token = Token.objects.get_or_create(user=user)
             serialToken = TokenSerializer(token)
             serialUser = userSerializer(user1,many=False)
             user_data = {
@@ -113,7 +113,7 @@ def loginUser(request):
                 'user_photo': serialUser.data['user_photo']
             }
             login(request, user)
-            return Response({'msj': 'Autenticación exitosa', 'token': serialToken.data['key'], 'userData': user_data}, status=status.HTTP_200_OK)
+            return Response({'msj': 'Autenticación exitosa', 'token': serialToken.data['Key'], 'userData': user_data}, status=status.HTTP_200_OK)
         else:
             # Usuario o contraseña incorrecta
             return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -136,7 +136,6 @@ def obtainUser(request, token):
                 return Response({'msj': 'Autenticación exitosa', 'userData': user_data}, status=status.HTTP_200_OK)
             else:
                 return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
-        
         except token1.DoesNotExist:
             return Response({'msj': 'Token Invalido'}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -145,12 +144,12 @@ def obtainUser(request, token):
 def logOut(request, id):
     if request.method == 'GET':
         user = User.objects.get(id = id)
-        user1 = AdminUser.objects.get(username=user.email)
-        if user1:
+        if user:
             token = Token.objects.get(user = user.email)
             if token:
                 token.delete()
                 logout(request, user)
+                return Response({'msj': 'Usuario deslogeado exitosamente'}, status=status.HTTP_200_OK)
             else:
                 return Response({'msj': 'No Autorizado para hacer esta acciion'}, status=status.HTTP_401_UNAUTHORIZED)
         else:
@@ -169,7 +168,7 @@ def editUser(request, id):
             if token:
                 if userSerial.is_valid():
                     userSerial.save()
-                    return Response({'userData':userSerial})
+                    return Response({'userData':userSerial.data}, status=status.HTTP_200_OK)
                 else:
                     return Response(userSerial.errors, status=status.HTTP_400_BAD_REQUEST)
             else:
@@ -185,12 +184,14 @@ def obtainDirection(request, user_id):
         user = User.objects.get(id = user_id)
         dir = Direction.objects.get(id = user.direction)
         dirSerial = DirectionSerializer(dir, many=False)
-        return Response({'userData':dirSerial})
+        return Response({'userData':dirSerial.data}, status=status.HTTP_200_OK)
     except user.DoesNotExist:
         return Response({'error': 'El usuario no existe'}, status=status.HTTP_404_NOT_FOUND)
     except dir.DoesNotExist:
         return Response({'error': 'No posee direccion'}, status=status.HTTP_404_NOT_FOUND)
-
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 @api_view(['POST'])
 def editDirection(request, id):
     try:
@@ -198,7 +199,7 @@ def editDirection(request, id):
         dirSerial = DirectionSerializer(dir, data=request.data)
         if dirSerial.is_valid():
             dirSerial.save()
-            return Response({'userData':dirSerial.data})
+            return Response({'userData':dirSerial.data}, status=status.HTTP_200_OK)
         else:
             return Response(dirSerial.errors, status=status.HTTP_400_BAD_REQUEST)  
     except Exception as e:
