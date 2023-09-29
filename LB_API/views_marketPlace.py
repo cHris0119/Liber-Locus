@@ -11,6 +11,8 @@ from rest_framework.authentication import TokenAuthentication
 
 
 @api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def book_create(request):
     if request.method == 'POST':
         data = request.data
@@ -48,6 +50,8 @@ def book_create(request):
             
          
 @api_view(['PUT'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def book_update(request, pk):
     try:
         data = request.data
@@ -62,6 +66,10 @@ def book_update(request, pk):
         # Verifica si el campo "seller" está presente en la solicitud y es un entero válido
         if 'seller' in request.data and isinstance(request.data['seller'], int):
             book.seller_id = request.data['seller']
+        
+          # Verifica si el usuario autenticado es el propietario del libro
+        if request.user != book.seller:
+            return Response({'error': 'No tienes permiso para actualizar este libro.'}, status=status.HTTP_403_FORBIDDEN)
 
         # Actualiza otros campos del libro con los datos proporcionados en la solicitud
         serializer = BookSerializer(book, data=request.data, partial=True)
