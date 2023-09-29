@@ -149,7 +149,6 @@ def logout(request, id):
             token = Token.objects.get(user = user1)
             if token:
                 token.delete()
-                logout(request)
                 return Response({'msj': 'Usuario deslogeado exitosamente'}, status=status.HTTP_200_OK)
             else:
                 return Response({'msj': 'No Autorizado para hacer esta acciion'}, status=status.HTTP_401_UNAUTHORIZED)
