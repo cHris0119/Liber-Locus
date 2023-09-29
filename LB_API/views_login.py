@@ -11,6 +11,7 @@ import time
 import re
 from django.contrib.auth.hashers import make_password
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.renderers import JSONRenderer
 
 
 def validacionCE(passw):
@@ -117,25 +118,26 @@ def loginUser(request):
             # Usuario o contraseña incorrecta
             return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
 
-api_view(['POST'])
+@api_view(['GET'])
 @csrf_exempt
 def obtainUser(request, token):
-    if request.method == 'POST':
+    if request.method == 'GET':
         try:
-            token = Token.objects.get(key = token)
-            user = User.objects.get(email = token.user)
+            token1 = Token.objects.get(key = token)
+            user = User.objects.get(email = token1.user)
             if user:
                 serialUser = userSerializer(user, many=False)
                 user_data = {
                     'id': serialUser.data['id'],
                     'first_name': serialUser.data['first_name'],
-                    'last_name': serialUser.data['last_name']
+                    'last_name': serialUser.data['last_name'],
+                    'user_photo': serialUser.data['user_photo']
                     }
                 return Response({'msj': 'Autenticación exitosa', 'userData': user_data}, status=status.HTTP_200_OK)
             else:
                 return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
         
-        except token.DoesNotExist:
+        except token1.DoesNotExist:
             return Response({'msj': 'Token Invalido'}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['GET'])
@@ -177,7 +179,7 @@ def editUser(request, id):
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-api_view(['POST'])
+@api_view(['POST'])
 def obtainDirection(request, user_id):
     try:
         user = User.objects.get(id = user_id)
@@ -189,7 +191,7 @@ def obtainDirection(request, user_id):
     except dir.DoesNotExist:
         return Response({'error': 'No posee direccion'}, status=status.HTTP_404_NOT_FOUND)
 
-api_view(['POST'])
+@api_view(['POST'])
 def editDirection(request, id):
     try:
         dir = User.objects.get(id=id)
