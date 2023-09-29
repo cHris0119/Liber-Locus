@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from .serializer import BookSerializer, BookCategorySerializer, CommentsSerializer
+from .serializer import BookSerializer, BookCategorySerializer, CommentsSerializer, editBooksSerializer
 from .models import Book, Comments, BookCategory, User, BookState
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -19,12 +19,15 @@ def book_create(request):
         # Obtiene la marca de tiempo actual en segundos
         marca_de_tiempo = int(time.time())
         try:
-                seller = User.objects.get(id=data['seller'])
+            # Obtén el vendedor a partir del correo electrónico del usuario autenticado
+            user_email = request.user.username
+            seller = User.objects.get(email=user_email)
         except User.DoesNotExist:
             return Response({'error': 'El vendedor no existe'}, status=status.HTTP_404_NOT_FOUND)
             
         try:
-            book_state = BookState.objects.get(id=data['book_state'])
+            # Configura el valor predeterminado para BOOK_STATE_id
+            book_state_id = 2  # Valor predeterminado deseado
             book_category = BookCategory.objects.get(id=data['book_category'])
                 
             book = Book.objects.create(
@@ -35,57 +38,45 @@ def book_create(request):
                 author=data['author'],
                 book_img=data['book_img'],
                 seller=seller,
-                book_state=book_state,
-                valoration=data['valoration'],
+                book_state_id=book_state_id,  # Establece el valor predeterminado
                 book_category=book_category
                 )
             book_serialized = BookSerializer(book, many=False)
             return Response({'BookData': book_serialized.data})
         except BookCategory.DoesNotExist:
             return Response({'error': 'La categoría del libro no existe'}, status=status.HTTP_404_NOT_FOUND)
-        except BookState.DoesNotExist:
-            return Response({'error': 'El estado del libro no existe'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
          
 @api_view(['PUT'])
-@authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def book_update(request, pk):
     try:
         data = request.data
-        # Obtén el libro existente por su clave primaria (ID)
+        user = User.objects.get(email=request.user.username)
         book = Book.objects.get(pk=pk)
-        book_state = BookState.objects.get(id=data['book_state'])
         book_category = BookCategory.objects.get(id=data['book_category'])
-        # Verifica si el campo "id" está presente en la solicitud y es un entero válido
+        bookSerial = editBooksSerializer(book, data=request.data)
+        
         if 'id' in request.data and isinstance(request.data['id'], int):
             book.id = request.data['id']
 
-        # Verifica si el campo "seller" está presente en la solicitud y es un entero válido
-        if 'seller' in request.data and isinstance(request.data['seller'], int):
-            book.seller_id = request.data['seller']
-        
-          # Verifica si el usuario autenticado es el propietario del libro
-        if request.user != book.seller:
-            return Response({'error': 'No tienes permiso para actualizar este libro.'}, status=status.HTTP_403_FORBIDDEN)
-
-        # Actualiza otros campos del libro con los datos proporcionados en la solicitud
-        serializer = BookSerializer(book, data=request.data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+        if user == book.seller:
+            bookSerial = BookSerializer(book, data=request.data, partial=True)  
+                    
+            if bookSerial.is_valid():
+                bookSerial.save()
+                return Response(bookSerial.data)
+            else:
+                return Response(bookSerial.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'No tienes permiso para actualizar este libro.'}, status=status.HTTP_403_FORBIDDEN)
 
     except Book.DoesNotExist:
         return Response({'error': 'El libro no existe'}, status=status.HTTP_404_NOT_FOUND)
     except BookCategory.DoesNotExist:
         return Response({'error': 'La categoría del libro no existe'}, status=status.HTTP_404_NOT_FOUND)
-    except BookState.DoesNotExist:
-        return Response({'error': 'El estado del libro no existe'}, status=status.HTTP_404_NOT_FOUND)    
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
@@ -96,8 +87,14 @@ def book_update(request, pk):
 def book_delete(request, pk):
     try:
         book = Book.objects.get(pk=pk)
-        book.delete()
-        return Response({'message': 'Libro eliminado con éxito'})
+        user = User.objects.get(email=request.user.username)
+
+        if user == book.seller:
+            book.delete()
+            return Response({'message': 'Libro eliminado con éxito'})
+        else:
+            return Response({'error': 'No tienes permiso para actualizar este libro.'}, status=status.HTTP_403_FORBIDDEN)
+        
     except Book.DoesNotExist:
         return Response({'error': 'El libro no existe'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
@@ -105,6 +102,7 @@ def book_delete(request, pk):
 
      
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_all_books(request):
     try:
         # Obtén todos los libros de la base de datos
