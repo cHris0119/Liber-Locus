@@ -85,6 +85,17 @@ def book_delete(request, pk):
       
      return Response(book.data) 
      
-     
+@api_view(['GET'])
+def get_all_books(request):
+    try:
+        # Obtén todos los libros de la base de datos
+        books = Book.objects.all()
+        # Serializa los libros para convertirlos en datos JSON
+        serializer = BookSerializer(books, many=True)
+        # Devuelve la lista de libros en la respuesta
+        return Response(serializer.data)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     
+
