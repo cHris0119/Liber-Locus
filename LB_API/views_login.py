@@ -54,7 +54,9 @@ def registerUser(request):
         except User.DoesNotExist:
             try:
                 dir = Direction.objects.get(calle = data['calle'], numero = data['numero'])
-                return Response({'error': 'No se pudo agregar la dirección, inténtelo más tarde'}, status=status.HTTP_400_BAD_REQUEST)
+                dir_user = User.objects.get(direction = dir)
+                if dir_user:
+                    return Response({'error': 'No se pudo agregar la dirección, inténtelo más tarde'}, status=status.HTTP_400_BAD_REQUEST)
             except Direction.DoesNotExist:
                 if len(passw) > 8:
                     if validacionCE(data['password']):
