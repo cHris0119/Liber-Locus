@@ -219,6 +219,7 @@ def editDirection(request, id):
         data = request.data
         try:
             data_dir = {
+                'nombre' :data['nombre'],
                 'calle' : data['calle'],
                 'numero': data['numero'],
                 'commune': data['id_com']
