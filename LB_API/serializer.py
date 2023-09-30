@@ -1,8 +1,10 @@
 from rest_framework import serializers
 from .models import *
+from drf_extra_fields.fields import Base64ImageField
 
 
 class userSerializer(serializers.ModelSerializer):
+    photo_dir = Base64ImageField(required=False)
     class Meta:
         model = User
         fields = '__all__'

@@ -471,7 +471,7 @@ class User(models.Model):
     password = models.CharField(max_length=45)
     created_at = models.DateTimeField()
     direction = models.ForeignKey(Direction, models.DO_NOTHING, db_column='DIRECTION_id')  # Field name made lowercase.
-    user_photo = models.CharField(max_length=255, blank=True, null=True, db_comment='URL')
+    user_photo = models.ImageField(upload_to="fotos/" ,null=True, db_comment='URL')
     subscription = models.ForeignKey(Subscription, models.DO_NOTHING, db_column='SUBSCRIPTION_id', db_comment='FREE/SUB_1/SUB_2/SUB_3')  # Field name made lowercase.
 
     class Meta:

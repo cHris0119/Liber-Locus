@@ -4,7 +4,8 @@ from LB_API import views_marketPlace as vw
 from LB_API import views_login as vl
 from rest_framework.authtoken import views
 from LB_API import views as v
-
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('api/gettoken/', views.obtain_auth_token),
@@ -22,3 +23,6 @@ urlpatterns = [
     path('api/getCategories/', v.getCategories, name='getCategories'),
     path('api/books/get_all_books/', vw.get_all_books, name='get_all_books')
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

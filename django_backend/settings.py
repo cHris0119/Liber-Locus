@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-tle+xkc%0d+cbo(47r2w%8ys-$o7*$9+n(96-nat(+cic5nv2g'
+SECRET_KEY =  os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -147,12 +147,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-STATIC_URL = 'static/'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -162,4 +156,16 @@ CSRF_TRUSTED_ORIGINS = 'http://localhost:5173',
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173"
+]
+
+# Ruta base del proyecto
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Configuración de archivos estáticos
+STATIC_URL = '/static/'  # URL base para servir archivos estáticos
+STATIC_ROOT = os.path.join(BASE_DIR, 'LB_API/staticfiles')  # Ruta donde se recopilan los archivos estáticos para producción
+
+# Directorios adicionales para archivos estáticos
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'LB_API/static'),  # Directorio donde se encuentran tus archivos estáticos personalizados
 ]

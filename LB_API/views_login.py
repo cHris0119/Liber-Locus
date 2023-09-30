@@ -5,14 +5,12 @@ from rest_framework.response import Response
 from datetime import datetime
 from rest_framework import status
 from django.contrib.auth.models import User as AdminUser
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, authenticate
 from rest_framework.authtoken.models import Token 
 import time
 import re
 from django.contrib.auth.hashers import make_password
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.renderers import JSONRenderer
-
 
 def validacionCE(passw):
     special_characters_pattern = r'[!@#$%^&*()_+{}\[\]:;<>,.?~\\]'

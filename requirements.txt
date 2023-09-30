@@ -7,3 +7,5 @@ python-dotenv==1.0.0
 pytz==2023.3.post1
 sqlparse==0.4.4
 tzdata==2023.3
+Pillow==10.0.1
+drf-extra-fields==3.7.0
