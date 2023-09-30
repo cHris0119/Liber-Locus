@@ -186,7 +186,7 @@ class editDirectionSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Direction
-        fields = ['calle', 'numero', 'commune']
+        fields = ['nombre','calle', 'numero', 'commune']
 
 class editBooksSerializer(serializers.ModelSerializer):
     
