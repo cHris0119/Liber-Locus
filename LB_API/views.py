@@ -1,7 +1,7 @@
 
 from rest_framework import viewsets
-from .serializer import CommuneSerializer, BookCategorySerializer
-from .models import Commune, BookCategory
+from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer
+from .models import Commune, BookCategory, Review
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -19,3 +19,9 @@ def getCategories(request):
     category = BookCategory.objects.all()
     categorySerial = BookCategorySerializer(category, many=True)
     return Response(categorySerial.data)
+
+@api_view(['GET']) 
+def getReviews(request):
+    review = Review.objects.all()
+    reviewSerial = ReviewSerializer(review, many=True)
+    return Response(reviewSerial.data)

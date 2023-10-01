@@ -8,7 +8,7 @@ from rest_framework import status
 import time
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
-
+from math import trunc
 
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
@@ -105,15 +105,48 @@ def book_delete(request, pk):
 @permission_classes([IsAuthenticated])
 def get_all_books(request):
     try:
-        # Obtén todos los libros de la base de datos
+        # Obtain all books from the database
         books = Book.objects.all()
-        # Serializa los libros para convertirlos en datos JSON
-        serializer = BookSerializer(books, many=True)
-        # Devuelve la lista de libros en la respuesta
-        return Response(serializer.data)
+
+        # Initialize empty lists to store user names and categories
+        
+        user_id = []
+        user_names = []
+        category_id = []
+        categories = []
+
+        # Iterate through the books to get seller names and categories
+        for book in books:
+            user = User.objects.get(id=book.seller.id)
+            user_names.append(user.email)
+            category = BookCategory.objects.get(id=book.book_category.id)
+            categories.append(category.description)
+
+        # Serialize the books along with user names and categories
+        serialized_books = []
+        for book, user_name, category in zip(books, user_names, categories):
+            serialized_book = {
+                'book_img': book.book_img,
+                'name': book.name,
+                'price': trunc(book.price),
+                'description': book.description,
+                'author': book.author,
+                'seller': {
+                    'id': book.seller.id,
+                    'user':user_name},
+                'category': {
+                    'id': book.book_category.id,
+                    'description': category}
+                # Add more fields as needed
+            }
+            serialized_books.append(serialized_book)
+
+        # Return the list of serialized books as JSON response
+        return Response(serialized_books)
+
     except Exception as e:
-        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+        # Handle exceptions and return an error response
+        return Response({'error': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)   
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

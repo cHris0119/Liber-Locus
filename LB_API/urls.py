@@ -21,6 +21,7 @@ urlpatterns = [
     path('api/books/delete/<int:pk>/', vw.book_delete, name='book_delete'),  
     path('api/communeGet/', v.getCommunes, name='communeGet'),
     path('api/getCategories/', v.getCategories, name='getCategories'),
+    path('api/getReviews', v.getReviews, name='getReviews'),
     path('api/books/get_all_books/', vw.get_all_books, name='get_all_books'),
     path('api/books/get_user_books/', vw.get_user_books, name='get_user_books')
 ]
