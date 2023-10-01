@@ -155,7 +155,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CSRF_TRUSTED_ORIGINS = 'http://localhost:5173',
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "j39p4gkg-5173.use.devtunnels.ms"
 ]
 
 # Ruta base del proyecto
