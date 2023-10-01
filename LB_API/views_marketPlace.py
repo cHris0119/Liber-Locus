@@ -124,20 +124,26 @@ def get_all_books(request):
 
         # Serialize the books along with user names and categories
         serialized_books = []
-        for book, user_name, category in zip(books, user_names, categories):
+
+        for book in books:
+            user = User.objects.get(id=book.seller.id)
             serialized_book = {
+                'id': book.id,  # Agregar el ID del libro
                 'book_img': book.book_img,
                 'name': book.name,
                 'price': trunc(book.price),
                 'description': book.description,
                 'author': book.author,
                 'seller': {
-                    'id': book.seller.id,
-                    'user':user_name},
+                    'id': user.id,  
+                    'first_name': user.first_name,  
+                    'last_name': user.last_name  
+                },
                 'category': {
                     'id': book.book_category.id,
-                    'description': category}
-                # Add more fields as needed
+                    'description': book.book_category.description
+                }
+                
             }
             serialized_books.append(serialized_book)
 
@@ -146,7 +152,7 @@ def get_all_books(request):
 
     except Exception as e:
         # Handle exceptions and return an error response
-        return Response({'error': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)   
+        return Response({'error': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
