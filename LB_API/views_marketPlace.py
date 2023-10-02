@@ -42,6 +42,7 @@ def book_create(request):
                 book_category=book_category
                 )
             book_serialized = BookSerializer(book, many=False)
+            
             return Response({'BookData': book_serialized.data})
         except BookCategory.DoesNotExist:
             return Response({'error': 'La categoría del libro no existe'}, status=status.HTTP_404_NOT_FOUND)

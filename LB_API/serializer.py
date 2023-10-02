@@ -41,15 +41,26 @@ class AuctionStateSerializer(serializers.ModelSerializer):
         model = AuctionState
         fields = '__all__'
 
-class BookSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Book
-        fields = '__all__'
 
 class BookCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = BookCategory
         fields = '__all__'
+
+
+class sellerSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name']
+class BookSerializer(serializers.ModelSerializer):
+    book_category = BookCategorySerializer(many=False, 
+                                           read_only=True,
+                                           )
+    seller = sellerSerializer(many=False, read_only=True)
+    class Meta:
+        model = Book
+        fields = ['id', 'name', 'price', 'description', 'author', 'book_img', 'valoration', 'seller', 'book_category']
 
 class BookStateSerializer(serializers.ModelSerializer):
     class Meta:
