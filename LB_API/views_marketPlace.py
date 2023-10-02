@@ -105,54 +105,40 @@ def book_delete(request, pk):
 @permission_classes([IsAuthenticated])
 def get_all_books(request):
     try:
-        # Obtain all books from the database
-        books = Book.objects.all()
+        # Obtén todos los libros de la base de datos con información relacionada precargada
+        books = Book.objects.select_related('seller', 'book_category').all()
 
-        # Initialize empty lists to store user names and categories
-        
-        user_id = []
-        user_names = []
-        category_id = []
-        categories = []
-
-        # Iterate through the books to get seller names and categories
-        for book in books:
-            user = User.objects.get(id=book.seller.id)
-            user_names.append(user.email)
-            category = BookCategory.objects.get(id=book.book_category.id)
-            categories.append(category.description)
-
-        # Serialize the books along with user names and categories
+        # Serialize los libros junto con la información de usuario y categoría
         serialized_books = []
 
         for book in books:
-            user = User.objects.get(id=book.seller.id)
             serialized_book = {
-                'id': book.id,  # Agregar el ID del libro
+                'id': book.id,
                 'book_img': book.book_img,
                 'name': book.name,
                 'price': trunc(book.price),
                 'description': book.description,
                 'author': book.author,
                 'seller': {
-                    'id': user.id,  
-                    'first_name': user.first_name,  
-                    'last_name': user.last_name  
+                    'id': book.seller.id,
+                    'first_name': book.seller.first_name,
+                    'last_name': book.seller.last_name
                 },
                 'category': {
                     'id': book.book_category.id,
                     'description': book.book_category.description
                 }
-                
             }
             serialized_books.append(serialized_book)
 
-        # Return the list of serialized books as JSON response
+        # Devuelve la lista de libros serializados como respuesta JSON
         return Response(serialized_books)
 
     except Exception as e:
-        # Handle exceptions and return an error response
-        return Response({'error': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # Maneja las excepciones y devuelve una respuesta de error
+        return Response({'error': f'Ha ocurrido un error: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

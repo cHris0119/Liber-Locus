@@ -156,8 +156,9 @@ CSRF_TRUSTED_ORIGINS = 'http://localhost:5173',
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "j39p4gkg-5173.use.devtunnels.ms"
+    "https://j39p4gkg-5173.use.devtunnels.ms"
 ]
+
 
 # Ruta base del proyecto
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
