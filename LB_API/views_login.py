@@ -11,6 +11,11 @@ import time
 import re
 from django.contrib.auth.hashers import make_password
 from django.views.decorators.csrf import csrf_exempt
+import base64
+import os
+from django.conf import settings
+
+
 
 def validacionCE(passw):
     special_characters_pattern = r'[!@#$%^&*()_+{}\[\]:;<>,.?~\\]'
@@ -60,6 +65,14 @@ def registerUser(request):
                     if validacionCE(data['password']):
                         if validacionMAYUS(data['password']):
                             if validacionNum(data['password']):
+                                photo_dir_base64 = data['photo_dir']
+                                photo_dir_data = base64.b64decode(photo_dir_base64)
+                                photo_dir_name = f"user_{request['email']}.png"  # Nombre de archivo único
+                                photo_dir_path = os.path.join(settings.MEDIA_ROOT, 'user_photos', photo_dir_name)
+
+                                with open(photo_dir_path, 'wb') as photo_dir_file:
+                                    photo_dir_file.write(photo_dir_data)
+                                
                                 dir = Direction.objects.create(
                                     id=marca_de_tiempo,
                                     nombre=data['nombre_dir'],
