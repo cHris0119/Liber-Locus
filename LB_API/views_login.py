@@ -58,8 +58,8 @@ def registerUser(request):
             try:
                 dir = Direction.objects.get(calle = data['calle'], numero = data['numero'])
                 dir_user = User.objects.get(direction = dir)
-                if dir_user:
-                    return Response({'error': 'No se pudo agregar la dirección, inténtelo más tarde'}, status=status.HTTP_400_BAD_REQUEST)
+                # if dir_user:
+                #     return Response({'error': 'No se pudo agregar la dirección, inténtelo más tarde'}, status=status.HTTP_400_BAD_REQUEST)
             except Direction.DoesNotExist:
                 if len(passw) > 8:
                     if validacionCE(data['password']):
@@ -67,11 +67,11 @@ def registerUser(request):
                             if validacionNum(data['password']):
                                 photo_dir_base64 = data['photo_dir']
                                 photo_dir_data = base64.b64decode(photo_dir_base64)
-                                photo_dir_name = f"user_{request['email']}.png"  # Nombre de archivo único
+                                photo_dir_name = f"user_{marca_de_tiempo}.png"  # Nombre de archivo único
                                 photo_dir_path = os.path.join(settings.MEDIA_ROOT, 'user_photos', photo_dir_name)
 
-                                with open(photo_dir_path, 'wb') as photo_dir_file:
-                                    photo_dir_file.write(photo_dir_data)
+                                # with open(photo_dir_path, 'wb') as photo_dir_file:
+                                #     photo_dir_file.write(photo_dir_data)
                                 
                                 dir = Direction.objects.create(
                                     id=marca_de_tiempo,

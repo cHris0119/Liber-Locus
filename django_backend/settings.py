@@ -166,6 +166,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Configuración de archivos estáticos
 STATIC_URL = '/static/'  # URL base para servir archivos estáticos
 STATIC_ROOT = os.path.join(BASE_DIR, 'LB_API/staticfiles')  # Ruta donde se recopilan los archivos estáticos para producción
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR
 
 # Directorios adicionales para archivos estáticos
 STATICFILES_DIRS = [
