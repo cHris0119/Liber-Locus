@@ -106,39 +106,11 @@ def book_delete(request, pk):
 @permission_classes([IsAuthenticated])
 def get_all_books(request):
     try:
-        # Obtén todos los libros de la base de datos con información relacionada precargada
-        books = Book.objects.select_related('seller', 'book_category').all()
-
-        # Serialize los libros junto con la información de usuario y categoría
-        serialized_books = []
-
-        for book in books:
-            serialized_book = {
-                'id': book.id,
-                'book_img': book.book_img,
-                'name': book.name,
-                'price': trunc(book.price),
-                'description': book.description,
-                'author': book.author,
-                'seller': {
-                    'id': book.seller.id,
-                    'first_name': book.seller.first_name,
-                    'last_name': book.seller.last_name
-                },
-                'category': {
-                    'id': book.book_category.id,
-                    'description': book.book_category.description
-                }
-            }
-            serialized_books.append(serialized_book)
-
-        # Devuelve la lista de libros serializados como respuesta JSON
-        return Response(serialized_books)
-
+        books = Book.objects.all()
+        serialized_books = BookSerializer(books, many=True)    
+        return Response(serialized_books.data)
     except Exception as e:
-        # Maneja las excepciones y devuelve una respuesta de error
         return Response({'error': f'Ha ocurrido un error: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
     
 @api_view(['GET'])
