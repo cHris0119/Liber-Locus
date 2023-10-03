@@ -52,7 +52,7 @@ class sellerSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['first_name', 'last_name']
+        fields = ['id','first_name', 'last_name']
 class BookSerializer(serializers.ModelSerializer):
     book_category = BookCategorySerializer(many=False, 
                                            read_only=True,
