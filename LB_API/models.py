@@ -7,8 +7,6 @@ class Answer(models.Model):
     question = models.ForeignKey('Question', models.DO_NOTHING, db_column='QUESTION_id')  # Field name made lowercase.
     user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
 
-    def __str__(self):
-        return self.description
     class Meta:
         managed = False
         db_table = 'answer'
@@ -20,7 +18,8 @@ class Auction(models.Model):
     created_at = models.DateTimeField()
     duration_days = models.IntegerField()
     final_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    auction_state = models.ForeignKey('AuctionState', models.DO_NOTHING, db_column='AUCTION_STATE_id')  # Field name made lowercase.    book = models.ForeignKey('Book', models.DO_NOTHING, db_column='BOOK_id')  # Field name made lowercase.
+    auction_state = models.ForeignKey('AuctionState', models.DO_NOTHING, db_column='AUCTION_STATE_id')  # Field name made lowercase.
+    book = models.ForeignKey('Book', models.DO_NOTHING, db_column='BOOK_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -117,6 +116,7 @@ class AuthUserUserPermissions(models.Model):
         db_table = 'auth_user_user_permissions'
         unique_together = (('user', 'permission'),)
 
+
 class AuthtokenToken(models.Model):
     key = models.CharField(primary_key=True, max_length=40)
     created = models.DateTimeField()
@@ -125,6 +125,8 @@ class AuthtokenToken(models.Model):
     class Meta:
         managed = False
         db_table = 'authtoken_token'
+
+
 class Book(models.Model):
     id = models.IntegerField(primary_key=True)  # The composite primary key (id, BOOK_STATE_id, BOOK_CATEGORY_id) found, that is not supported. The first column is selected.
     name = models.CharField(max_length=60)
@@ -136,6 +138,7 @@ class Book(models.Model):
     book_state = models.ForeignKey('BookState', models.DO_NOTHING, db_column='BOOK_STATE_id')  # Field name made lowercase.
     created_at = models.DateTimeField()
     book_category = models.ForeignKey('BookCategory', models.DO_NOTHING, db_column='BOOK_CATEGORY_id')  # Field name made lowercase.
+
     class Meta:
         managed = False
         db_table = 'book'
@@ -199,6 +202,20 @@ class Commune(models.Model):
         managed = False
         db_table = 'commune'
 
+
+class Direction(models.Model):
+    id = models.IntegerField(primary_key=True)
+    nombre = models.CharField(max_length=100)
+    calle = models.CharField(max_length=50)
+    numero = models.IntegerField()
+    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
+    commune = models.ForeignKey(Commune, models.DO_NOTHING, db_column='COMMUNE_id')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'direction'
+
+
 class Discussion(models.Model):
     id = models.IntegerField(primary_key=True)
     description = models.TextField()
@@ -256,6 +273,24 @@ class DjangoSession(models.Model):
         managed = False
         db_table = 'django_session'
 
+
+class Follow(models.Model):
+    id = models.IntegerField(primary_key=True)
+    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
+    followed = models.ForeignKey('Followed', models.DO_NOTHING, db_column='FOLLOWED_id')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'follow'
+
+
+class Followed(models.Model):
+    id = models.IntegerField(primary_key=True)
+    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'followed'
 
 
 class Forum(models.Model):
@@ -331,7 +366,7 @@ class PaymentMethod(models.Model):
 
 
 class PostVenta(models.Model):
-    id = models.IntegerField(primary_key=True)  
+    id = models.IntegerField(primary_key=True)  # The composite primary key (id, STATE_POST_VENTA_id, BRANCH_id) found, that is not supported. The first column is selected.
     purchase_detail = models.ForeignKey('PurchaseDetail', models.DO_NOTHING, db_column='PURCHASE_DETAIL_id')  # Field name made lowercase.
     state_post_venta = models.ForeignKey('StatePostVenta', models.DO_NOTHING, db_column='STATE_POST_VENTA_id')  # Field name made lowercase.
     branch = models.ForeignKey(Branch, models.DO_NOTHING, db_column='BRANCH_id')  # Field name made lowercase.
@@ -382,23 +417,19 @@ class Refund(models.Model):
     reason = models.TextField()
     date_refund = models.DateTimeField()
     post_venta = models.ForeignKey(PostVenta, models.DO_NOTHING, db_column='POST_VENTA_id')  # Field name made lowercase.
+    post_venta_state_post_venta_id = models.IntegerField(db_column='POST_VENTA_STATE_POST_VENTA_id')  # Field name made lowercase.
+    post_venta_branch_id = models.IntegerField(db_column='POST_VENTA_BRANCH_id')  # Field name made lowercase.
+
     class Meta:
         managed = False
         db_table = 'refund'
 
-class UserReported(models.Model):
-    id = models.IntegerField(primary_key=True)
-    user_reported = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')
-    
-    class Meta:
-        managed = False
-        db_table = 'userReported'
 
 class Report(models.Model):
     id = models.IntegerField(primary_key=True)
     description = models.TextField()
     user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
-    user_reported = models.ForeignKey(UserReported, models.DO_NOTHING, db_column='UserReported_id')
+
     class Meta:
         managed = False
         db_table = 'report'
@@ -406,13 +437,13 @@ class Report(models.Model):
 
 class Review(models.Model):
     id = models.IntegerField(primary_key=True)
-    created_at = models.DateTimeField()
     title = models.CharField(max_length=200)
+    created_at = models.DateTimeField()
     description = models.TextField()
     valoration = models.IntegerField()
     updated_at = models.DateTimeField(blank=True, null=True)
     review_img = models.CharField(max_length=255, blank=True, null=True)
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase. # Field name made lowercase.
+    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -459,13 +490,13 @@ class Subscription(models.Model):
 
 
 class User(models.Model):
-    id = models.IntegerField(primary_key=True)  
+    id = models.IntegerField(primary_key=True)  # The composite primary key (id, SUBSCRIPTION_id) found, that is not supported. The first column is selected.
     first_name = models.CharField(max_length=45)
     last_name = models.CharField(max_length=45)
     email = models.CharField(max_length=45)
     password = models.CharField(max_length=45)
     created_at = models.DateTimeField()
-    user_photo = models.ImageField(upload_to="fotos/" ,null=True, db_comment='URL')
+    user_photo = models.CharField(max_length=255, blank=True, null=True, db_comment='URL')
     subscription = models.ForeignKey(Subscription, models.DO_NOTHING, db_column='SUBSCRIPTION_id', db_comment='FREE/SUB_1/SUB_2/SUB_3')  # Field name made lowercase.
 
     class Meta:
@@ -493,30 +524,3 @@ class UserRoom(models.Model):
     class Meta:
         managed = False
         db_table = 'user_room'
-
-class Direction(models.Model):
-    id = models.IntegerField(primary_key=True)
-    nombre = models.CharField(max_length=100)
-    calle = models.CharField(max_length=50)
-    numero = models.IntegerField()
-    commune = models.ForeignKey(Commune, models.DO_NOTHING, db_column='COMMUNE_id')  # Field name made lowercase.
-    user = models.ForeignKey(User, models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
-    class Meta:
-        managed = False
-        db_table = 'direction'
-        
-class Followed(models.Model):
-    id = models.IntegerField(primary_key=True)
-    followed = models.ForeignKey(User, models.DO_NOTHING, db_column='USER_id')
-
-    class Meta:
-        managed = False
-        db_table = 'followed'
-class Follow(models.Model):
-    id = models.IntegerField(primary_key=True)
-    follower = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')
-    followed = models.ForeignKey(Followed, models.DO_NOTHING, db_column='followed_id')
-    
-    class Meta:
-        managed = False
-        db_table = 'follow'
