@@ -90,7 +90,7 @@ def registerUser(request):
                                     nombre=data['nombre_dir'],
                                     calle=data['calle'],
                                     numero=data['numero'],
-                                    commune=Commune.objects.get(id=data['id_com'])
+                                    commune=Commune.objects.get(id=data['id_com']),
                                     user_id=user.id
                                 )
                                     AdminUser.objects.create(username=data['email'], password=make_password(data['password']))
