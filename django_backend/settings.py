@@ -163,22 +163,9 @@ CORS_ALLOWED_ORIGINS = [
 # Ruta base del proyecto
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-<<<<<<< HEAD
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL = '/media/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'media'),
 )
-=======
-# Configuración de archivos estáticos
-STATIC_URL = '/static/'  # URL base para servir archivos estáticos
-STATIC_ROOT = os.path.join(BASE_DIR, 'LB_API/staticfiles')  # Ruta donde se recopilan los archivos estáticos para producción
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR
-
-# Directorios adicionales para archivos estáticos
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'LB_API/static'),  # Directorio donde se encuentran tus archivos estáticos personalizados
-]
->>>>>>> 69d0ba3b177a05fbe247806b00a8ea9ae078de48
