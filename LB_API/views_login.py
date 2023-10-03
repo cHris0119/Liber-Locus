@@ -79,7 +79,6 @@ def registerUser(request):
                                     email=data['email'],
                                     password=make_password(data['password']),
                                     created_at=datetime.now(),
-                                    direction=Direction.objects.get(id=dir.id),
                                     user_photo=data['photo_dir'],
                                     subscription=Subscription.objects.get(id=1)
                                 )
