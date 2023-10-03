@@ -72,16 +72,7 @@ def registerUser(request):
 
                                 # with open(photo_dir_path, 'wb') as photo_dir_file:
                                 #     photo_dir_file.write(photo_dir_data)
-                                
-                                dir = Direction.objects.create(
-                                    id=marca_de_tiempo,
-                                    nombre=data['nombre_dir'],
-                                    calle=data['calle'],
-                                    numero=data['numero'],
-                                    commune=Commune.objects.get(id=data['id_com'])
-                                )
-                                if dir:
-                                    user = User.objects.create(
+                                user = User.objects.create(
                                     id=marca_de_tiempo,
                                     first_name=data['first_name'],
                                     last_name=data['last_name'],
@@ -91,7 +82,17 @@ def registerUser(request):
                                     direction=Direction.objects.get(id=dir.id),
                                     user_photo=data['photo_dir'],
                                     subscription=Subscription.objects.get(id=1)
-                                    )
+                                )
+                                
+                                if user:
+                                    dir = Direction.objects.create(
+                                    id=marca_de_tiempo,
+                                    nombre=data['nombre_dir'],
+                                    calle=data['calle'],
+                                    numero=data['numero'],
+                                    commune=Commune.objects.get(id=data['id_com'])
+                                    user_id=user.id
+                                )
                                     AdminUser.objects.create(username=data['email'], password=make_password(data['password']))
                                     userSerial = userSerializer(user, many=False)
                                     return Response({'success': 'El usuario ha sido creado', 'UserData': userSerial.data}, status=status.HTTP_201_CREATED)
