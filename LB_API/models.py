@@ -134,7 +134,7 @@ class Book(models.Model):
     book_img = models.CharField(max_length=255, db_comment='URL')
     seller = models.ForeignKey('User', models.DO_NOTHING)
     book_state = models.ForeignKey('BookState', models.DO_NOTHING, db_column='BOOK_STATE_id')  # Field name made lowercase.
-    valoration = models.IntegerField(blank=True, null=True)
+    created_at = models.DateTimeField()
     book_category = models.ForeignKey('BookCategory', models.DO_NOTHING, db_column='BOOK_CATEGORY_id')  # Field name made lowercase.
     class Meta:
         managed = False
@@ -199,19 +199,6 @@ class Commune(models.Model):
         managed = False
         db_table = 'commune'
 
-
-class Direction(models.Model):
-    id = models.IntegerField(primary_key=True)
-    nombre = models.CharField(max_length=100)
-    calle = models.CharField(max_length=50)
-    numero = models.IntegerField()
-    commune = models.ForeignKey(Commune, models.DO_NOTHING, db_column='COMMUNE_id')  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'direction'
-
-
 class Discussion(models.Model):
     id = models.IntegerField(primary_key=True)
     description = models.TextField()
@@ -268,6 +255,7 @@ class DjangoSession(models.Model):
     class Meta:
         managed = False
         db_table = 'django_session'
+
 
 
 class Forum(models.Model):
@@ -398,12 +386,19 @@ class Refund(models.Model):
         managed = False
         db_table = 'refund'
 
+class UserReported(models.Model):
+    id = models.IntegerField(primary_key=True)
+    user_reported = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')
+    
+    class Meta:
+        managed = False
+        db_table = 'userReported'
 
 class Report(models.Model):
     id = models.IntegerField(primary_key=True)
     description = models.TextField()
     user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
-
+    user_reported = models.ForeignKey(UserReported, models.DO_NOTHING, db_column='UserReported_id')
     class Meta:
         managed = False
         db_table = 'report'
@@ -412,12 +407,12 @@ class Report(models.Model):
 class Review(models.Model):
     id = models.IntegerField(primary_key=True)
     created_at = models.DateTimeField()
+    title = models.CharField(max_length=200)
     description = models.TextField()
     valoration = models.IntegerField()
     updated_at = models.DateTimeField(blank=True, null=True)
     review_img = models.CharField(max_length=255, blank=True, null=True)
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
-    book = models.ForeignKey(Book, models.DO_NOTHING, db_column='BOOK_id')  # Field name made lowercase.
+    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase. # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -470,7 +465,6 @@ class User(models.Model):
     email = models.CharField(max_length=45)
     password = models.CharField(max_length=45)
     created_at = models.DateTimeField()
-    direction = models.ForeignKey(Direction, models.DO_NOTHING, db_column='DIRECTION_id')  # Field name made lowercase.
     user_photo = models.ImageField(upload_to="fotos/" ,null=True, db_comment='URL')
     subscription = models.ForeignKey(Subscription, models.DO_NOTHING, db_column='SUBSCRIPTION_id', db_comment='FREE/SUB_1/SUB_2/SUB_3')  # Field name made lowercase.
 
@@ -499,3 +493,30 @@ class UserRoom(models.Model):
     class Meta:
         managed = False
         db_table = 'user_room'
+
+class Direction(models.Model):
+    id = models.IntegerField(primary_key=True)
+    nombre = models.CharField(max_length=100)
+    calle = models.CharField(max_length=50)
+    numero = models.IntegerField()
+    commune = models.ForeignKey(Commune, models.DO_NOTHING, db_column='COMMUNE_id')  # Field name made lowercase.
+    user = models.ForeignKey(User, models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
+    class Meta:
+        managed = False
+        db_table = 'direction'
+        
+class Followed(models.Model):
+    id = models.IntegerField(primary_key=True)
+    followed = models.ForeignKey(User, models.DO_NOTHING, db_column='USER_id')
+
+    class Meta:
+        managed = False
+        db_table = 'followed'
+class Follow(models.Model):
+    id = models.IntegerField(primary_key=True)
+    follower = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')
+    followed = models.ForeignKey(Followed, models.DO_NOTHING, db_column='followed_id')
+    
+    class Meta:
+        managed = False
+        db_table = 'follow'
