@@ -60,7 +60,7 @@ class BookSerializer(serializers.ModelSerializer):
     seller = sellerSerializer(many=False, read_only=True)
     class Meta:
         model = Book
-        fields = ['id', 'name', 'price', 'description', 'author', 'book_img', 'valoration', 'seller', 'book_category']
+        fields = ['id', 'name', 'price', 'description', 'author', 'book_img', 'created_at', 'seller', 'book_category']
 
 class BookStateSerializer(serializers.ModelSerializer):
     class Meta:
