@@ -22,6 +22,7 @@ def book_create(request):
             # Obtén el vendedor a partir del correo electrónico del usuario autenticado
             user_email = request.user.username
             seller = User.objects.get(email=user_email)
+
         except User.DoesNotExist:
             return Response({'error': 'El vendedor no existe'}, status=status.HTTP_404_NOT_FOUND)
             
@@ -29,6 +30,7 @@ def book_create(request):
             # Configura el valor predeterminado para BOOK_STATE_id
             book_state_id = 2  # Valor predeterminado deseado
             book_category = BookCategory.objects.get(id=data['book_category'])
+            created_at =Book.objects.get(id=data['created_at'])
                 
             book = Book.objects.create(
                 id=marca_de_tiempo,
@@ -39,7 +41,8 @@ def book_create(request):
                 book_img=data['book_img'],
                 seller=seller,
                 book_state_id=book_state_id,  # Establece el valor predeterminado
-                book_category=book_category
+                book_category=book_category,
+                created_at=created_at
                 )
             book_serialized = BookSerializer(book, many=False)
             
