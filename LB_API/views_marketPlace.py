@@ -9,6 +9,7 @@ import time
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from math import trunc
+from datetime import datetime
 
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
@@ -30,7 +31,6 @@ def book_create(request):
             # Configura el valor predeterminado para BOOK_STATE_id
             book_state_id = 2  # Valor predeterminado deseado
             book_category = BookCategory.objects.get(id=data['book_category'])
-            created_at =Book.objects.get(id=data['created_at'])
                 
             book = Book.objects.create(
                 id=marca_de_tiempo,
@@ -42,7 +42,7 @@ def book_create(request):
                 seller=seller,
                 book_state_id=book_state_id,  # Establece el valor predeterminado
                 book_category=book_category,
-                created_at=created_at
+                created_at=datetime.now()
                 )
             book_serialized = BookSerializer(book, many=False)
             
