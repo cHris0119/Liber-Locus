@@ -1,7 +1,6 @@
 from rest_framework import viewsets
 from .serializer import BookSerializer, BookCategorySerializer, CommentsSerializer, editBooksSerializer
 from .models import Book, Comments, BookCategory, User, BookState
-from django.http import JsonResponse
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -60,11 +59,11 @@ def book_update(request, pk):
         data = request.data
         user = User.objects.get(email=request.user.username)
         book = Book.objects.get(pk=pk)
+        book.book_category = BookCategory.objects.get(id = data['book_category'])
         bookSerial = editBooksSerializer(book, data=data)
         if book:
             if user == book.seller:
-                bookSerial = BookSerializer(book, data=data, partial=True)  
-                    
+                bookSerial = BookSerializer(book, data=data, partial=True)        
                 if bookSerial.is_valid():
                     bookSerial.save()
                     return Response(bookSerial.data)
