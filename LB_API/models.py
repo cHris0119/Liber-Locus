@@ -11,6 +11,8 @@ class Answer(models.Model):
         managed = False
         db_table = 'answer'
 
+    def __str__(self):
+        return self.description
 
 class Auction(models.Model):
     id = models.IntegerField(primary_key=True)  # The composite primary key (id, AUCTION_STATE_id) found, that is not supported. The first column is selected.
@@ -26,6 +28,8 @@ class Auction(models.Model):
         db_table = 'auction'
         unique_together = (('id', 'auction_state'),)
 
+    def __str__(self):
+        return self.id
 
 class AuctionOffer(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -38,6 +42,8 @@ class AuctionOffer(models.Model):
         managed = False
         db_table = 'auction_offer'
 
+    def __str__(self):
+        return self.created_at
 
 class AuctionState(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -47,6 +53,8 @@ class AuctionState(models.Model):
         managed = False
         db_table = 'auction_state'
 
+    def __str__(self):
+        return self.state
 
 class AuthGroup(models.Model):
     name = models.CharField(unique=True, max_length=150)
@@ -144,6 +152,8 @@ class Book(models.Model):
         db_table = 'book'
         unique_together = (('id', 'book_state', 'book_category'),)
 
+    def __str__(self):
+        return self.name
 
 class BookCategory(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -153,6 +163,8 @@ class BookCategory(models.Model):
         managed = False
         db_table = 'book_category'
 
+    def __str__(self):
+        return self.description
 
 class BookState(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -162,6 +174,8 @@ class BookState(models.Model):
         managed = False
         db_table = 'book_state'
 
+    def __str__(self):
+        return self.state
 
 class Branch(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -172,6 +186,8 @@ class Branch(models.Model):
         managed = False
         db_table = 'branch'
 
+    def __str__(self):
+        return self.name
 
 class ChatRoom(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -180,6 +196,9 @@ class ChatRoom(models.Model):
     class Meta:
         managed = False
         db_table = 'chat_room'
+        
+    def __str__(self):
+        return self.id
 
 
 class Comments(models.Model):
@@ -193,7 +212,9 @@ class Comments(models.Model):
         managed = False
         db_table = 'comments'
 
-
+    def __str__(self):
+        return self.created_at
+    
 class Commune(models.Model):
     id = models.IntegerField(primary_key=True)
     nombre = models.CharField(max_length=100)
@@ -202,7 +223,9 @@ class Commune(models.Model):
         managed = False
         db_table = 'commune'
 
-
+    def __str__(self):
+        return self.nombre
+    
 class Direction(models.Model):
     id = models.IntegerField(primary_key=True)
     nombre = models.CharField(max_length=100)
@@ -215,6 +238,8 @@ class Direction(models.Model):
         managed = False
         db_table = 'direction'
 
+    def __str__(self):
+        return self.nombre
 
 class Discussion(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -228,6 +253,8 @@ class Discussion(models.Model):
         managed = False
         db_table = 'discussion'
 
+    def __str__(self):
+        return self.title
 
 class DjangoAdminLog(models.Model):
     action_time = models.DateTimeField()
@@ -283,6 +310,8 @@ class Follow(models.Model):
         managed = False
         db_table = 'follow'
 
+    def __str__(self):
+        return self.id
 
 class Followed(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -292,6 +321,8 @@ class Followed(models.Model):
         managed = False
         db_table = 'followed'
 
+    def __str__(self):
+        return self.id
 
 class Forum(models.Model):
     id = models.IntegerField(primary_key=True)  # The composite primary key (id, FORUM_CATEGORY_id) found, that is not supported. The first column is selected.
@@ -305,6 +336,8 @@ class Forum(models.Model):
         db_table = 'forum'
         unique_together = (('id', 'forum_category'),)
 
+    def __str__(self):
+        return self.name
 
 class ForumCategory(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -314,6 +347,8 @@ class ForumCategory(models.Model):
         managed = False
         db_table = 'forum_category'
 
+    def __str__(self):
+        return self.category_name
 
 class ForumUser(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -324,6 +359,8 @@ class ForumUser(models.Model):
         managed = False
         db_table = 'forum_user'
 
+    def __str__(self):
+        return self.id
 
 class Message(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -336,6 +373,8 @@ class Message(models.Model):
         managed = False
         db_table = 'message'
 
+    def __str__(self):
+        return self.id
 
 class Notification(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -348,6 +387,8 @@ class Notification(models.Model):
         managed = False
         db_table = 'notification'
 
+    def __str__(self):
+        return self.message
 
 class PaymentMethod(models.Model):
     id = models.IntegerField(primary_key=True)  # The composite primary key (id, rut) found, that is not supported. The first column is selected.
@@ -364,6 +405,8 @@ class PaymentMethod(models.Model):
         db_table = 'payment_method'
         unique_together = (('id', 'rut'),)
 
+    def __str__(self):
+        return self.rut
 
 class PostVenta(models.Model):
     id = models.IntegerField(primary_key=True)  # The composite primary key (id, STATE_POST_VENTA_id, BRANCH_id) found, that is not supported. The first column is selected.
@@ -376,6 +419,8 @@ class PostVenta(models.Model):
         db_table = 'post_venta'
         unique_together = (('id', 'state_post_venta', 'branch'),)
 
+    def __str__(self):
+        return self.id
 
 class PurchaseDetail(models.Model):
     id = models.IntegerField(primary_key=True)  # The composite primary key (id, PURCHASE_DETAIL_STATE_id) found, that is not supported. The first column is selected.
@@ -391,6 +436,8 @@ class PurchaseDetail(models.Model):
         db_table = 'purchase_detail'
         unique_together = (('id', 'purchase_detail_state'),)
 
+    def __str__(self):
+        return self.id
 
 class PurchaseDetailState(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -400,6 +447,8 @@ class PurchaseDetailState(models.Model):
         managed = False
         db_table = 'purchase_detail_state'
 
+    def __str__(self):
+        return self.state
 
 class Question(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -411,7 +460,9 @@ class Question(models.Model):
         managed = False
         db_table = 'question'
 
-
+    def __str__(self):
+        return self.description
+    
 class Refund(models.Model):
     id = models.IntegerField(primary_key=True)
     reason = models.TextField()
@@ -424,6 +475,8 @@ class Refund(models.Model):
         managed = False
         db_table = 'refund'
 
+    def __str__(self):
+        return self.reason
 
 class Report(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -434,6 +487,8 @@ class Report(models.Model):
         managed = False
         db_table = 'report'
 
+    def __str__(self):
+        return self.description
 
 class Review(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -449,6 +504,8 @@ class Review(models.Model):
         managed = False
         db_table = 'review'
 
+    def __str__(self):
+        return self.title
 
 class ReviewLike(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -459,6 +516,8 @@ class ReviewLike(models.Model):
         managed = False
         db_table = 'review_like'
 
+    def __str__(self):
+        return self.id
 
 class Role(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -468,6 +527,8 @@ class Role(models.Model):
         managed = False
         db_table = 'role'
 
+    def __str__(self):
+        return self.name
 
 class StatePostVenta(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -477,6 +538,8 @@ class StatePostVenta(models.Model):
         managed = False
         db_table = 'state_post_venta'
 
+    def __str__(self):
+        return self.state
 
 class Subscription(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -488,6 +551,8 @@ class Subscription(models.Model):
         managed = False
         db_table = 'subscription'
 
+    def __str__(self):
+        return self.description
 
 class User(models.Model):
     id = models.IntegerField(primary_key=True)  # The composite primary key (id, SUBSCRIPTION_id) found, that is not supported. The first column is selected.
@@ -496,7 +561,7 @@ class User(models.Model):
     email = models.CharField(max_length=45)
     password = models.CharField(max_length=45)
     created_at = models.DateTimeField()
-    user_photo = models.CharField(max_length=255, blank=True, null=True, db_comment='URL')
+    user_photo = models.ImageField(upload_to='user', max_length=255, blank=True, null=True, db_comment='URL')
     subscription = models.ForeignKey(Subscription, models.DO_NOTHING, db_column='SUBSCRIPTION_id', db_comment='FREE/SUB_1/SUB_2/SUB_3')  # Field name made lowercase.
 
     class Meta:
@@ -504,6 +569,8 @@ class User(models.Model):
         db_table = 'user'
         unique_together = (('id', 'subscription'),)
 
+    def __str__(self):
+        return self.email
 
 class UserRole(models.Model):
     id = models.IntegerField(primary_key=True)  # The composite primary key (id, USER_id, ROLE_id) found, that is not supported. The first column is selected.
@@ -515,6 +582,8 @@ class UserRole(models.Model):
         db_table = 'user_role'
         unique_together = (('id', 'user', 'role'),)
 
+    def __str__(self):
+        return self.id
 
 class UserRoom(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -524,3 +593,6 @@ class UserRoom(models.Model):
     class Meta:
         managed = False
         db_table = 'user_room'
+        
+    def __str__(self):
+        return self.id
