@@ -214,10 +214,9 @@ def editUser(request, id):
 @api_view(['GET'])
 def obtainDirection(request, user_id):
     try:
-        user = User.objects.get(id = user_id)
-        id_dir = user.direction.id
-        dir = Direction.objects.get(id = id_dir)
-        dirSerial = DirectionSerializer(dir, many=False)
+        user = User.objects.get(email=request.user.username)
+        direct = Direction.objects.get(user_id = user.id )
+        dirSerial = DirectionSerializer(direct, many=False)
         return Response({'userData':dirSerial.data}, status=status.HTTP_200_OK)
     except user.DoesNotExist:
         return Response({'error': 'El usuario no existe'}, status=status.HTTP_404_NOT_FOUND)
@@ -237,8 +236,7 @@ def editDirection(request, id):
                 'numero': data['numero'],
                 'commune': data['id_com']
             }
-            user = User.objects.get(id=id)
-            direction = Direction.objects.get(id=user.direction.id)
+            direction = Direction.objects.get(user_id=id)
             dirSerial = editDirectionSerializer(direction, data=data_dir)
             if dirSerial.is_valid():
                 dirSerial.save()
