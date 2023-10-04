@@ -60,25 +60,20 @@ def book_update(request, pk):
         data = request.data
         user = User.objects.get(email=request.user.username)
         book = Book.objects.get(pk=pk)
-        book_category = BookCategory.objects.get(id=data['book_category'])
-        bookSerial = editBooksSerializer(book, data=request.data)
-        
-        if 'id' in request.data and isinstance(request.data['id'], int):
-            book.id = request.data['id']
-
-        if user == book.seller:
-            bookSerial = BookSerializer(book, data=request.data, partial=True)  
+        bookSerial = editBooksSerializer(book, data=data)
+        if book:
+            if user == book.seller:
+                bookSerial = BookSerializer(book, data=data, partial=True)  
                     
-            if bookSerial.is_valid():
-                bookSerial.save()
-                return Response(bookSerial.data)
+                if bookSerial.is_valid():
+                    bookSerial.save()
+                    return Response(bookSerial.data)
+                else:
+                    return Response(bookSerial.errors, status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response(bookSerial.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': 'No tienes permiso para actualizar este libro.'}, status=status.HTTP_403_FORBIDDEN)
         else:
-            return Response({'error': 'No tienes permiso para actualizar este libro.'}, status=status.HTTP_403_FORBIDDEN)
-
-    except Book.DoesNotExist:
-        return Response({'error': 'El libro no existe'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'El libro no existe.'}, status=status.HTTP_404_NOT_FOUND)
     except BookCategory.DoesNotExist:
         return Response({'error': 'La categoría del libro no existe'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
