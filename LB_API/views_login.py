@@ -1,5 +1,5 @@
-from .serializer import userSerializer, TokenSerializer, editDirectionSerializer,DirectionSerializer, PaymentMethodSerializer, editUserSerializer
-from .models import User, UserRole, Role, Direction, Commune, Subscription, PaymentMethod
+from .serializer import userSerializer, TokenSerializer
+from .models import User, UserRole, Role, Direction, Commune, Subscription
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from datetime import datetime
@@ -142,35 +142,6 @@ def loginUser(request):
             # Usuario o contraseña incorrecta
             return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
 
-@api_view(['GET'])
-@csrf_exempt
-def obtainUser(request, token):
-    if request.method == 'GET':
-        try:
-            token1 = Token.objects.get(key = token)
-            user = User.objects.get(email = token1.user)
-            if user:
-                serialUser = userSerializer(user, many=False)
-                user_data = {
-                    'id': serialUser.data['id'],
-                    'first_name': serialUser.data['first_name'],
-                    'last_name': serialUser.data['last_name'],
-                    'user_photo': serialUser.data['user_photo']
-                    }
-                # Obtén la dirección del usuario y agrégala a los datos de usuario
-                user_direction = Direction.objects.get(id=user.id)
-                direction_data = {
-                    'nombre': user_direction.nombre,
-                    'calle': user_direction.calle,
-                    'numero': user_direction.numero,
-                    'commune': user_direction.commune.id  # Ajusta esto según tus necesidades
-                }
-                user_data['direction'] = direction_data
-                return Response({'msj': 'Autenticación exitosa', 'userData': user_data}, status=status.HTTP_200_OK)
-            else:
-                return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
-        except token1.DoesNotExist:
-            return Response({'msj': 'Token Invalido'}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['POST'])
 @csrf_exempt
@@ -190,60 +161,6 @@ def logout(request, id):
         
 
 
-@api_view(['PUT'])
-def editUser(request, id):
-    try:
-        user1 = User.objects.get(id=id)
-        user = AdminUser.objects.get(username=user1.email)
-        userSerial = editUserSerializer(user1, data=request.data)
-        if user1:
-            token = Token.objects.get(user=user)
-            if token:
-                if userSerial.is_valid():
-                    userSerial.save()
-                    return Response({'userData':userSerial.data}, status=status.HTTP_200_OK)
-                else:
-                    return Response(userSerial.errors, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response({'error': 'El Usuario no está autenticado'}, status=status.HTTP_401_UNAUTHORIZED)
-        else:
-            return Response({'error': 'El usuario no existe'}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-@api_view(['GET'])
-def obtainDirection(request, user_id):
-    try:
-        user = User.objects.get(email=request.user.username)
-        direct = Direction.objects.get(user_id = user.id )
-        dirSerial = DirectionSerializer(direct, many=False)
-        return Response({'userData':dirSerial.data}, status=status.HTTP_200_OK)
-    except user.DoesNotExist:
-        return Response({'error': 'El usuario no existe'}, status=status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 
-@api_view(['POST'])
-def editDirection(request, id):
-    if request.method == 'POST':
-        data = request.data
-        try:
-            data_dir = {
-                'nombre' :data['nombre'],
-                'calle' : data['calle'],
-                'numero': data['numero'],
-                'commune': data['id_com']
-            }
-            direction = Direction.objects.get(user_id=id)
-            dirSerial = editDirectionSerializer(direction, data=data_dir)
-            if dirSerial.is_valid():
-                dirSerial.save()
-                return Response({'dirData': dirSerial.data}, status=status.HTTP_200_OK)
-            else:
-                return Response(dirSerial.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        except Direction.DoesNotExist:
-            return Response({'error': 'Dirección no encontrada'}, status=status.HTTP_404_NOT_FOUND)
