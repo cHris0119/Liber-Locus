@@ -1,6 +1,6 @@
 
-from .serializer import BookSerializer, ReviewSerializer
-from .models import Book, BookCategory, User, Review
+from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer
+from .models import Book, BookCategory, User, Review, ReviewLike
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -61,7 +61,7 @@ def review_create(request):
         data = request.data
         try:
             review = Review.objects.create(
-            id = marca_de_tiempo,
+            id = marca_de_tiempo + data['valoration'],
             title = data['title'],
             created_at = datetime.now(),
             description = data['description'],
@@ -74,3 +74,22 @@ def review_create(request):
             return Response({'reviewData': reviewSerial.data}) 
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+@api_view(['POST'])        
+@permission_classes([IsAuthenticated])        
+def like_a_post(request, id):
+    if request.method == 'POST':
+        user = User.objects.get(email = request.user.username)
+        review = Review.objects.get(id = id)
+        if user:
+            try:
+                reviewLike = ReviewLike.objects.create(
+                    id = marca_de_tiempo + review.id,
+                    user = user,
+                    review = review   
+                )
+                RSerial = ReviewLikeSerializer(reviewLike, many=False)
+                return Response(RSerial.data)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
