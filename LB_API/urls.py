@@ -29,7 +29,8 @@ urlpatterns = [
     path('api/reviews/get_user_reviews/', vg.get_user_reviews, name='get_user_reviews'),
     path('api/reviews/update/<int:pk>/', vpu.review_update, name='review_update'),
     path('api/reviews/delete/<int:pk>/', vd.review_delete, name='review_delete'),
-    path('api/reviews/like_a_post/<int:id>/', vpo.like_a_post, name='like_a_post')
+    path('api/reviews/like_a_post/<int:id>/', vpo.like_a_post, name='like_a_post'),
+    path('api/reviews/reviews_likes/<int:id>/', vg.reviews_likes, name='review_likes')
 ]
 
 if settings.DEBUG:

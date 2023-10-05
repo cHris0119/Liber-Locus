@@ -1,5 +1,5 @@
-from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer
-from .models import Commune, BookCategory, Review, User, Direction, Book
+from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer
+from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -119,3 +119,23 @@ def get_user_reviews(request):
         return Response({'error': 'No se encontraron libros para este usuario.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def reviews_likes(request, id):
+    try:
+        user = User.objects.get(email = request.user.username)
+        review = Review.objects.get(id = id)
+        if review:
+            like = False
+            reviewL = ReviewLike.objects.filter(review = review)
+            for review_like in reviewL:
+                if review_like.user == user:
+                    like = True
+                    break
+            Likes = reviewL.count()
+            return Response({'user_like': like, 'likes': Likes})    
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except review.DoesNotExist:
+        return Response({'error': 'No existe la reseña.'}, status=status.HTTP_404_NOT_FOUND)
