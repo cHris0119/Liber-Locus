@@ -22,9 +22,10 @@ urlpatterns = [
     path('api/books/delete/<int:pk>/', vd.book_delete, name='book_delete'),  
     path('api/communeGet/', vg.getCommunes, name='communeGet'),
     path('api/getCategories/', vg.getCategories, name='getCategories'),
-    path('api/getReviews', vg.getReviews, name='getReviews'),
+    path('api/getReviews/', vg.getReviews, name='getReviews'),
     path('api/books/get_all_books/', vg.get_all_books, name='get_all_books'),
-    path('api/books/get_user_books/', vg.get_user_books, name='get_user_books')
+    path('api/books/get_user_books/', vg.get_user_books, name='get_user_books'),
+    path('api/reviews/create/', vpo.review_create, name='review_create')
 ]
 
 if settings.DEBUG:

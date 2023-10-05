@@ -1,6 +1,6 @@
 
-from .serializer import BookSerializer
-from .models import Book, BookCategory, User
+from .serializer import BookSerializer, ReviewSerializer
+from .models import Book, BookCategory, User, Review
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -8,7 +8,9 @@ import time
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from datetime import datetime
-
+marca_de_tiempo = int(time.time())
+from django.contrib.auth.models import User as AdminUser
+# Creacion de libros
 
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
@@ -17,7 +19,7 @@ def book_create(request):
     if request.method == 'POST':
         data = request.data
         # Obtiene la marca de tiempo actual en segundos
-        marca_de_tiempo = int(time.time())
+        
         try:
             # Obtén el vendedor a partir del correo electrónico del usuario autenticado
             user_email = request.user.username
@@ -50,5 +52,26 @@ def book_create(request):
             return Response({'error': 'La categoría del libro no existe'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+api_view(['POST'])        
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def review_create(request):
+    if request.method == 'POST':
+        data = request.data
+        try:
+            review = Review.objects.create(
+            id = marca_de_tiempo,
+            title = data['title'],
+            created_at = datetime.now(),
+            description = data['description'],
+            valoration = data['valoration'],
+            updated_at = datetime.now(),
+            review_img = data['review_img'],
+            user = User.objects.get(email = request.user.username))
             
-   
+            reviewSerial = ReviewSerializer(review, many=False)
+            return Response(reviewSerial.data, status=status.HTTP_201_CREATED) 
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
