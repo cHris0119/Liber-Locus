@@ -98,3 +98,24 @@ def get_user_books(request):
         return Response({'error': 'No se encontraron libros para este usuario.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_reviews(request):
+    try:
+        # Obtén el usuario autenticado
+        user = User.objects.get(email=request.user.username)
+
+        # Obtén todos los libros creados por el usuario
+        review = Review.objects.filter(user=user)
+
+        # Serializa los libros para convertirlos en datos JSON
+        serializer = ReviewSerializer(review, many=True)
+
+        # Devuelve la lista de libros en la respuesta
+        return Response(serializer.data)
+    except Book.DoesNotExist:
+        return Response({'error': 'No se encontraron libros para este usuario.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

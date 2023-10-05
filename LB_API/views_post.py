@@ -54,8 +54,7 @@ def book_create(request):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-api_view(['POST'])        
-@authentication_classes([TokenAuthentication])
+@api_view(['POST'])        
 @permission_classes([IsAuthenticated])
 def review_create(request):
     if request.method == 'POST':
@@ -72,6 +71,6 @@ def review_create(request):
             user = User.objects.get(email = request.user.username))
             
             reviewSerial = ReviewSerializer(review, many=False)
-            return Response(reviewSerial.data, status=status.HTTP_201_CREATED) 
+            return Response({'reviewData': reviewSerial.data}) 
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
