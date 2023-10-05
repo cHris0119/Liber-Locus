@@ -8,8 +8,20 @@ import time
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from datetime import datetime
-marca_de_tiempo = int(time.time())
 from django.contrib.auth.models import User as AdminUser
+from django.utils import timezone
+
+
+def int_id():
+    # Obtener el tiempo actual en segundos desde la época (timestamp)
+    timestamp = int(time.time())
+    # Formatear el timestamp como DDMMSS
+    formatted_time = time.strftime("%d%H%m%S", time.localtime(timestamp))
+    # Convertir la cadena formateada a un número entero
+    return int(formatted_time)
+
+
+
 # Creacion de libros
 
 @api_view(['POST'])
@@ -34,7 +46,7 @@ def book_create(request):
             book_category = BookCategory.objects.get(id=data['book_category'])
                 
             book = Book.objects.create(
-                id=marca_de_tiempo,
+                id=int_id(),
                 name=data['name'],
                 price=data['price'],
                 description=data['description'],
@@ -60,20 +72,26 @@ def review_create(request):
     if request.method == 'POST':
         data = request.data
         try:
-            review = Review.objects.create(
-            id = marca_de_tiempo + data['valoration'],
-            title = data['title'],
-            created_at = datetime.now(),
-            description = data['description'],
-            valoration = data['valoration'],
-            updated_at = datetime.now(),
-            review_img = data['review_img'],
-            user = User.objects.get(email = request.user.username))
+            usuario = User.objects.get(email = request.user.username)
+            reviewUser = Review.objects.get(title = data['title'], user = usuario)
+            if reviewUser:
+                return Response({'error': 'Ya existe esa Reseña'}, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            try:
+                review = Review.objects.create(
+                id = int_id(),
+                title = data['title'],
+                created_at = datetime.now(),
+                description = data['description'],
+                valoration = data['valoration'],
+                updated_at = datetime.now(),
+                review_img = data['review_img'],
+                user = usuario)
             
-            reviewSerial = ReviewSerializer(review, many=False)
-            return Response({'reviewData': reviewSerial.data}) 
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                reviewSerial = ReviewSerializer(review, many=False)
+                return Response({'reviewData': reviewSerial.data})
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 @api_view(['POST'])        
 @permission_classes([IsAuthenticated])        
@@ -84,7 +102,7 @@ def like_a_post(request, id):
         if user:
             try:
                 reviewLike = ReviewLike.objects.create(
-                    id = marca_de_tiempo + review.id,
+                    id = int_id(),
                     user = user,
                     review = review   
                 )

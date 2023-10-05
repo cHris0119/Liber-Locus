@@ -17,7 +17,13 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 
 
-
+def int_id():
+    # Obtener el tiempo actual en segundos desde la época (timestamp)
+    timestamp = int(time.time())
+    # Formatear el timestamp como DDMMSS
+    formatted_time = time.strftime("%d%H%m%S", time.localtime(timestamp))
+    # Convertir la cadena formateada a un número entero
+    return int(formatted_time)
 
 def validacionCE(passw):
     special_characters_pattern = r'[!@#$%^&*()_+{}\[\]:;<>,.?~\\]'
@@ -44,7 +50,7 @@ def validacionNum(passw):
         return False
 
 # Obtiene la marca de tiempo actual en segundos
-marca_de_tiempo = int(time.time())
+marca_de_tiempo = int_id()
 
 
 

@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User as AdminUser
 from rest_framework.authentication import TokenAuthentication
 
+
 @api_view(['PUT'])
 @authentication_classes([TokenAuthentication])
 def editDirection(request, id):
