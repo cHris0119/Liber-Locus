@@ -27,7 +27,8 @@ urlpatterns = [
     path('api/reviews/create/', vpo.review_create, name='review_create'),
     path('api/getReviews/', vg.getReviews, name='getReviews'),
     path('api/reviews/get_user_reviews/', vg.get_user_reviews, name='get_user_reviews'),
-    path('api/reviews/update/<int:pk>/', vpu.review_update, name='review_update')
+    path('api/reviews/update/<int:pk>/', vpu.review_update, name='review_update'),
+    path('api/reviews/delete/<int:pk>/', vd.review_delete, name='review_delete')
 ]
 
 if settings.DEBUG:

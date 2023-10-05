@@ -1,4 +1,4 @@
-from .models import Book, User
+from .models import Book, User, Review
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -21,5 +21,24 @@ def book_delete(request, pk):
         
     except Book.DoesNotExist:
         return Response({'error': 'El libro no existe'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def review_delete(request, pk):
+    try:
+        review = Review.objects.get(pk=pk)
+        user = User.objects.get(email=request.user.username)
+
+        if user == review.user:
+            review.delete()
+            return Response({'message': 'Reseña eliminada con éxito'})
+        else:
+            return Response({'error': 'No tienes permiso para eliminar esta reseña.'}, status=status.HTTP_403_FORBIDDEN)
+        
+    except review.DoesNotExist:
+        return Response({'error': 'la reseña no existe'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
