@@ -1,5 +1,5 @@
-from .serializer import BookSerializer,  editBooksSerializer, editUserSerializer, editDirectionSerializer
-from .models import Book, BookCategory, User, Direction
+from .serializer import BookSerializer,  editBooksSerializer, editUserSerializer, editDirectionSerializer, ReviewSerializer, editReviewSerializer
+from .models import Book, BookCategory, User, Direction, Review
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -68,6 +68,31 @@ def book_update(request, pk):
                     return Response(bookSerial.data)
                 else:
                     return Response(bookSerial.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'error': 'No tienes permiso para actualizar este libro.'}, status=status.HTTP_403_FORBIDDEN)
+        else:
+            return Response({'error': 'El libro no existe.'}, status=status.HTTP_404_NOT_FOUND)
+    except BookCategory.DoesNotExist:
+        return Response({'error': 'La categoría del libro no existe'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def review_update(request, pk):
+    try:
+        data = request.data
+        user = User.objects.get(email=request.user.username)
+        review = Review.objects.get(pk=pk)
+        if review:
+            if user == review.user:
+                reviewSerial = ReviewSerializer(review, data=data, partial=True)        
+                if reviewSerial.is_valid():
+                    reviewSerial.save()
+                    return Response(reviewSerial.data)
+                else:
+                    return Response(reviewSerial.errors, status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response({'error': 'No tienes permiso para actualizar este libro.'}, status=status.HTTP_403_FORBIDDEN)
         else:

@@ -54,9 +54,7 @@ class sellerSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id','first_name', 'last_name']
 class BookSerializer(serializers.ModelSerializer):
-    book_category = BookCategorySerializer(many=False, 
-                                           read_only=True,
-                                           )
+    book_category = BookCategorySerializer(many=False, read_only=True,)
     seller = sellerSerializer(many=False, read_only=True)
     class Meta:
         model = Book
@@ -158,6 +156,7 @@ class ReportSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ReviewSerializer(serializers.ModelSerializer):
+    user = sellerSerializer(many=False, read_only=True)
     class Meta:
         model = Review
         fields = '__all__'
@@ -204,3 +203,8 @@ class editBooksSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['name', 'price', 'description', 'author', 'book_img', 'book_category']
+
+class editReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ['title', 'description', 'valoration']
