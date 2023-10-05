@@ -18,3 +18,8 @@ Preparar entorno virtual(solo si es primera vez)
 # Iniciar proyectos
 
 - python manage.py runserver 
+
+# Crear StaticFiles
+
+- cd .\LB_API\  
+- md staticfiles/media

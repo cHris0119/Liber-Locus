@@ -12,8 +12,10 @@ import re
 from django.contrib.auth.hashers import make_password
 from django.views.decorators.csrf import csrf_exempt
 import base64
-import os
-from django.conf import settings
+from PIL import Image
+from io import BytesIO
+from django.core.files.base import ContentFile
+
 
 
 
@@ -65,38 +67,44 @@ def registerUser(request):
                     if validacionCE(data['password']):
                         if validacionMAYUS(data['password']):
                             if validacionNum(data['password']):
-                                photo_dir_base64 = data['photo_dir']
-                                photo_dir_data = base64.b64decode(photo_dir_base64)
-                                photo_dir_name = f"user_{marca_de_tiempo}.png"  # Nombre de archivo único
-                                photo_dir_path = os.path.join(settings.MEDIA_ROOT, 'user_photos', photo_dir_name)
+                                image_data = data['photo_dir']
+                                if image_data.startswith("data:image"):
+                                    try:
+                                        image_data = image_data.split(",")[1]
+                                        image_bytes = base64.b64decode(image_data)
+                                        image = Image.open(BytesIO(image_bytes))
+                                        user = User.objects.create(
+                                            id=marca_de_tiempo,
+                                            first_name=data['first_name'],
+                                            last_name=data['last_name'],
+                                            email=data['email'],
+                                            password=make_password(data['password']),
+                                            created_at=datetime.now(),
+                                            subscription=Subscription.objects.get(id=1)
+                                        )
 
-                                # with open(photo_dir_path, 'wb') as photo_dir_file:
-                                #     photo_dir_file.write(photo_dir_data)
-                                user = User.objects.create(
-                                    id=marca_de_tiempo,
-                                    first_name=data['first_name'],
-                                    last_name=data['last_name'],
-                                    email=data['email'],
-                                    password=make_password(data['password']),
-                                    created_at=datetime.now(),
-                                    user_photo=data['photo_dir'],
-                                    subscription=Subscription.objects.get(id=1)
-                                )
+                                        user.user_photo.save(f"{user.email}.png", ContentFile(image_bytes), save=True)
+                                        user.save()
                                 
-                                if user:
-                                    dir = Direction.objects.create(
-                                    id=marca_de_tiempo,
-                                    nombre=data['nombre_dir'],
-                                    calle=data['calle'],
-                                    numero=data['numero'],
-                                    commune=Commune.objects.get(id=data['id_com']),
-                                    user_id=user.id
-                                )
-                                    AdminUser.objects.create(username=data['email'], password=make_password(data['password']))
-                                    userSerial = userSerializer(user, many=False)
-                                    return Response({'success': 'El usuario ha sido creado', 'UserData': userSerial.data}, status=status.HTTP_201_CREATED)
+                                        if user:
+                                            dir = Direction.objects.create(
+                                            id=marca_de_tiempo,
+                                            nombre=data['nombre_dir'],
+                                            calle=data['calle'],
+                                            numero=data['numero'],
+                                            commune=Commune.objects.get(id=data['id_com']),
+                                            user_id=user.id
+                                            )
+                                        
+                                            AdminUser.objects.create(username=data['email'], password=make_password(data['password']))
+                                            userSerial = userSerializer(user, many=False)
+                                            return Response({'success': 'El usuario ha sido creado', 'UserData': userSerial.data}, status=status.HTTP_201_CREATED)
+                                        else:
+                                            return Response({'error': 'No se pudo crear la direccion'}, status=status.HTTP_400_BAD_REQUEST)
+                                    except Exception as e:
+                                        return Response({'error': 'Error al decodificar y guardar la imagen'}, status=status.HTTP_400_BAD_REQUEST)
                                 else:
-                                    return Response({'error': 'No se pudo crear la direccion'}, status=status.HTTP_400_BAD_REQUEST)
+                                    return Response({'error': 'Los datos de la imagen no están en el formato correcto'}, status=status.HTTP_400_BAD_REQUEST)
                             else:
                                 return Response({'error': 'La contraseña debe tener al menos un numero'}, status=status.HTTP_400_BAD_REQUEST)
                         else:
