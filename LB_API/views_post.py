@@ -1,6 +1,6 @@
 
-from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer
-from .models import Book, BookCategory, User, Review, ReviewLike
+from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer
+from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -111,3 +111,38 @@ def like_a_post(request, id):
             except Exception as e:
                 return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
+        
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def create_forum(request):
+    if request.method == 'POST':
+        data = request.data
+        
+        try:
+            # Obtén el vendedor a partir del correo electrónico del usuario autenticado
+            user_email = request.user.username
+            seller = User.objects.get(email=user_email)
+
+        except User.DoesNotExist:
+            return Response({'error': 'El vendedor no existe'}, status=status.HTTP_404_NOT_FOUND)
+            
+        try:
+            # Configura el valor predeterminado para FORUM_CATEGORY_id
+            forum_category = ForumCategory.objects.get(id=data['forum_category'])
+                
+            forum = Forum.objects.create(
+                id=int_id(),
+                name=data['name'],
+                created_at=datetime.now(),  # Utiliza el campo creado automáticamente
+                forum_img=data.get('forum_img', ''),  # Campo opcional
+                forum_category=forum_category
+                
+            )
+            forum_serialized = ForumSerializer(forum, many=False)
+            
+            return Response({'ForumData': forum_serialized.data})
+        except ForumCategory.DoesNotExist:
+            return Response({'error': 'La categoría del foro no existe'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
