@@ -17,6 +17,7 @@ class LikesConsumer(AsyncWebsocketConsumer):
         
         
         if action == 'like':
+            id = data.get('id')
             UserAd = Adminuser.objects.get(id=id)
             user = User.objects.get(email = UserAd.username)
             review_id = data.get('review_id')
