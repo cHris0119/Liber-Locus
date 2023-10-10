@@ -1,5 +1,5 @@
-from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer
-from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike
+from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer
+from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike, Forum, ForumUser
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -139,3 +139,39 @@ def reviews_likes(request, id):
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     except review.DoesNotExist:
         return Response({'error': 'No existe la reseña.'}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_all_forums(request):
+    try:
+        forums = Forum.objects.all()
+        serialized_forums = ForumSerializer(forums, many=True)    
+        return Response({'ForumsData': serialized_forums.data})
+    except Exception as e:
+        return Response({'error': f'Ha ocurrido un error: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_forums(request):
+    try:
+        # Obtén el usuario autenticado
+        user = User.objects.get(email=request.user.username)
+
+        # Obtén todos los foros
+        forums = Forum.objects.all()
+
+        # Filtra los foros creados por el usuario
+        user_forums = []
+        for forum in forums:
+            if ForumUser.objects.filter(forum=forum, user=user).exists():
+                user_forums.append(forum)
+
+        # Serializa los foros para convertirlos en datos JSON
+        serializer = ForumSerializer(forums, many=True)
+
+        # Devuelve la lista de foros en la respuesta
+        return Response(serializer.data)
+    except Forum.DoesNotExist:
+        return Response({'error': 'No se encontraron foros para este usuario.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

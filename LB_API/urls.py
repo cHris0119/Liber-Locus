@@ -31,7 +31,10 @@ urlpatterns = [
     path('api/reviews/delete/<int:pk>/', vd.review_delete, name='review_delete'),
     path('api/reviews/like_a_post/<int:id>/', vpo.like_a_post, name='like_a_post'),
     path('api/reviews/reviews_likes/<int:id>/', vg.reviews_likes, name='review_likes'),
-    path('api/create_forum/', vpo.create_forum, name='create_forum')
+    path('api/create_forum/', vpo.create_forum, name='create_forum'),
+    path('api/forums/get_all_forums/', vg.get_all_forums, name='get_all_forums'),
+    path('api/forums/get_user_forums/', vg.get_user_forums, name='get_user_forums')
+
 ]
 
 if settings.DEBUG:
