@@ -2,6 +2,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import ReviewLike, Review,User
+from django.contrib.auth import User as Adminuser
 
 class LikesConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -16,8 +17,8 @@ class LikesConsumer(AsyncWebsocketConsumer):
         
         
         if action == 'like':
-            id = data.get('id')
-            user = User.objects.get(id = id)
+            UserAd = Adminuser.objects.get(id=id)
+            user = User.objects.get(email = UserAd.username)
             review_id = data.get('review_id')
             review = Review.objects.get(id = review_id)
             like_exists = ReviewLike.objects.filter(user=user, review=review).exists()
