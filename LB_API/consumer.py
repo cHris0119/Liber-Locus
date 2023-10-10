@@ -2,7 +2,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import ReviewLike, Review,User
-from django.contrib.auth import User as Adminuser
+from django.contrib.auth.models import User as Adminuser
 
 class LikesConsumer(AsyncWebsocketConsumer):
     async def connect(self):
