@@ -1,7 +1,7 @@
-from django.urls import path
+from django.urls import path, re_path
 from .consumer import LikesConsumer
 
 
 ws_urlpatterns = [
-    path('ws/consumer/likes', LikesConsumer.as_asgi())
+    re_path(r'ws/consumer/likes/', LikesConsumer.as_asgi())
 ]
