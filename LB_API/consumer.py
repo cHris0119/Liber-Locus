@@ -2,7 +2,14 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
 from .models import ReviewLike, Review,User
-from views_login import int_id
+from time import time
+def int_id():
+    # Obtener el tiempo actual en segundos desde la época (timestamp)
+    timestamp = int(time.time())
+    # Formatear el timestamp como DDMMSS
+    formatted_time = time.strftime("%d%H%m%S", time.localtime(timestamp))
+    # Convertir la cadena formateada a un número entero
+    return int(formatted_time)
 
 class LikesConsumer(WebsocketConsumer):
     def connect(self):

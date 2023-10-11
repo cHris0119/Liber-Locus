@@ -48,8 +48,6 @@ INSTALLED_APPS = [
     'LB_API',
 ]
 
-ASGI_APPLICATION = 'django_backend.asgi.application'
-WSGI_APPLICATION = 'django_backend.wsgi.application'
 
 
 REST_FRAMEWORK = {
@@ -103,6 +101,8 @@ TEMPLATES = [
     },
 ]
 
+
+WSGI_APPLICATION = 'django_backend.wsgi.application'
 
 
 
@@ -165,7 +165,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://j39p4gkg-5173.use.devtunnels.ms"
 ]
 
-
+ASGI_APPLICATION = 'django_backend.asgi.application'
 # Ruta base del proyecto
 
 
