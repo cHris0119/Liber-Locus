@@ -175,3 +175,20 @@ def get_user_forums(request):
         return Response({'error': 'No se encontraron foros para este usuario.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_forums_by_category(request, category_id):
+    try:
+        # Obtén los foros por categoría
+        forums = Forum.objects.filter(forum_category=category_id)
+
+        # Serializa los foros para convertirlos en datos JSON
+        serializer = ForumSerializer(forums, many=True)
+
+        # Devuelve la lista de foros en la respuesta
+        return Response(serializer.data)
+    except Forum.DoesNotExist:
+        return Response({'error': 'No se encontraron foros para esta categoría.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
