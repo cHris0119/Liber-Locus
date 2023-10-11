@@ -30,14 +30,24 @@ class LikesConsumer(WebsocketConsumer):
             try:
                 user = User.objects.get(id=user_id)
                 review = Review.objects.get(id=review_id)
-
                 like = ReviewLike.objects.filter(user=user, review=review).exists()
+                likes = ReviewLike.objects.filter(review=review).count()
                 if like:
+                    likeus = ReviewLike.objects.get(user=user, review=review)
+                    likeus.delete()
+                    like = ReviewLike.objects.filter(user=user, review=review).exists()
                     likes = ReviewLike.objects.filter(review=review).count()
                     self.send(text_data=json.dumps({
                         'user_like': like,
                         'likes': likes}))
                 else:
+                    if likes == 0:
+                        ReviewLike.objects.create(
+                        id = int_id(),
+                        user = user,
+                        review = review
+                        )
+                    like = ReviewLike.objects.filter(user=user, review=review).exists()
                     likes = ReviewLike.objects.filter(review=review).count()
                     self.send(text_data=json.dumps({
                         'user_like': like, 
