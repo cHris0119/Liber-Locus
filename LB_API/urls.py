@@ -33,8 +33,8 @@ urlpatterns = [
     path('api/reviews/reviews_likes/<int:id>/', vg.reviews_likes, name='review_likes'),
     path('api/create_forum/', vpo.create_forum, name='create_forum'),
     path('api/forums/get_all_forums/', vg.get_all_forums, name='get_all_forums'),
-    path('api/forums/get_user_forums/', vg.get_user_forums, name='get_user_forums')
-
+    path('api/forums/get_user_forums/', vg.get_user_forums, name='get_user_forums'),
+    path('api/forums/category/<int:category_id>/', vg.get_forums_by_category, name='get_forums_by_category')
 ]
 
 if settings.DEBUG:
