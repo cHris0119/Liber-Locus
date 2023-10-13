@@ -1,5 +1,5 @@
-from .serializer import BookSerializer,  editBooksSerializer, editUserSerializer, editDirectionSerializer, ReviewSerializer, editReviewSerializer
-from .models import Book, BookCategory, User, Direction, Review
+from .serializer import BookSerializer,  editBooksSerializer, editUserSerializer, editDirectionSerializer, ReviewSerializer, editReviewSerializer, ForumSerializer
+from .models import Book, BookCategory, User, Direction, Review, Forum, ForumUser, ForumCategory
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -100,5 +100,39 @@ def review_update(request, pk):
             return Response({'error': 'El libro no existe.'}, status=status.HTTP_404_NOT_FOUND)
     except BookCategory.DoesNotExist:
         return Response({'error': 'La categoría del libro no existe'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_forum(request, pk):
+    try:
+        data = request.data
+        user = User.objects.get(email=request.user.username)
+        forum = Forum.objects.get(pk=pk)
+
+        if forum:
+            if user == forum.user:
+                forum.name = data.get('name', forum.name)
+                forum.forum_img = data.get('forum_img', forum.forum_img)
+                if 'forum_category' in data:
+                    try:
+                        forum_category = ForumCategory.objects.get(id=data['forum_category'])
+                        forum.forum_category = forum_category
+                    except ForumCategory.DoesNotExist:
+                        return Response({'error': 'La categoría del foro no existe'}, status=status.HTTP_400_BAD_REQUEST)
+
+                forum.save()
+
+                forum_serialized = ForumSerializer(forum, data=data, partial=True)
+                if forum_serialized.is_valid():
+                    forum_serialized.save()
+                    return Response({'UpdatedForumData': forum_serialized.data})
+                else:
+                    return Response(forum_serialized.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'error': 'No tienes permiso para actualizar este foro.'}, status=status.HTTP_403_FORBIDDEN)
+        else:
+            return Response({'error': 'El foro no existe.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

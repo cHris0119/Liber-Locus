@@ -118,29 +118,29 @@ def like_a_post(request, id):
 def create_forum(request):
     if request.method == 'POST':
         data = request.data
-        
+
         try:
-            # Obtén el vendedor a partir del correo electrónico del usuario autenticado
-            user_email = request.user.username
-            seller = User.objects.get(email=user_email)
+            # Obtén el usuario autenticado
+            user = User.objects.get(email=request.user.username)
 
         except User.DoesNotExist:
-            return Response({'error': 'El vendedor no existe'}, status=status.HTTP_404_NOT_FOUND)
-            
+            return Response({'error': 'El usuario no existe'}, status=status.HTTP_404_NOT_FOUND)
+
         try:
             # Configura el valor predeterminado para FORUM_CATEGORY_id
             forum_category = ForumCategory.objects.get(id=data['forum_category'])
-                
+
             forum = Forum.objects.create(
                 id=int_id(),
                 name=data['name'],
-                created_at=datetime.now(),  # Utiliza el campo creado automáticamente
-                forum_img=data.get('forum_img', ''),  # Campo opcional
-                forum_category=forum_category
-                
+                created_at=datetime.now(),
+                forum_img=data.get('forum_img', ''),
+                forum_category=forum_category,
+                user=user  # Asigna al usuario que creó el foro
             )
+
             forum_serialized = ForumSerializer(forum, many=False)
-            
+
             return Response({'ForumData': forum_serialized.data})
         except ForumCategory.DoesNotExist:
             return Response({'error': 'La categoría del foro no existe'}, status=status.HTTP_404_NOT_FOUND)
