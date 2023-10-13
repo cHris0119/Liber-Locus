@@ -330,7 +330,7 @@ class Forum(models.Model):
     created_at = models.DateTimeField()
     forum_img = models.CharField(max_length=255, blank=True, null=True, db_comment='URL')
     forum_category = models.ForeignKey('ForumCategory', models.DO_NOTHING, db_column='FORUM_CATEGORY_id')  # Field name made lowercase.
-
+    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id', blank=True, null=True)  # Field name made lowercase.
     class Meta:
         managed = False
         db_table = 'forum'
