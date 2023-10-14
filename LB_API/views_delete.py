@@ -1,4 +1,4 @@
-from .models import Book, User, Review
+from .models import Book, User, Review, Forum
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -40,5 +40,23 @@ def review_delete(request, pk):
         
     except review.DoesNotExist:
         return Response({'error': 'la reseña no existe'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_forum(request, pk):
+    try:
+        forum = Forum.objects.get(pk=pk)
+        user = User.objects.get(email=request.user.username)
+
+        if user == forum.user:
+            forum.delete()
+            return Response({'message': 'Foro eliminado con éxito'})
+        else:
+            return Response({'error': 'No tienes permiso para eliminar este foro.'}, status=status.HTTP_403_FORBIDDEN)
+        
+    except Forum.DoesNotExist:
+        return Response({'error': 'El foro no existe'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
