@@ -1,6 +1,6 @@
 
 from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer
-from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory
+from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -146,3 +146,27 @@ def create_forum(request):
             return Response({'error': 'La categoría del foro no existe'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def join_forum(request, id):
+    if request.method == 'POST':
+        user = User.objects.get(email=request.user.username)
+        forum = Forum.objects.get(id=id)
+        if user:
+            # Verifica si el usuario ya es miembro del foro
+            if ForumUser.objects.filter(user=user, forum=forum).exists():
+                return Response({'message': 'Ya eres miembro de este foro.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                forum_user = ForumUser.objects.create(
+                    id=int_id(),
+                    user=user,
+                    forum=forum
+                )
+                return Response({'message': 'Te has unido al foro exitosamente.'}, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response({'error': 'Método no permitido'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)

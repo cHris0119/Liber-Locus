@@ -1,4 +1,4 @@
-from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer
+from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer
 from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -208,3 +208,13 @@ def get_forum_categories(request):
         return Response({'error': 'No se encontraron categorías de foros.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_forum_users(request):
+    # Obtén todos los usuarios del foro
+    forum_users = ForumUser.objects.all()
+
+    # Serializa los usuarios y devuelve una respuesta
+    forum_users_serialized = ForumUserSerializer(forum_users, many=True)
+    return Response({'ForumUsersData': forum_users_serialized.data})
