@@ -39,7 +39,9 @@ urlpatterns = [
     path('api/forums/update/<int:pk>/', vpu.update_forum, name='update_forum'),
     path('api/forums/delete/<int:pk>/', vd.delete_forum, name='delete_forum'),
     path('api/forums/get_forum_users/', vg.get_forum_users, name='get_forum_users'),
-    path('api/join_forum/<int:id>/', vpo.join_forum, name='join_forum')
+    path('api/join_forum/<int:id>/', vpo.join_forum, name='join_forum'),
+    path('api/forums/get_users_one_forum/<int:forum_id>/', vg.get_users_one_forum, name='get_users_one_forum'),
+    path('api/forums/leave_forum/<int:forum_id>/', vd.leave_forum, name='leave_forum')
 ]
 
 if settings.DEBUG:
