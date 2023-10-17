@@ -171,7 +171,7 @@ def join_forum(request, id):
     else:
         return Response({'error': 'Método no permitido'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     
-@api_view({'POST'})
+@api_view(['POST'])
 @permission_classes({IsAuthenticated})
 def followUser(request, idUser):
     try:
