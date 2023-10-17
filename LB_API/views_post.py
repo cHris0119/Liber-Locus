@@ -1,6 +1,6 @@
 
-from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer
-from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser
+from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer, FollowedSerializer, FollowSerializer
+from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser, Follow, Followed
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -170,3 +170,26 @@ def join_forum(request, id):
                 return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         return Response({'error': 'Método no permitido'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    
+@api_view({'POST'})
+@permission_classes({IsAuthenticated})
+def followUser(request, idUser):
+    try:
+        
+        follow = User.objects.get(email = request.user.username)
+        followed = User.objects.get(id = idUser)
+        
+        followeds = Followed.objects.create(
+            id = int_id(),
+            user = followed
+        )
+        followModel = Follow.objects.create(
+            id = int_id(),
+            user = follow,
+            followed = followeds
+        )
+        return Response(f'Le has dado like a {followed.email}', status=status.HTTP_200_OK)        
+    except follow.DoesNotExist:
+        return Response('Hubo un error al seguir a la persona', status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -1,5 +1,5 @@
-from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer
-from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory
+from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer
+from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -234,3 +234,24 @@ def get_users_one_forum(request, forum_id):
         return Response({'ForumUsersData': forum_users_serialized.data})
     except Forum.DoesNotExist:
         return Response({'error': 'El foro no existe.'}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])    
+def get_Follows_followers(request):
+    if request.method == 'GET':
+        try:
+            
+            user = User.objects.get(email = request.user.username)
+        
+            followers = Follow.objects.filter(user = user).count()
+            follows = Followed.objects.filter(user = user).count()
+        
+            flsSerial =  FollowedSerializer(follows, many=True)
+            flrsSerial = FollowSerializer(followers, many=True)
+
+            return Response({'Follows': flsSerial, 'Followeds': flrsSerial})
+        except user.DoesNotExist:
+            return Response('El usuario no existe', status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+

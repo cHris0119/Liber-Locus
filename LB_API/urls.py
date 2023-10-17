@@ -41,7 +41,9 @@ urlpatterns = [
     path('api/forums/get_forum_users/', vg.get_forum_users, name='get_forum_users'),
     path('api/join_forum/<int:id>/', vpo.join_forum, name='join_forum'),
     path('api/forums/get_users_one_forum/<int:forum_id>/', vg.get_users_one_forum, name='get_users_one_forum'),
-    path('api/forums/leave_forum/<int:forum_id>/', vd.leave_forum, name='leave_forum')
+    path('api/forums/leave_forum/<int:forum_id>/', vd.leave_forum, name='leave_forum'),
+    path('api/users/get_all_follow/', vg.get_Follows_followers, name='get_all_follow'),
+    path('api/users/follow/<int:idUser>/', vpo.followUser, name='follow_user')
 ]
 
 if settings.DEBUG:

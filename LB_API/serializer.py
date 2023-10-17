@@ -110,6 +110,17 @@ class ForumUserSerializer(serializers.ModelSerializer):
         model = ForumUser
         fields = '__all__'
 
+class FollowedSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Followed
+        fields = '__all__'
+class FollowSerializer(serializers.ModelSerializer):
+    followed = FollowedSerializer(many=False)
+    class Meta:
+        model = Follow
+        fields = '__all__'
+
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
