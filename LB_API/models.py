@@ -563,6 +563,8 @@ class User(models.Model):
     created_at = models.DateTimeField()
     user_photo = models.ImageField(upload_to='user', max_length=255, blank=True, null=True, db_comment='URL')
     subscription = models.ForeignKey(Subscription, models.DO_NOTHING, db_column='SUBSCRIPTION_id', db_comment='FREE/SUB_1/SUB_2/SUB_3')  # Field name made lowercase.
+    is_active = models.BooleanField(default=False)
+
 
     class Meta:
         managed = False

@@ -229,9 +229,23 @@ def get_users_one_forum(request, forum_id):
         # Obtén todos los usuarios que se han unido a ese foro
         forum_users = ForumUser.objects.filter(forum=forum)
 
-        # Serializa los usuarios y devuelve una respuesta
-        forum_users_serialized = ForumUserSerializer(forum_users, many=True)
-        return Response({'ForumUsersData': forum_users_serialized.data})
+        user_data_list = []
+
+        for forum_user in forum_users:
+            user = forum_user.user
+
+            # Serializa los datos del usuario
+            user_serialized = userSerializer(user, many=False)
+
+            user_data = {
+                'id': user_serialized.data['id'],
+                'first_name': user_serialized.data['first_name'],
+                'last_name': user_serialized.data['last_name'],
+            }
+
+            user_data_list.append(user_data)
+        return Response({'ForumUsersData': user_data_list}, status=status.HTTP_200_OK)
+
     except Forum.DoesNotExist:
         return Response({'error': 'El foro no existe.'}, status=status.HTTP_404_NOT_FOUND)
     
