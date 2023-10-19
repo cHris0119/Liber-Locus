@@ -564,6 +564,7 @@ class User(models.Model):
     user_photo = models.ImageField(upload_to='user', max_length=255, blank=True, null=True, db_comment='URL')
     subscription = models.ForeignKey(Subscription, models.DO_NOTHING, db_column='SUBSCRIPTION_id', db_comment='FREE/SUB_1/SUB_2/SUB_3')  # Field name made lowercase.
     is_active = models.BooleanField(default=False)
+    confirm_key = models.CharField(max_length=50, null=True, blank=True)
 
 
     class Meta:

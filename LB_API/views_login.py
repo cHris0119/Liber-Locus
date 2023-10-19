@@ -127,31 +127,33 @@ def loginUser(request):
     if request.method == 'POST':
         data = request.data
         user = authenticate(username=data['email'], password=data['password'])
-
         if user is not None:
-            user1 = User.objects.get(email=data['email'])
-            user_profile = User.objects.get(email=data['email'])  # Obtén el perfil del usuario por su correo electrónico
-            token, created = Token.objects.get_or_create(user=user)
-            serialToken = TokenSerializer(token)
-            serialUser = userSerializer(user1,many=False)
-            user_data = {
-                'id': serialUser.data['id'],
-                'first_name': serialUser.data['first_name'],
-                'last_name': serialUser.data['last_name'],
-                'user_photo': serialUser.data['user_photo']
-            }
+            if user.is_active:
+                user1 = User.objects.get(email=data['email'])
+                user_profile = User.objects.get(email=data['email'])  # Obtén el perfil del usuario por su correo electrónico
+                token, created = Token.objects.get_or_create(user=user)
+                serialToken = TokenSerializer(token)
+                serialUser = userSerializer(user1,many=False)
+                user_data = {
+                    'id': serialUser.data['id'],
+                    'first_name': serialUser.data['first_name'],
+                    'last_name': serialUser.data['last_name'],
+                    'user_photo': serialUser.data['user_photo']
+                }
             # Obtén la dirección del usuario y agrégala a los datos de usuario
-            user_direction = Direction.objects.get(id=user_profile.id)
-            direction_data = {
-                'nombre': user_direction.nombre,
-                'calle': user_direction.calle,
-                'numero': user_direction.numero,
-                'commune': user_direction.commune.id  # Ajusta esto según tus necesidades
-            }
-            user_data['direction'] = direction_data
+                user_direction = Direction.objects.get(id=user_profile.id)
+                direction_data = {
+                    'nombre': user_direction.nombre,
+                    'calle': user_direction.calle,
+                    'numero': user_direction.numero,
+                    'commune': user_direction.commune.id  # Ajusta esto según tus necesidades
+                }
+                user_data['direction'] = direction_data
 
-            login(request, user)
-            return Response({'msj': 'Autenticación exitosa', 'token': serialToken.data['key'], 'userData': user_data}, status=status.HTTP_200_OK)
+                login(request, user)
+                return Response({'msj': 'Autenticación exitosa', 'token': serialToken.data['key'], 'userData': user_data}, status=status.HTTP_200_OK)
+            else:
+                return Response('Debes activar tu cuenta para poder ingresar, Porfavor verifica tu correo', status=status.HTTP_400_BAD_REQUEST)
         else:
             # Usuario o contraseña incorrecta
             return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)

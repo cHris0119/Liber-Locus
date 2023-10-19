@@ -10,7 +10,11 @@ from rest_framework.authentication import TokenAuthentication
 from datetime import datetime
 from django.contrib.auth.models import User as AdminUser
 from django.utils import timezone
-
+from django.core.mail import EmailMessage
+from django_backend.settings import EMAIL_HOST_USER
+from django.urls import reverse
+from django.core.signing import Signer
+from django.shortcuts import redirect
 
 def int_id():
     # Obtener el tiempo actual en segundos desde la época (timestamp)
@@ -193,3 +197,46 @@ def followUser(request, idUser):
         return Response('Hubo un error al seguir a la persona', status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    
+@api_view(['POST'])
+def send_email(request, email):
+    try:
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response("No se encontró un usuario con esa dirección de correo electrónico.", status=status.HTTP_400_BAD_REQUEST)
+        signer = Signer()
+        token = Signer.sign(user.email)
+        user.confirm_key = token
+        user.save()
+        url = request.build_absolute_uri(reverse(f'/user_active/{token}/'))
+        email = EmailMessage(
+            'Bienvenido a LiberLocus: {}'.format(user.email),
+            'Para continuar con el inicio de sesion debemos verificar su correo\n\n {} \n\n '.format(url),
+            EMAIL_HOST_USER,
+            [user.email],
+            reply_to=[EMAIL_HOST_USER]
+        )
+        try:
+            email.send()
+            return Response('Correo de confirmacion enviado con exito', status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)   
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    
+@api_view(['POST'])
+def confirm_email(request, token):
+    signer = Signer()
+    try:
+        email = signer.unsign(token)
+        user = User.objects.get(email=email)
+        if not user.is_active:
+            user.is_active = True
+            user.save()
+            return redirect('http://localhost:5173')    
+    except User.DoesNotExist:
+        return redirect('http://localhost:5173')
+        
