@@ -21,14 +21,11 @@ urlpatterns = [
     path('api/create_forum/', vpo.create_forum, name='create_forum'),
     path('api/join_forum/<int:id>/', vpo.join_forum, name='join_forum'),
     path('api/users/follow/<int:idUser>/', vpo.followUser, name='follow_user'),
-<<<<<<< HEAD
     path('api/user/send_mail/<str:email>/', vpo.send_email, name='send_mail'),
     path('api/users/confirm_email/<str:token>/', vpo.confirm_email, name='confirm_email'),
-=======
     path('api/user/send_mail/<str:email>', vpo.send_email),
     path('api/users/confirm-email/<str:token>/', vpo.confirm_email, name='confirm_email'),
     path('api/create_discussion/', vpo.create_discussion, name='create_discussion'),
->>>>>>> ca1c55f262b7d152a296fe69c85ac053663250c4
     #Vistas con metodo DELETE
     path('api/books/delete/<int:pk>/', vd.book_delete, name='book_delete'), 
     path('api/reviews/delete/<int:pk>/', vd.review_delete, name='review_delete'),

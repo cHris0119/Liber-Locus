@@ -28,8 +28,7 @@ class Auction(models.Model):
         db_table = 'auction'
         unique_together = (('id', 'auction_state'),)
 
-    def __str__(self):
-        return self.id
+ 
 
 class AuctionOffer(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -197,8 +196,6 @@ class ChatRoom(models.Model):
         managed = False
         db_table = 'chat_room'
         
-    def __str__(self):
-        return self.id
 
 
 class Comments(models.Model):
@@ -310,8 +307,6 @@ class Follow(models.Model):
         managed = False
         db_table = 'follow'
 
-    def __str__(self):
-        return self.id
 
 class Followed(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -321,8 +316,7 @@ class Followed(models.Model):
         managed = False
         db_table = 'followed'
 
-    def __str__(self):
-        return self.id
+   
 
 class Forum(models.Model):
     id = models.IntegerField(primary_key=True)  # The composite primary key (id, FORUM_CATEGORY_id) found, that is not supported. The first column is selected.
@@ -359,8 +353,7 @@ class ForumUser(models.Model):
         managed = False
         db_table = 'forum_user'
 
-    def __str__(self):
-        return self.id
+
 
 class Message(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -373,8 +366,7 @@ class Message(models.Model):
         managed = False
         db_table = 'message'
 
-    def __str__(self):
-        return self.id
+
 
 class Notification(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -419,8 +411,7 @@ class PostVenta(models.Model):
         db_table = 'post_venta'
         unique_together = (('id', 'state_post_venta', 'branch'),)
 
-    def __str__(self):
-        return self.id
+   
 
 class PurchaseDetail(models.Model):
     id = models.IntegerField(primary_key=True)  # The composite primary key (id, PURCHASE_DETAIL_STATE_id) found, that is not supported. The first column is selected.
@@ -436,8 +427,6 @@ class PurchaseDetail(models.Model):
         db_table = 'purchase_detail'
         unique_together = (('id', 'purchase_detail_state'),)
 
-    def __str__(self):
-        return self.id
 
 class PurchaseDetailState(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -516,8 +505,6 @@ class ReviewLike(models.Model):
         managed = False
         db_table = 'review_like'
 
-    def __str__(self):
-        return self.id
 
 class Role(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -585,8 +572,6 @@ class UserRole(models.Model):
         db_table = 'user_role'
         unique_together = (('id', 'user', 'role'),)
 
-    def __str__(self):
-        return self.id
 
 class UserRoom(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -597,5 +582,3 @@ class UserRoom(models.Model):
         managed = False
         db_table = 'user_room'
         
-    def __str__(self):
-        return self.id
