@@ -12,10 +12,8 @@ from django.contrib.auth.models import User as AdminUser
 from django.utils import timezone
 from django.core.mail import EmailMessage
 from django_backend.settings import EMAIL_HOST_USER
-from django.urls import reverse
 from django.core.signing import Signer
 from django.shortcuts import redirect
-
 def int_id():
     # Obtener el tiempo actual en segundos desde la época (timestamp)
     timestamp = int(time.time())
@@ -207,25 +205,25 @@ def send_email(request, email):
         except User.DoesNotExist:
             return Response("No se encontró un usuario con esa dirección de correo electrónico.", status=status.HTTP_400_BAD_REQUEST)
         signer = Signer()
-        token = Signer.sign(user.email)
+        token = signer.sign(user.email)
         user.confirm_key = token
         user.save()
-        url = request.build_absolute_uri(reverse(f'/user_active/{token}/'))
+        url = f'http://127.0.0.1:8000/LB_API/api/users/confirm_email/{token}/'
         email = EmailMessage(
             'Bienvenido a LiberLocus: {}'.format(user.email),
-            'Para continuar con el inicio de sesion debemos verificar su correo\n\n {} \n\n '.format(url),
+            'Para continuar con el inicio de sesión debemos verificar su correo\n\n {} \n\n'.format(url),
             EMAIL_HOST_USER,
-            [user.email],
-            reply_to=[EMAIL_HOST_USER]
+            [email],  # Aquí debería ser simplemente [email] en lugar de [[email]]
         )
         try:
-            email.send()
-            return Response('Correo de confirmacion enviado con exito', status=status.HTTP_200_OK)
+            email.send(fail_silently=True)
+            print(email)
+            return Response('Correo de confirmación enviado con éxito', status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)   
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
+  
     
 @api_view(['POST'])
 def confirm_email(request, token):
