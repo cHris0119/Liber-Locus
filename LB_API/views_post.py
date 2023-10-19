@@ -13,7 +13,7 @@ from django.utils import timezone
 from django.core.mail import EmailMessage
 from django_backend.settings import EMAIL_HOST_USER
 from django.core.signing import Signer
-from django.shortcuts import redirect
+
 def int_id():
     # Obtener el tiempo actual en segundos desde la época (timestamp)
     timestamp = int(time.time())
@@ -208,13 +208,16 @@ def send_email(request, email):
         token = signer.sign(user.email)
         user.confirm_key = token
         user.save()
+        mail = user.email
         url = f'http://127.0.0.1:8000/LB_API/api/users/confirm_email/{token}/'
         email = EmailMessage(
-            'Bienvenido a LiberLocus: {}'.format(user.email),
-            'Para continuar con el inicio de sesión debemos verificar su correo\n\n {} \n\n'.format(url),
-            EMAIL_HOST_USER,
-            [email],  # Aquí debería ser simplemente [email] en lugar de [[email]]
+        f'Bienvenido a LiberLocus {mail}',
+        f'Para continuar con el inicio de sesión debemos verificar su correo\n\n {url} \n\n',
+        f"<{EMAIL_HOST_USER}>",
+        [mail]
         )
+          # Aquí debería ser simplemente [email] en lugar de [[email]]
+        
         try:
             email.send(fail_silently=True)
             print(email)
@@ -225,19 +228,7 @@ def send_email(request, email):
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
   
     
-@api_view(['POST'])
-def confirm_email(request, token):
-    signer = Signer()
-    try:
-        email = signer.unsign(token)
-        user = User.objects.get(email=email)
-        if not user.is_active:
-            user.is_active = True
-            user.save()
-            return redirect('http://localhost:5173')    
-    except User.DoesNotExist:
-        return redirect('http://localhost:5173')
-        
+       
 
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])

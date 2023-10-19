@@ -7,6 +7,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from django.core.signing import Signer
+from django.shortcuts import redirect
 
 @api_view(['GET']) 
 def getCommunes(request):
@@ -297,3 +299,16 @@ def get_forum_discussions(request, forum_id):
     except Forum.DoesNotExist:
         return Response({'error': 'El foro no existe.'}, status=status.HTTP_404_NOT_FOUND)
 
+@api_view(['GET'])
+def confirm_email(request, token):
+    signer = Signer()
+    try:
+        email = signer.unsign(token)
+        user = User.objects.get(email=email)
+        if not user.is_active:
+            user.is_active = True
+            user.save()
+            return redirect('http://localhost:5173')    
+    except User.DoesNotExist:
+        return redirect('http://localhost:5173')
+ 
