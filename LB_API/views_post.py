@@ -1,6 +1,6 @@
 
 from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer, FollowedSerializer, FollowSerializer
-from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser, Follow, Followed
+from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser, Follow, Followed, Discussion
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -238,3 +238,46 @@ def confirm_email(request, token):
     except User.DoesNotExist:
         return redirect('http://localhost:5173')
         
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def create_discussion(request):
+    if request.method == 'POST':
+        try:
+            user = User.objects.get(email=request.user.username)
+
+            # Asegúrate de que el usuario existe
+            if not user:
+                return Response({'error': 'El usuario no existe.'}, status=status.HTTP_404_NOT_FOUND)
+
+            forum_id = request.data.get('forum_id')
+
+            # Asegúrate de que el foro exista
+            forum = Forum.objects.get(id=forum_id)
+
+            if not forum:
+                return Response({'error': 'El foro no existe.'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Asegúrate de que el usuario sea miembro del foro
+            if not ForumUser.objects.filter(user=user, forum=forum).exists():
+                return Response({'error': 'El usuario no es miembro de este foro.'}, status=status.HTTP_403_FORBIDDEN)
+
+            title = request.data.get('title')
+            description = request.data.get('description')
+
+            # Crea la discusión y asigna al usuario actual como el creador
+            discussion = Discussion.objects.create(
+                id=int_id(),
+                title=title,
+                description=description,
+                created_by=user,  # Asigna al usuario actual como el creador
+                created_at=datetime.now(),
+                forum_user=ForumUser.objects.get(user=user, forum=forum)
+            )
+
+            return Response({'message': 'Discusión creada exitosamente.', 'discussion_id': discussion.id}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response({'error': 'Método no permitido'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)

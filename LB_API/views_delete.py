@@ -1,4 +1,4 @@
-from .models import Book, User, Review, Forum, ForumUser
+from .models import Book, User, Review, Forum, ForumUser, Discussion
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -83,5 +83,27 @@ def leave_forum(request, forum_id):
         return Response({'error': 'El foro no existe.'}, status=status.HTTP_404_NOT_FOUND)
     except ForumUser.DoesNotExist:
         return Response({'error': 'No eres miembro de este foro.'}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_discussion(request, discussion_id):
+    try:
+        discussion = Discussion.objects.get(id=discussion_id)
+        user = User.objects.get(email=request.user.username)
+
+        # Asegúrate de que el usuario actual sea el creador de la discusión
+        if ForumUser.objects.filter(user=user, forum=discussion.forum_user.forum).exists():
+            if user == discussion.forum_user.user:
+                discussion.delete()
+                return Response({'message': 'Discusión eliminada con éxito'})
+            else:
+                return Response({'error': 'No tienes permiso para eliminar esta discusión.'}, status=status.HTTP_403_FORBIDDEN)
+        else:
+            return Response({'error': 'El usuario no es miembro de este foro.'}, status=status.HTTP_403_FORBIDDEN)
+
+    except Discussion.DoesNotExist:
+        return Response({'error': 'La discusión no existe'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
