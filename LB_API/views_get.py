@@ -1,5 +1,5 @@
 from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer
-from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed
+from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -268,4 +268,32 @@ def get_Follows_followers(request):
             return Response('El usuario no existe', status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_forum_discussions(request, forum_id):
+    try:
+        # Obtén el foro específico
+        forum = Forum.objects.get(id=forum_id)
+
+        # Obtén todas las discusiones para el foro dado
+        discussions = Discussion.objects.filter(forum_user__forum=forum)
+
+        discussions_data_list = []
+
+        for discussion in discussions:
+            discussion_data = {
+                'id': discussion.id,
+                'title': discussion.title,
+                'description': discussion.description,
+                'created_by': discussion.created_by,
+                'created_at': discussion.created_at,
+            }
+
+            discussions_data_list.append(discussion_data)
+
+        return Response({'ForumDiscussionsData': discussions_data_list}, status=status.HTTP_200_OK)
+
+    except Forum.DoesNotExist:
+        return Response({'error': 'El foro no existe.'}, status=status.HTTP_404_NOT_FOUND)
 

@@ -23,11 +23,13 @@ urlpatterns = [
     path('api/users/follow/<int:idUser>/', vpo.followUser, name='follow_user'),
     path('api/user/send_mail/<str:email>', vpo.send_email),
     path('api/users/confirm-email/<str:token>/', vpo.confirm_email, name='confirm_email'),
+    path('api/create_discussion/', vpo.create_discussion, name='create_discussion'),
     #Vistas con metodo DELETE
     path('api/books/delete/<int:pk>/', vd.book_delete, name='book_delete'), 
     path('api/reviews/delete/<int:pk>/', vd.review_delete, name='review_delete'),
     path('api/forums/delete/<int:pk>/', vd.delete_forum, name='delete_forum'),
     path('api/forums/leave_forum/<int:forum_id>/', vd.leave_forum, name='leave_forum'),
+    path('api/discussions/delete/<int:discussion_id>/', vd.delete_discussion, name='delete_discussion'),
     # Vistas con metodo GET
     path('api/obtainUser/<str:token>/', vg.obtainUser, name='obtainUser'),
     path('api/obtainDirection/<int:user_id>/', vg.obtainDirection, name='obtainDirection'),
@@ -45,6 +47,7 @@ urlpatterns = [
     path('api/forums/get_forum_users/', vg.get_forum_users, name='get_forum_users'),
     path('api/forums/get_users_one_forum/<int:forum_id>/', vg.get_users_one_forum, name='get_users_one_forum'),
     path('api/users/get_all_follow/', vg.get_Follows_followers, name='get_all_follow'),
+    path('api/forums/get_forum_discussions/<int:forum_id>/', vg.get_forum_discussions, name='get_forum_discussions'),
     # Vistas con metodo PUT
     path('api/editDirection/<int:id>/', vpu.editDirection, name='editDirection'),
     path('api/editUser/<int:id>/', vpu.editUser, name='editUser'),
