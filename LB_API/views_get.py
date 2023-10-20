@@ -154,29 +154,38 @@ def get_all_forums(request):
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_user_forums(request):
+def get_user_forums(request, user_id):
     try:
-        # Obtén el usuario autenticado
-        user = User.objects.get(email=request.user.username)
+        # Obtén el usuario específico por su ID
+        user = User.objects.get(id=user_id)
 
-        # Obtén todos los foros
-        forums = Forum.objects.all()
+        # Obtén todos los foros a los que se ha unido el usuario
+        user_forums = ForumUser.objects.filter(user=user)
 
-        # Filtra los foros creados por el usuario
-        user_forums = []
-        for forum in forums:
-            if ForumUser.objects.filter(forum=forum, user=user).exists():
-                user_forums.append(forum)
+        # Obtén los detalles de los foros
+        forum_data_list = []
 
-        # Serializa los foros para convertirlos en datos JSON
-        serializer = ForumSerializer(forums, many=True)
+        for forum_user in user_forums:
+            forum = forum_user.forum
 
-        # Devuelve la lista de foros en la respuesta
-        return Response(serializer.data)
-    except Forum.DoesNotExist:
-        return Response({'error': 'No se encontraron foros para este usuario.'}, status=status.HTTP_404_NOT_FOUND)
+            # Serializa los datos del foro
+            forum_serialized = ForumSerializer(forum, many=False)
+
+            forum_data = {
+                'id': forum_serialized.data['id'],
+                'name': forum_serialized.data['name'],
+            }
+
+            forum_data_list.append(forum_data)
+
+        return Response({'UserForumsData': forum_data_list}, status=status.HTTP_200_OK)
+
+    except User.DoesNotExist:
+        return Response({'error': 'El usuario no existe.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
