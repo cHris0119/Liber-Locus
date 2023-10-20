@@ -210,7 +210,7 @@ class Comments(models.Model):
         db_table = 'comments'
 
     def __str__(self):
-        return self.created_at
+        return self.content
     
 class Commune(models.Model):
     id = models.IntegerField(primary_key=True)

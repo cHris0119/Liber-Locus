@@ -1,6 +1,6 @@
 
 from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer, FollowedSerializer, FollowSerializer
-from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser, Follow, Followed, Discussion
+from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser, Follow, Followed, Discussion, Comments
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -270,5 +270,31 @@ def create_discussion(request):
             return Response({'message': 'Discusión creada exitosamente.', 'discussion_id': discussion.id}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response({'error': 'Método no permitido'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def add_comment(request, discussion_id):
+    # Obtén la discusión específica
+    discussion = Discussion.objects.get(id=discussion_id)
+    
+    user = User.objects.get(email=request.user.username)  # Obtén al usuario autenticado
+    
+    if request.method == 'POST':
+        content = request.data.get('content')
+        
+        # Crea el comentario
+        comment = Comments.objects.create(
+            id=int_id(),
+            content=content,
+            created_at=datetime.now(),
+            discussion=discussion,
+            user=user
+        )
+        
+        return Response({'message': 'Comentario agregado exitosamente.'}, status=status.HTTP_201_CREATED)
     else:
         return Response({'error': 'Método no permitido'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)

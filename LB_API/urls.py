@@ -24,6 +24,7 @@ urlpatterns = [
     path('api/user/send_mail/<str:email>/', vpo.send_email, name='send_mail'), 
     path('api/user/send_mail/<str:email>', vpo.send_email),
     path('api/create_discussion/', vpo.create_discussion, name='create_discussion'),
+    path('api/discussion/<int:discussion_id>/add_comment/', vpo.add_comment, name='add_comment'),
     #Vistas con metodo DELETE
     path('api/books/delete/<int:pk>/', vd.book_delete, name='book_delete'), 
     path('api/reviews/delete/<int:pk>/', vd.review_delete, name='review_delete'),
