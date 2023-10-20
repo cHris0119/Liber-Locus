@@ -49,6 +49,7 @@ urlpatterns = [
     path('api/users/get_all_follow/', vg.get_Follows_followers, name='get_all_follow'),
     path('api/forums/get_forum_discussions/<int:forum_id>/', vg.get_forum_discussions, name='get_forum_discussions'),
     path('api/users/confirm_email/<str:token>/', vg.confirm_email, name='confirm_email'),
+    path('api/user_forum_discussions/<user_id>/<forum_id>/', vg.get_user_forum_discussions, name='get_user_forum_discussions'),
     # Vistas con metodo PUT
     path('api/editDirection/<int:id>/', vpu.editDirection, name='editDirection'),
     path('api/editUser/<int:id>/', vpu.editUser, name='editUser'),

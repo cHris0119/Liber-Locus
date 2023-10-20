@@ -321,3 +321,39 @@ def confirm_email(request, token):
     except User.DoesNotExist:
         return redirect('http://localhost:5173')
  
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_forum_discussions(request, forum_id, user_id):
+    try:
+        # Obtén el usuario autenticado
+        user_id = User.objects.get(email=request.user.username).id
+
+        # Obtén el foro específico
+        forum = Forum.objects.get(id=forum_id)
+
+        # Obtén todas las discusiones del usuario en el foro específico
+        discussions = Discussion.objects.filter(forum_user__forum=forum, forum_user__user=user_id)
+
+        discussions_data_list = []
+
+        for discussion in discussions:
+            discussion_data = {
+                'id': discussion.id,
+                'title': discussion.title,
+                'description': discussion.description,
+                'created_at': discussion.created_at,
+            }
+
+            discussions_data_list.append(discussion_data)
+
+        return Response({'UserForumDiscussionsData': discussions_data_list}, status=status.HTTP_200_OK)
+
+    except Forum.DoesNotExist:
+        return Response({'error': 'El foro no existe.'}, status=status.HTTP_404_NOT_FOUND)
+    except Discussion.DoesNotExist:
+        return Response({'error': 'No se encontraron discusiones para este usuario en el foro específico.'}, status=status.HTTP_404_NOT_FOUND)
+    except User.DoesNotExist:
+        return Response({'error': 'El usuario no existe.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
