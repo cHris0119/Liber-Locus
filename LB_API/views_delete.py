@@ -107,3 +107,36 @@ def delete_discussion(request, discussion_id):
         return Response({'error': 'La discusión no existe'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def remove_user_from_forum(request, forum_id, owner_id, user_id):
+    try:
+        current_user = User.objects.get(email=request.user.username) #Usuario quien pide la elimicion
+        forum = Forum.objects.get(id=forum_id) #ID actual del foro
+        owner = User.objects.get(id=owner_id) # Se encarga de saber quien creo el foro
+        user_to_remove = User.objects.get(id=user_id) # Usuario quien sera eliminado
+
+        # Si el usuario que hace la peticion no es del foro del foro, no puede hacer la accion
+        if current_user != owner:
+            return Response({'error': 'No tienes permiso para eliminar a este usuario del foro.'}, status=status.HTTP_403_FORBIDDEN)
+
+        # Si el usuario que hace la peticion no es el creador de ese foro, no puede hacer la accion
+        if owner != forum.user:
+            return Response({'error': 'El usuario especificado no es el dueño del foro.'}, status=status.HTTP_403_FORBIDDEN)
+
+        # Realiza la lógica para eliminar al usuario del foro
+        forum_user_to_remove = ForumUser.objects.filter(user=user_to_remove, forum=forum)
+
+        if forum_user_to_remove.exists():
+            forum_user_to_remove.delete()
+            return Response({'message': 'Usuario eliminado del foro exitosamente.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'El usuario no es miembro de este foro.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    except Forum.DoesNotExist:
+        return Response({'error': 'El foro no existe.'}, status=status.HTTP_404_NOT_FOUND)
+    except User.DoesNotExist:
+        return Response({'error': 'El usuario no existe.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
