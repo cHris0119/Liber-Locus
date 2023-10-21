@@ -31,6 +31,7 @@ urlpatterns = [
     path('api/forums/delete/<int:pk>/', vd.delete_forum, name='delete_forum'),
     path('api/forums/leave_forum/<int:forum_id>/', vd.leave_forum, name='leave_forum'),
     path('api/discussions/delete/<int:discussion_id>/', vd.delete_discussion, name='delete_discussion'),
+    path('api/remove_user_from_forum/<int:forum_id>/<int:owner_id>/<int:user_id>/', vd.remove_user_from_forum, name='remove_user_from_forum'), #forum_id= id del foro, owner=quien creo el foro, user id= usuario a eliminar
     # Vistas con metodo GET
     path('api/obtainUser/<str:token>/', vg.obtainUser, name='obtainUser'),
     path('api/obtainDirection/<int:user_id>/', vg.obtainDirection, name='obtainDirection'),
