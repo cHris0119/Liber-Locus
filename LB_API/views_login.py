@@ -86,7 +86,9 @@ def registerUser(request):
                                             email=data['email'],
                                             password=make_password(data['password']),
                                             created_at=datetime.now(),
-                                            subscription=Subscription.objects.get(id=1)
+                                            subscription=Subscription.objects.get(id=1),
+                                            is_active=False,
+                                            confirm_key=None
                                         )
 
                                         user.user_photo.save(f"{user.email}.png", ContentFile(image_bytes), save=True)
