@@ -1,5 +1,5 @@
-from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer
-from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion
+from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer
+from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -357,3 +357,23 @@ def get_user_forum_discussions(request, forum_id, user_id):
         return Response({'error': 'El usuario no existe.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    
+@api_view(['GET'])
+def BookQuestion(request, bookID):
+    try:
+        book = Book.objects.get(id = bookID)
+        try:
+            ques = Question.objects.filter(book = book)
+            cantidad = ques.count()
+            if cantidad > 1:
+                quesSerial =  QuestionSerializer(ques, many=True)
+                return Response({'Questions':quesSerial.data}, status=status.HTTP_200_OK)
+            else:
+                quesSerial =  QuestionSerializer(ques, many=False)
+                return Response({'Questions':quesSerial.data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+

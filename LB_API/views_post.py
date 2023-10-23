@@ -1,6 +1,6 @@
 
-from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer, FollowedSerializer, FollowSerializer
-from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser, Follow, Followed, Discussion, Comments
+from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer, FollowedSerializer, FollowSerializer, QuestionSerializer
+from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser, Follow, Followed, Discussion, Comments, Question
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -216,8 +216,6 @@ def send_email(request, email):
         f"<{EMAIL_HOST_USER}>",
         [mail]
         )
-          # Aquí debería ser simplemente [email] en lugar de [[email]]
-        
         try:
             email.send(fail_silently=True)
             print(email)
@@ -298,3 +296,27 @@ def add_comment(request, discussion_id):
         return Response({'message': 'Comentario agregado exitosamente.'}, status=status.HTTP_201_CREATED)
     else:
         return Response({'error': 'Método no permitido'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+@api_view(['POST'])
+def askQuestion(request, bookID):
+    try:
+        data = request.data
+        user = User.objects.get(email = request.user.username)
+        book = Book.objects.get(id = bookID)
+        try:
+            Question.objects.create(
+                id = int_id(),
+                description = data['description'],
+                book = book,
+                user = user
+            )
+            quest = QuestionSerializer(Question, many=False)
+            return Response({'Question': quest.data},  status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)  
+    except user.DoesNotExist:
+        return Response({'msj':'El usuario no existe'})
+    
+    
+    
