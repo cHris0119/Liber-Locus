@@ -141,6 +141,9 @@ def create_forum(request):
                 user=user  # Asigna al usuario que creó el foro
             )
 
+            # Añade al usuario como miembro del foro que acaba de crear
+            ForumUser.objects.create(id=int_id(),forum=forum, user=user)
+
             forum_serialized = ForumSerializer(forum, many=False)
 
             return Response({'ForumData': forum_serialized.data})
