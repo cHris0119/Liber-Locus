@@ -57,6 +57,7 @@ urlpatterns = [
     path('api/questions/getBookQuestions/<int:bookID>/', vg.BookQuestion, name='bookQuestion'), # obtener preguntas del libro
     path('api/latest_discussions/<int:user_id>/', vg.latest_discussions, name='latest_discussions'), # obtener las ultimas discuciones que fueron publicadas en los foros en donde esta el usuario
     path('api/discussions/<int:discussion_id>/', vg.get_discussion_by_id, name='get_discussion_by_id'), # Obtener discusiones/hilos por el ID
+    path('api/discussions/<int:discussion_id>/comments/', vg.get_comments, name='get_comments'), #Obtener todos los comentarios dentro de un hilo/discusion
     # Vistas con metodo PUT
     path('api/editDirection/<int:id>/', vpu.editDirection, name='editDirection'), # editar direccion
     path('api/editUser/<int:id>/', vpu.editUser, name='editUser'), # editar usuario
