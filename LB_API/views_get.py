@@ -1,4 +1,4 @@
-from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer
+from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer
 from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -159,24 +159,11 @@ def get_user_forums(request, user_id):
         # Obtén el usuario específico por su ID
         user = User.objects.get(id=user_id)
 
-        # Obtén todos los foros a los que se ha unido el usuario
-        user_forums = ForumUser.objects.filter(user=user)
+        # Obtén todos los foros a los que se ha unido el usuario y selecciona los campos deseados
+        user_forums = ForumUser.objects.filter(user=user).values('forum__id', 'forum__name')
 
-        # Obtén los detalles de los foros
-        forum_data_list = []
-
-        for forum_user in user_forums:
-            forum = forum_user.forum
-
-            # Serializa los datos del foro
-            forum_serialized = ForumSerializer(forum, many=False)
-
-            forum_data = {
-                'id': forum_serialized.data['id'],
-                'name': forum_serialized.data['name'],
-            }
-
-            forum_data_list.append(forum_data)
+        # Serializa los datos de los foros
+        forum_data_list = list(user_forums)
 
         return Response({'UserForumsData': forum_data_list}, status=status.HTTP_200_OK)
 
@@ -236,26 +223,14 @@ def get_users_one_forum(request, forum_id):
     try:
         # Obtén el foro específico
         forum = Forum.objects.get(id=forum_id)
-        
-        # Obtén todos los usuarios que se han unido a ese foro
-        forum_users = ForumUser.objects.filter(forum=forum)
 
-        user_data_list = []
+        # Obtén todos los usuarios que se han unido a ese foro con el campo 'id'
+        forum_users = ForumUser.objects.filter(forum=forum).values('user__id')
 
-        for forum_user in forum_users:
-            user = forum_user.user
+        # Serializa los datos de los usuarios utilizando el userSerializer
+        user_data_list = sellerSerializer(User.objects.filter(id__in=forum_users), many=True)
 
-            # Serializa los datos del usuario
-            user_serialized = userSerializer(user, many=False)
-
-            user_data = {
-                'id': user_serialized.data['id'],
-                'first_name': user_serialized.data['first_name'],
-                'last_name': user_serialized.data['last_name'],
-            }
-
-            user_data_list.append(user_data)
-        return Response({'ForumUsersData': user_data_list}, status=status.HTTP_200_OK)
+        return Response({'ForumUsersData': user_data_list.data}, status=status.HTTP_200_OK)
 
     except Forum.DoesNotExist:
         return Response({'error': 'El foro no existe.'}, status=status.HTTP_404_NOT_FOUND)
@@ -284,29 +259,19 @@ def get_Follows_followers(request):
 @permission_classes([IsAuthenticated])
 def get_forum_discussions(request, forum_id):
     try:
-        # Obtén el foro específico
-        forum = Forum.objects.get(id=forum_id)
-
         # Obtén todas las discusiones para el foro dado
-        discussions = Discussion.objects.filter(forum_user__forum=forum)
+        discussions = Discussion.objects.filter(forum_user__forum_id=forum_id)
 
-        discussions_data_list = []
-
-        for discussion in discussions:
-            discussion_data = {
-                'id': discussion.id,
-                'title': discussion.title,
-                'description': discussion.description,
-                'created_by': discussion.created_by,
-                'created_at': discussion.created_at,
-            }
-
-            discussions_data_list.append(discussion_data)
-
-        return Response({'ForumDiscussionsData': discussions_data_list}, status=status.HTTP_200_OK)
+        if discussions.exists():
+            discussions_serialized = DiscussionSerializer(discussions, many=True)
+            return Response({'ForumDiscussionsData': discussions_serialized.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'No se encontraron discusiones para este foro.'}, status=status.HTTP_404_NOT_FOUND)
 
     except Forum.DoesNotExist:
         return Response({'error': 'El foro no existe.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
 def confirm_email(request, token):
@@ -324,39 +289,27 @@ def confirm_email(request, token):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_user_forum_discussions(request, forum_id, user_id):
+def get_user_forum_discussions(request, forum_id):
     try:
         # Obtén el usuario autenticado
-        user_id = User.objects.get(email=request.user.username).id
-
-        # Obtén el foro específico
-        forum = Forum.objects.get(id=forum_id)
+        user = User.objects.get(email=request.user.username)
 
         # Obtén todas las discusiones del usuario en el foro específico
-        discussions = Discussion.objects.filter(forum_user__forum=forum, forum_user__user=user_id)
+        discussions = Discussion.objects.filter(forum_user__forum_id=forum_id, forum_user__user=user)
 
-        discussions_data_list = []
-
-        for discussion in discussions:
-            discussion_data = {
-                'id': discussion.id,
-                'title': discussion.title,
-                'description': discussion.description,
-                'created_at': discussion.created_at,
-            }
-
-            discussions_data_list.append(discussion_data)
-
-        return Response({'UserForumDiscussionsData': discussions_data_list}, status=status.HTTP_200_OK)
+        if discussions.exists():
+            discussions_serialized = DiscussionSerializer(discussions, many=True)
+            return Response({'UserForumDiscussionsData': discussions_serialized.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'No se encontraron discusiones para este usuario en el foro específico.'}, status=status.HTTP_404_NOT_FOUND)
 
     except Forum.DoesNotExist:
         return Response({'error': 'El foro no existe.'}, status=status.HTTP_404_NOT_FOUND)
-    except Discussion.DoesNotExist:
-        return Response({'error': 'No se encontraron discusiones para este usuario en el foro específico.'}, status=status.HTTP_404_NOT_FOUND)
     except User.DoesNotExist:
         return Response({'error': 'El usuario no existe.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     
 
 @api_view(['GET'])

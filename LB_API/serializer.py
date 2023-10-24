@@ -90,11 +90,6 @@ class DirectionSerializer(serializers.ModelSerializer):
         model = Direction
         fields = '__all__'
 
-class DiscussionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Discussion
-        fields = '__all__'
-
 class ForumSerializer(serializers.ModelSerializer):
     class Meta:
         model = Forum
@@ -109,6 +104,13 @@ class ForumUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = ForumUser
         fields = '__all__'
+
+class DiscussionSerializer(serializers.ModelSerializer):
+    forum_user = ForumUserSerializer(many=False, read_only=True)  # Usamos el serializador de ForumUser
+
+    class Meta:
+        model = Discussion
+        fields = ['id', 'title', 'description', 'created_by', 'created_at', 'forum_user']
 
 class FollowedSerializer(serializers.ModelSerializer):
     
