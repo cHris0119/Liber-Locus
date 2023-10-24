@@ -1,6 +1,6 @@
 
-from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer, FollowedSerializer, FollowSerializer, QuestionSerializer, AnswerSerializer
-from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser, Follow, Followed, Discussion, Comments, Question, Answer
+from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer, FollowedSerializer, FollowSerializer, QuestionSerializer, AnswerSerializer, PaymentMethodSerializer, es_fecha_vencimiento_valida, es_cvv_valido, es_rut_valido
+from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser, Follow, Followed, Discussion, Comments, Question, Answer, PaymentMethod
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -353,7 +353,43 @@ def createAnswer(request, Q_id):
             return Response({'error': 'la pregunta no existe'}, status=status.HTTP_404_NOT_FOUND)     
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)   
-        
+    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_payment_method(request):
+    serializer = PaymentMethodSerializer(data=request.data)
+
+    if serializer.is_valid():
+        # Verificar si el método de pago ya existe para el usuario actual
+        existing_payment_method = PaymentMethod.objects.filter(user=request.user, card_number=serializer.validated_data['card_number']).first()
+        if existing_payment_method:
+            return Response({"error": "Ya existe un método de pago con este número de tarjeta para este usuario."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validar la fecha de vencimiento y el CVV
+        expiration_month = serializer.validated_data['expiration_month']
+        expiration_year = serializer.validated_data['expiration_year']
+        cvv = serializer.validated_data['cvv']
+
+        if not es_fecha_vencimiento_valida(expiration_month, expiration_year):
+            return Response({"error": "La fecha de vencimiento no es válida."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not es_cvv_valido(cvv, serializer.validated_data['method_name']):
+            return Response({"error": "El código CVV no es válido."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validar el RUT
+        if not es_rut_valido(serializer.validated_data['rut']):
+            return Response({"error": "El RUT no es válido."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Limitar la cantidad de métodos de pago por usuario
+        existing_payment_methods_count = PaymentMethod.objects.filter(user=request.user).count()
+        if existing_payment_methods_count >= 4:
+            return Response({"error": "Se ha alcanzado el límite de métodos de pago permitidos por usuario."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Crear el método de pago
+        serializer.save(user=request.user)
+        return Response({"message": "Método de pago creado con éxito."}, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 
     

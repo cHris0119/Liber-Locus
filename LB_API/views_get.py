@@ -335,3 +335,29 @@ def BookQuestion(request, bookID):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def latest_discussions(request, user_id):
+    try:
+        # Obtén las últimas discusiones creadas por el usuario en el foro
+        discussions = Discussion.objects.filter(forum_user__user_id=user_id).order_by('-created_at')[:10]
+
+        if discussions:
+            discussion_serialized = DiscussionSerializer(discussions, many=True)
+            return Response({'LatestDiscussions': discussion_serialized.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'No se encontraron discusiones.'}, status=status.HTTP_204_NO_CONTENT)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_discussion_by_id(request, discussion_id):
+    try:
+        discussion = Discussion.objects.get(id=discussion_id)
+        discussion_serializer = DiscussionSerializer(discussion, many=False)
+        return Response(discussion_serializer.data, status=status.HTTP_200_OK)
+    except Discussion.DoesNotExist:
+        return Response({'error': 'La discusión no existe.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
