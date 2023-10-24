@@ -362,21 +362,20 @@ def get_discussion_by_id(request, discussion_id):
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Comments  # Asegúrate de importar el modelo de tus comentarios
+
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def get_comments(request, discussion_id):
     try:
         discussion = Discussion.objects.get(id=discussion_id)
         comments = Comments.objects.filter(discussion=discussion)
 
         if comments:
-            if comments.count() > 1:
-                comment_serializer = CommentsSerializer(comments, many=True)
-                return Response({'Comments': comment_serializer.data}, status=status.HTTP_200_OK)
-            elif comments.count() == 1:
-                only_comment = Comments.objects.get(discussion=discussion)
-                comment_serializer = CommentsSerializer(only_comment, many=False)
-                return Response({'Comments': comment_serializer.data}, status=status.HTTP_200_OK)
+            comment_serializer = CommentsSerializer(comments, many=True)  # Serializar todos los comentarios en una lista
+            return Response({'Comments': comment_serializer.data}, status=status.HTTP_200_OK)
         else:
             return Response({'message': 'No hay comentarios para esta discusión'}, status=status.HTTP_204_NO_CONTENT)
     except Discussion.DoesNotExist:
