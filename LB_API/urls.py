@@ -55,6 +55,8 @@ urlpatterns = [
     path('api/users/confirm_email/<str:token>/', vg.confirm_email, name='confirm_email'), # confirmar email del usuario
     path('api/get_user_forum_discussions/<int:forum_id>/', vg.get_user_forum_discussions, name='get_user_forum_discussions'), # Obtener las hilos creadas por 1 usuario dentro del foro
     path('api/questions/getBookQuestions/<int:bookID>/', vg.BookQuestion, name='bookQuestion'), # obtener preguntas del libro
+    path('api/latest_discussions/<int:user_id>/', vg.latest_discussions, name='latest_discussions'), # obtener las ultimas discuciones que fueron publicadas en los foros en donde esta el usuario
+    path('api/discussions/<int:discussion_id>/', vg.get_discussion_by_id, name='get_discussion_by_id'), # Obtener discusiones/hilos por el ID
     # Vistas con metodo PUT
     path('api/editDirection/<int:id>/', vpu.editDirection, name='editDirection'), # editar direccion
     path('api/editUser/<int:id>/', vpu.editUser, name='editUser'), # editar usuario
