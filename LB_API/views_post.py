@@ -1,6 +1,6 @@
 
-from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer, FollowedSerializer, FollowSerializer, QuestionSerializer
-from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser, Follow, Followed, Discussion, Comments, Question
+from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer, FollowedSerializer, FollowSerializer, QuestionSerializer, AnswerSerializer
+from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser, Follow, Followed, Discussion, Comments, Question, Answer
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -299,24 +299,58 @@ def add_comment(request, discussion_id):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def askQuestion(request, bookID):
     try:
         data = request.data
         user = User.objects.get(email = request.user.username)
         book = Book.objects.get(id = bookID)
-        try:
-            Question.objects.create(
-                id = int_id(),
-                description = data['description'],
-                book = book,
-                user = user
-            )
-            quest = QuestionSerializer(Question, many=False)
-            return Response({'Question': quest.data},  status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)  
+        if user != book.user: 
+            try:
+                question = Question.objects.create(
+                    id = int_id(),
+                    description = data['description'],
+                    book = book,
+                    user = user
+                )
+                quest = QuestionSerializer(question, many=False)
+                return Response({'Question': quest.data},  status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response({'error':'Eres el dueño del libro no puedes hacer preguntas'}, status=status.HTTP_400_BAD_REQUEST)  
     except user.DoesNotExist:
         return Response({'msj':'El usuario no existe'})
     
-    
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def createAnswer(request, Q_id):
+    data = request.data
+    try:
+        user = User.objects.get(email = request.user.username)
+        quest = Question.objects.get(id = Q_id)
+        book = Book.objects.get(id = quest.book.id)
+        if quest:
+            if user == book.user:
+                try:
+                    ans = Answer.objects.create(
+                        id = int_id(),
+                        description = data['description'],
+                        question = quest,
+                        user = user
+                    )
+                    ansSerial = AnswerSerializer(ans, many=False)
+                    return Response({'Answer': ansSerial}, status=status.HTTP_200_OK)
+                except Exception as e:
+                    return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            else:
+                return Response({'error':'No estas autorizado para contestar a la pregunta'}, status=status.HTTP_401_UNAUTHORIZED)
+        else:
+            return Response({'error': 'la pregunta no existe'}, status=status.HTTP_404_NOT_FOUND)     
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)   
+        
+        
+
     

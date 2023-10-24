@@ -358,20 +358,25 @@ def get_user_forum_discussions(request, forum_id, user_id):
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
-    
+
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def BookQuestion(request, bookID):
     try:
         book = Book.objects.get(id = bookID)
         try:
             ques = Question.objects.filter(book = book)
             cantidad = ques.count()
-            if cantidad > 1:
-                quesSerial =  QuestionSerializer(ques, many=True)
-                return Response({'Questions':quesSerial.data}, status=status.HTTP_200_OK)
+            if ques:
+                if cantidad > 1:
+                    quesSerial =  QuestionSerializer(ques, many=True)
+                    return Response({'Questions':quesSerial.data}, status=status.HTTP_200_OK)
+                if cantidad == 1:
+                    onlyQuest = Question.objects.get(book = book)
+                    quesSerial =  QuestionSerializer(onlyQuest, many=False)
+                    return Response({'Questions':quesSerial.data}, status=status.HTTP_200_OK)
             else:
-                quesSerial =  QuestionSerializer(ques, many=False)
-                return Response({'Questions':quesSerial.data}, status=status.HTTP_200_OK)
+                return Response({'msj':'No Hay preguntas para este libro'}, status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     except Exception as e:

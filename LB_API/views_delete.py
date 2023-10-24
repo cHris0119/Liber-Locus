@@ -1,4 +1,4 @@
-from .models import Book, User, Review, Forum, ForumUser, Discussion
+from .models import Book, User, Review, Forum, ForumUser, Discussion, Question
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -140,3 +140,24 @@ def remove_user_from_forum(request, forum_id, owner_id, user_id):
         return Response({'error': 'El usuario no existe.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def QuestionDelete(request, Q_id):
+    try:
+        user = User.objects.get(email = request.user.username)
+        quest = Question.objects.get(id = Q_id)
+        if quest:
+            if quest.user == user:
+                try:
+                    quest.delete()
+                    return Response({'msj':'la pregunta se ha eliminado exitosamente'}, status=status.HTTP_200_OK)
+                except user.DoesNotExist:
+                    return Response({'error':'El usuario no existe'}, status=status.HTTP_404_NOT_FOUND) 
+            else:
+                return Response({'error':'El usuario no esta autorizado a eliminar esta pregunta'}, status=status.HTTP_401_UNAUTHORIZED)            
+        else:
+            return Response({'error':'La pregunta no existe'}, status=status.HTTP_404_NOT_FOUND)    
+    except Exception as e:
+         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
