@@ -1,5 +1,5 @@
 
-from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer, FollowedSerializer, FollowSerializer, QuestionSerializer, AnswerSerializer, PaymentMethodSerializer, es_fecha_vencimiento_valida, es_cvv_valido, es_rut_valido
+from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer, FollowedSerializer, FollowSerializer, QuestionSerializer, AnswerSerializer, PaymentMethodSerializer, CommentsSerializer, es_fecha_vencimiento_valida, es_cvv_valido, es_rut_valido
 from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser, Follow, Followed, Discussion, Comments, Question, Answer, PaymentMethod
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
@@ -295,11 +295,13 @@ def add_comment(request, discussion_id):
             discussion=discussion,
             user=user
         )
+
+        # Serializa el comentario para incluirlo en la respuesta
+        comment_serializer = CommentsSerializer(comment)
         
-        return Response({'message': 'Comentario agregado exitosamente.'}, status=status.HTTP_201_CREATED)
+        return Response({'message': 'Comentario agregado exitosamente', 'comment': comment_serializer.data}, status=status.HTTP_201_CREATED)
     else:
         return Response({'error': 'Método no permitido'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

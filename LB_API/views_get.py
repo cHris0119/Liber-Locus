@@ -1,5 +1,5 @@
-from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer
-from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question
+from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer
+from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -376,3 +376,27 @@ def get_discussion_by_id(request, discussion_id):
         return Response({'error': 'La discusión no existe.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Comments  # Asegúrate de importar el modelo de tus comentarios
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_comments(request, discussion_id):
+    try:
+        discussion = Discussion.objects.get(id=discussion_id)
+        comments = Comments.objects.filter(discussion=discussion)
+
+        if comments:
+            comment_serializer = CommentsSerializer(comments, many=True)  # Serializar todos los comentarios en una lista
+            return Response({'Comments': comment_serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'No hay comentarios para esta discusión'}, status=status.HTTP_204_NO_CONTENT)
+    except Discussion.DoesNotExist:
+        return Response({'error': 'La discusión no existe'}, status=status.HTTP_404_NOT_FOUND)
+    except Comments.DoesNotExist:
+        return Response({'message': 'No hay comentarios para esta discusión'}, status=status.HTTP_204_NO_CONTENT)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
