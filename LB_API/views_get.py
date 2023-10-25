@@ -245,11 +245,26 @@ def get_Follows_followers(request):
         
             followers = Follow.objects.filter(user = user).count()
             follows = Followed.objects.filter(user = user).count()
-        
-            flsSerial =  FollowedSerializer(follows, many=True)
-            flrsSerial = FollowSerializer(followers, many=True)
 
-            return Response({'Follows': flsSerial, 'Followeds': flrsSerial})
+            return Response({'Follows': followers, 'Followeds': follows})
+        except user.DoesNotExist:
+            return Response('El usuario no existe', status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])    
+def get_Follows_followers_users(request, user_id):
+    if request.method == 'GET':
+        try:
+            
+            user = User.objects.get(id = user_id)
+        
+            followers = Follow.objects.filter(user = user).count()
+            follows = Followed.objects.filter(user = user).count()
+
+            return Response({'Follows': followers, 'Followeds': follows})
         except user.DoesNotExist:
             return Response('El usuario no existe', status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
