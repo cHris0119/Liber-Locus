@@ -368,6 +368,7 @@ from rest_framework import status
 from .models import Comments  # Asegúrate de importar el modelo de tus comentarios
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_comments(request, discussion_id):
     try:
         discussion = Discussion.objects.get(id=discussion_id)

@@ -76,9 +76,11 @@ class ChatRoomSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CommentsSerializer(serializers.ModelSerializer):
+    user_name = serializers.CharField(source='user.first_name', read_only=True)  # Obtener el nombre del usuario
+
     class Meta:
         model = Comments
-        fields = '__all__'
+        fields = ['id', 'content', 'created_at', 'user_name']  # Agregar 'user_name'
 
 class CommuneSerializer(serializers.ModelSerializer):
     class Meta:
