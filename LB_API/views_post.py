@@ -308,53 +308,62 @@ def add_comment(request, discussion_id):
 def askQuestion(request, bookID):
     try:
         data = request.data
-        user = User.objects.get(email = request.user.username)
-        book = Book.objects.get(id = bookID)
-        if user != book.user: 
-            try:
-                question = Question.objects.create(
-                    id = int_id(),
-                    description = data['description'],
-                    book = book,
-                    user = user
-                )
-                quest = QuestionSerializer(question, many=False)
-                return Response({'Question': quest.data},  status=status.HTTP_200_OK)
-            except Exception as e:
-                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        else:
-            return Response({'error':'Eres el dueño del libro no puedes hacer preguntas'}, status=status.HTTP_400_BAD_REQUEST)  
-    except user.DoesNotExist:
-        return Response({'msj':'El usuario no existe'})
+        user = User.objects.get(email=request.user.username)
+        book = Book.objects.get(id=bookID)
+
+        if user == book.seller:
+            return Response({'error': 'Eres el vendedor del libro. No puedes hacer preguntas.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        question = Question.objects.create(
+            id=int_id(),
+            description=data['description'],
+            book=book,
+            user=user
+        )
+
+        question_serialized = QuestionSerializer(question, many=False)
+        return Response({'Question': question_serialized.data}, status=status.HTTP_200_OK)
+
+    except User.DoesNotExist:
+        return Response({'error': 'El usuario no existe'}, status=status.HTTP_404_NOT_FOUND)
+    except Book.DoesNotExist:
+        return Response({'error': 'El libro no existe'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def createAnswer(request, Q_id):
-    data = request.data
     try:
-        user = User.objects.get(email = request.user.username)
-        quest = Question.objects.get(id = Q_id)
-        book = Book.objects.get(id = quest.book.id)
-        if quest:
-            if user == book.user:
-                try:
-                    ans = Answer.objects.create(
-                        id = int_id(),
-                        description = data['description'],
-                        question = quest,
-                        user = user
-                    )
-                    ansSerial = AnswerSerializer(ans, many=False)
-                    return Response({'Answer': ansSerial}, status=status.HTTP_200_OK)
-                except Exception as e:
-                    return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            else:
-                return Response({'error':'No estas autorizado para contestar a la pregunta'}, status=status.HTTP_401_UNAUTHORIZED)
+        data = request.data
+        user = User.objects.get(email=request.user.username)
+        question = Question.objects.get(id=Q_id)
+        book = Book.objects.get(id=question.book.id)
+
+        if user == book.seller:
+            try:
+                answer = Answer.objects.create(
+                    id=int_id(),
+                    description=data['description'],
+                    question=question,
+                    user=user
+                )
+
+                answer_serialized = AnswerSerializer(answer, many=False)
+                return Response({'Answer': answer_serialized.data}, status=status.HTTP_200_OK)
+
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
-            return Response({'error': 'la pregunta no existe'}, status=status.HTTP_404_NOT_FOUND)     
+            return Response({'error': 'No estás autorizado para responder a la pregunta'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    except Question.DoesNotExist:
+        return Response({'error': 'La pregunta no existe'}, status=status.HTTP_404_NOT_FOUND)
+    except Book.DoesNotExist:
+        return Response({'error': 'El libro no existe'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)   
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
