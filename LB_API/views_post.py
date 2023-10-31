@@ -321,8 +321,18 @@ def askQuestion(request, bookID):
             user=user
         )
 
+        # Obtén el nombre del usuario que creó la pregunta
+        id_author = user.id
+        author_name = user.first_name
+
         question_serialized = QuestionSerializer(question, many=False)
-        return Response({'Question': question_serialized.data}, status=status.HTTP_200_OK)
+        response_data = {
+            'Question': question_serialized.data,
+            'id': id_author,
+            'Author': author_name  # Agregar el nombre del autor
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
 
     except User.DoesNotExist:
         return Response({'error': 'El usuario no existe'}, status=status.HTTP_404_NOT_FOUND)
