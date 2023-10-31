@@ -261,9 +261,10 @@ class PurchaseDetailStateSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class QuestionSerializer(serializers.ModelSerializer):
+    answers = AnswerSerializer(many=True, read_only=True)
     class Meta:
         model = Question
-        fields = ('id', 'description')
+        fields = ('id', 'description', 'answers')
 
 class RefundSerializer(serializers.ModelSerializer):
     class Meta:
