@@ -322,10 +322,7 @@ def askQuestion(request, bookID):
         )
 
         question_serialized = QuestionSerializer(question, many=False)
-        return Response([{
-            'id': question_serialized.data['id'],
-            'description': question_serialized.data['description']
-        }], status=status.HTTP_200_OK)  # Respuesta en un array con formato personalizado
+        return Response({'Question': question_serialized.data}, status=status.HTTP_200_OK)
 
     except User.DoesNotExist:
         return Response({'error': 'El usuario no existe'}, status=status.HTTP_404_NOT_FOUND)
@@ -333,6 +330,8 @@ def askQuestion(request, bookID):
         return Response({'error': 'El libro no existe'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -353,10 +352,7 @@ def createAnswer(request, Q_id):
                 )
 
                 answer_serialized = AnswerSerializer(answer, many=False)
-                return Response([{
-                    'id': answer_serialized.data['id'],
-                    'description': answer_serialized.data['description']
-                }], status=status.HTTP_200_OK)  # Respuesta en un array con formato personalizado
+                return Response({'Answer': answer_serialized.data}, status=status.HTTP_200_OK)
 
             except Exception as e:
                 return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -369,7 +365,6 @@ def createAnswer(request, Q_id):
         return Response({'error': 'El libro no existe'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
     
 @api_view(['POST'])

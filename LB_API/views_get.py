@@ -1,8 +1,8 @@
 import os
 
 from django_backend import settings
-from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer
-from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments
+from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer
+from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -313,30 +313,26 @@ def get_user_forum_discussions(request, forum_id):
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def BookQuestion(request, bookID):
     try:
-        book = Book.objects.get(id = bookID)
-        try:
-            ques = Question.objects.filter(book = book)
-            cantidad = ques.count()
-            if ques:
-                if cantidad > 1:
-                    quesSerial =  QuestionSerializer(ques, many=True)
-                    return Response({'Questions':quesSerial.data}, status=status.HTTP_200_OK)
-                if cantidad == 1:
-                    onlyQuest = Question.objects.get(book = book)
-                    quesSerial =  QuestionSerializer(onlyQuest, many=False)
-                    return Response({'Questions':quesSerial.data}, status=status.HTTP_200_OK)
-            else:
-                return Response({'msj':'No Hay preguntas para este libro'}, status=status.HTTP_204_NO_CONTENT)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        book = Book.objects.get(id=bookID)
+        ques = Question.objects.filter(book=book)
+        answers = Answer.objects.filter(question__in=ques)
+
+        if ques.exists():
+            data = ques.values('id', 'description', 'answer__description')
+
+            return Response({'Data': data}, status=status.HTTP_200_OK)
+        else:
+            return Response({'msj': 'No Hay preguntas para este libro'}, status=status.HTTP_204_NO_CONTENT)
+    except Book.DoesNotExist:
+        return Response({'msj': 'El libro no existe'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
