@@ -32,7 +32,7 @@ urlpatterns = [
     path('api/forums/delete/<int:pk>/', vd.delete_forum, name='delete_forum'), # eliminar un foro
     path('api/forums/leave_forum/<int:forum_id>/', vd.leave_forum, name='leave_forum'), # salirse de un foro
     path('api/discussions/delete/<int:discussion_id>/', vd.delete_discussion, name='delete_discussion'), # eliminar un hilo
-    path('api/remove_user_from_forum/<int:forum_id>/<int:owner_id>/<int:user_id>/', vd.remove_user_from_forum, name='remove_user_from_forum'), #forum_id= id del foro, owner=quien creo el foro, user id= usuario a eliminar
+    path('api/forums/<int:forum_id>/remove_user/<int:user_id>/', vd.remove_user_from_forum, name='remove_user_from_forum'), #forum_id= id del foro, owner=quien creo el foro, user id= usuario a eliminar
     path('api/questions/delete/<int:Q_id>/', vd.QuestionDelete, name='QuestionDelete'), # eliminar una pregunta
     # Vistas con metodo GET
     path('api/obtainUser/<str:token>/', vg.obtainUser, name='obtainUser'), # otbtener al ususario mediante el token
