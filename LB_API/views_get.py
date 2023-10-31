@@ -1,3 +1,6 @@
+import os
+
+from django_backend import settings
 from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer
 from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments
 from rest_framework.decorators import api_view
@@ -385,3 +388,15 @@ def get_comments(request, discussion_id):
         return Response({'message': 'No hay comentarios para esta discusión'}, status=status.HTTP_204_NO_CONTENT)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+def getimage(request, path):
+    # Construye la ruta completa al archivo de imagen en el directorio de medios
+    image_path = os.path.join(settings.MEDIA_ROOT, path)
+
+    # Verifica si el archivo existe
+    if os.path.exists(image_path):
+        with open(image_path, 'rb') as image_file:
+            return Response(image_file.read(), content_type='image/jpeg')  # Ajusta el tipo MIME según el tipo de imagen
+
+    return Response(status=404)

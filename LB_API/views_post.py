@@ -400,7 +400,6 @@ def create_payment_method(request):
         serializer.save(user=request.user)
         return Response({"message": "Método de pago creado con éxito."}, status=status.HTTP_200_OK)
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)        
 
     
