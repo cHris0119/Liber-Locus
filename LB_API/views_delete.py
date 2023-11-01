@@ -1,4 +1,4 @@
-from .models import Book, User, Review, Forum, ForumUser, Discussion, Question
+from .models import Book, User, Review, Forum, ForumUser, Discussion, Question, Auction
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -155,3 +155,34 @@ def QuestionDelete(request, Q_id):
             return Response({'error':'La pregunta no existe'}, status=status.HTTP_404_NOT_FOUND)    
     except Exception as e:
          return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def cancel_subasta(request, subasta_id):
+    try:
+        subasta = Auction.objects.get(id=subasta_id)
+        user = User.objects.get(email=request.user.username)
+
+        # Verifica si el usuario autenticado es el vendedor del libro relacionado con la subasta
+        can_cancel = subasta.book.seller == user
+
+        if can_cancel:
+            # Cambia el estado de la subasta a "Cancelled" (1)
+            subasta.auction_state_id = 1
+            subasta.save()
+
+            # Actualiza el estado del libro a "Available" (2)
+            subasta.book.book_state_id = 2
+            subasta.book.save()
+
+            # Elimina la subasta
+            subasta.delete()
+
+            return Response({'message': 'Subasta cancelada y eliminada con éxito'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'No tienes permiso para cancelar esta subasta.'}, status=status.HTTP_403_FORBIDDEN)
+
+    except Auction.DoesNotExist:
+        return Response({'error': 'La subasta no existe'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
