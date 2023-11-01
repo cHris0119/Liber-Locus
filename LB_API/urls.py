@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/discussion/<int:discussion_id>/add_comment/', vpo.add_comment, name='add_comment'), # agregar comentario a un hilo
     path('api/question/create/<int:bookID>/', vpo.askQuestion, name='askQuestion'), # crear una pregunta en el libro
     path('api/answer/create/<int:Q_id>/', vpo.createAnswer, name='createAnswer'), # crear respuesta en un libro
+    path('api/create_subasta/<book_id>/', vpo.create_subasta, name='create_subasta'), # crear subasta
     #Vistas con metodo DELETE
     path('api/books/delete/<int:pk>/', vd.book_delete, name='book_delete'),  # eliminar un libro
     path('api/reviews/delete/<int:pk>/', vd.review_delete, name='review_delete'), # eliminar una reseña
@@ -34,6 +35,7 @@ urlpatterns = [
     path('api/discussions/delete/<int:discussion_id>/', vd.delete_discussion, name='delete_discussion'), # eliminar un hilo
     path('api/forums/<int:forum_id>/remove_user/<int:user_id>/', vd.remove_user_from_forum, name='remove_user_from_forum'), #forum_id= id del foro, owner=quien creo el foro, user id= usuario a eliminar
     path('api/questions/delete/<int:Q_id>/', vd.QuestionDelete, name='QuestionDelete'), # eliminar una pregunta
+    path('api/subastas/<int:subasta_id>/cancel/', vd.cancel_subasta, name='cancel_subasta'), # Cancelar subasta
     # Vistas con metodo GET
     path('api/obtainUser/<str:token>/', vg.obtainUser, name='obtainUser'), # otbtener al ususario mediante el token
     path('api/obtainDirection/<int:user_id>/', vg.obtainDirection, name='obtainDirection'), # obtener la direccion

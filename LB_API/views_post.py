@@ -1,13 +1,13 @@
 
 from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer, FollowedSerializer, FollowSerializer, QuestionSerializer, AnswerSerializer, PaymentMethodSerializer, CommentsSerializer, es_fecha_vencimiento_valida, es_cvv_valido, es_rut_valido
-from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser, Follow, Followed, Discussion, Comments, Question, Answer, PaymentMethod
+from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser,Auction, Follow, Followed, Discussion, Comments, Question, Answer, PaymentMethod
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
 import time
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.contrib.auth.models import User as AdminUser
 from django.utils import timezone
 from django.core.mail import EmailMessage
@@ -413,4 +413,46 @@ def create_payment_method(request):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)        
 
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_subasta(request, book_id):
+    if request.method == 'POST':
+        data = request.data
+
+        try:
+            # Asegúrate de obtener al usuario autenticado (el vendedor de la subasta)
+            seller = User.objects.get(email=request.user.username)
+
+            # Verifica si el usuario tiene un libro específico con el ID proporcionado
+            try:
+                book = Book.objects.get(id=book_id, seller=seller)
+            except Book.DoesNotExist:
+                return Response({'error': 'No tienes un libro con el ID especificado en el marketplace.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Calcular la fecha y hora de finalización de la subasta
+            duration_days = data['duration_days']
+            end_datetime = datetime.now() + timedelta(days=duration_days)
+
+            # Crea una nueva subasta relacionada con el libro específico
+            subasta = Auction.objects.create(
+                id=int_id(),
+                initial_price=data['initial_price'],
+                created_at=datetime.now(),
+                duration_days=duration_days,
+                final_price=data.get('final_price', None),  # Puedes ajustar esto según tus necesidades
+                auction_state_id=2,  # Establece el estado de la subasta a "AVAILABLE" (estado 2)
+                book=book
+            )
+
+            # Actualiza el estado del libro a "IN AUCTION" (estado 3)
+            book.book_state_id = 3
+            book.save()
+
+            return Response({'message': 'Subasta creada exitosamente.', 'subasta_id': subasta.id, 'end_datetime': end_datetime}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    return Response({'error': 'Método no permitido'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     
