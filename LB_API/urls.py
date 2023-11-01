@@ -65,7 +65,8 @@ urlpatterns = [
     path('api/books/update/<int:pk>/', vpu.book_update, name='book_update'),  # Ruta para actualizar un libro por ID (PUT) 
     path('api/reviews/update/<int:pk>/', vpu.review_update, name='review_update'), # editar reseña
     path('api/forums/update/<int:pk>/', vpu.update_forum, name='update_forum') # editar foro
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+   

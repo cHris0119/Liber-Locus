@@ -15,6 +15,8 @@ import base64
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
+from .views_post import send_email
+
 
 
 def int_id():
@@ -103,7 +105,7 @@ def registerUser(request):
                                             commune=Commune.objects.get(id=data['id_com']),
                                             user_id=user.id
                                             )
-                                        
+                                            send_email(user.email)
                                             AdminUser.objects.create(username=data['email'], password=make_password(data['password']))
                                             userSerial = userSerializer(user, many=False)
                                             return Response({'success': 'El usuario ha sido creado', 'UserData': userSerial.data}, status=status.HTTP_201_CREATED)
@@ -129,10 +131,9 @@ def loginUser(request):
     if request.method == 'POST':
         data = request.data
         user = authenticate(username=data['email'], password=data['password'])
-        if user is not None:
-            if user.is_active:
-                user1 = User.objects.get(email=data['email'])
-                user_profile = User.objects.get(email=data['email'])  # Obtén el perfil del usuario por su correo electrónico
+        user1 = User.objects.get(email = data['email'])
+        if user1 is not None:
+            if user1.is_active:
                 token, created = Token.objects.get_or_create(user=user)
                 serialToken = TokenSerializer(token)
                 serialUser = userSerializer(user1,many=False)
@@ -143,7 +144,7 @@ def loginUser(request):
                     'user_photo': serialUser.data['user_photo']
                 }
             # Obtén la dirección del usuario y agrégala a los datos de usuario
-                user_direction = Direction.objects.get(id=user_profile.id)
+                user_direction = Direction.objects.get(id=user1.id)
                 direction_data = {
                     'nombre': user_direction.nombre,
                     'calle': user_direction.calle,

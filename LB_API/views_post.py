@@ -200,8 +200,7 @@ def followUser(request, idUser):
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     
-@api_view(['POST'])
-def send_email(request, email):
+def send_email(email):
     try:
         try:
             user = User.objects.get(email=email)
