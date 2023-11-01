@@ -323,7 +323,7 @@ def BookQuestion(request, bookID):
         answers = Answer.objects.filter(question__in=ques)
 
         if ques.exists():
-            data = ques.values('id', 'description', 'answer__description')
+            data = ques.values('id', 'user_id', 'user__first_name', 'description', 'answer__description')
 
             return Response({'Data': data}, status=status.HTTP_200_OK)
         else:
