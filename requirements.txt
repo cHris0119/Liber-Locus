@@ -2,8 +2,11 @@ asgiref==3.7.2
 attrs==23.1.0
 autobahn==23.6.2
 Automat==22.10.0
+certifi==2023.7.22
 cffi==1.16.0
 channels==4.0.0
+charset-normalizer==3.3.2
+cloudinary==1.36.0
 constantly==15.1.0
 cryptography==41.0.4
 daphne==4.0.0
@@ -15,7 +18,9 @@ filetype==1.2.0
 hyperlink==21.0.0
 idna==3.4
 incremental==22.10.0
+marshmallow==3.17.0
 mysqlclient==2.2.0
+packaging==23.2
 Pillow==10.0.1
 pyasn1==0.5.0
 pyasn1-modules==0.3.0
@@ -23,12 +28,15 @@ pycparser==2.21
 pyOpenSSL==23.2.0
 python-dotenv==1.0.0
 pytz==2023.3.post1
+requests==2.31.0
 service-identity==23.1.0
 six==1.16.0
 sqlparse==0.4.4
+transbank-sdk==4.0.0
 Twisted==23.8.0
 twisted-iocpsupport==1.0.4
 txaio==23.1.1
 typing_extensions==4.8.0
 tzdata==2023.3
+urllib3==2.0.7
 zope.interface==6.1

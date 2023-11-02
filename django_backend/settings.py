@@ -170,7 +170,8 @@ CORS_ALLOWED_ORIGINS = [
 ASGI_APPLICATION = 'django_backend.asgi.application'
 # Ruta base del proyecto
 
-
+TRANSBANK_API_KEY = 'TU_API_KEY'
+TRANSBANK_COMMERCE_CODE = 	597020000540
 
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
