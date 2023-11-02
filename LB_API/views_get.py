@@ -345,7 +345,7 @@ def latest_discussions(request, user_id):
             discussion_serialized = DiscussionSerializer(discussions, many=True)
             return Response({'LatestDiscussions': discussion_serialized.data}, status=status.HTTP_200_OK)
         else:
-            return Response({'message': 'No se encontraron discusiones.'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'LatestDiscussions': discussion_serialized.data,'message': 'No se encontraron discusiones.'}, status=status.HTTP_204_NO_CONTENT)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
