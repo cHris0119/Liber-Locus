@@ -340,12 +340,12 @@ def latest_discussions(request, user_id):
     try:
         # Obtén las últimas discusiones creadas por el usuario en el foro
         discussions = Discussion.objects.filter(forum_user__user_id=user_id).order_by('-created_at')[:10]
+        discussion_serialized = DiscussionSerializer(discussions, many=True)
 
         if discussions:
-            discussion_serialized = DiscussionSerializer(discussions, many=True)
             return Response({'LatestDiscussions': discussion_serialized.data}, status=status.HTTP_200_OK)
         else:
-            return Response({'LatestDiscussions': discussion_serialized.data,'message': 'No se encontraron discusiones.'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'LatestDiscussions': []}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
