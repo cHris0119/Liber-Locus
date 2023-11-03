@@ -140,7 +140,7 @@ class Book(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, db_comment='only positive numbers')
     description = models.CharField(max_length=200)
     author = models.CharField(max_length=45)
-    book_img = models.CharField(max_length=255, db_comment='URL')
+    book_img = models.ImageField(upload_to='books', max_length=255, blank=True, null=True, db_comment='URL')
     seller = models.ForeignKey('User', models.DO_NOTHING)
     book_state = models.ForeignKey('BookState', models.DO_NOTHING, db_column='BOOK_STATE_id')  # Field name made lowercase.
     created_at = models.DateTimeField()
@@ -322,7 +322,7 @@ class Forum(models.Model):
     id = models.IntegerField(primary_key=True)  # The composite primary key (id, FORUM_CATEGORY_id) found, that is not supported. The first column is selected.
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField()
-    forum_img = models.CharField(max_length=255, blank=True, null=True, db_comment='URL')
+    forum_img = models.ImageField(upload_to='forums', max_length=255, blank=True, null=True, db_comment='URL')
     forum_category = models.ForeignKey('ForumCategory', models.DO_NOTHING, db_column='FORUM_CATEGORY_id')  # Field name made lowercase.
     user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id', blank=True, null=True)  # Field name made lowercase.
     class Meta:
@@ -486,7 +486,7 @@ class Review(models.Model):
     description = models.TextField()
     valoration = models.IntegerField()
     updated_at = models.DateTimeField(blank=True, null=True)
-    review_img = models.CharField(max_length=255, blank=True, null=True)
+    review_img = models.ImageField(upload_to='reviews', max_length=255, blank=True, null=True, db_comment='URL')
     user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
 
     class Meta:

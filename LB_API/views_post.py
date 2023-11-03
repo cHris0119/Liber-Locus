@@ -13,6 +13,10 @@ from django.utils import timezone
 from django.core.mail import EmailMessage
 from django_backend.settings import EMAIL_HOST_USER
 from django.core.signing import Signer
+from PIL import Image
+import base64
+from io import BytesIO
+from django.core.files.base import ContentFile
 
 def int_id():
     # Obtener el tiempo actual en segundos desde la época (timestamp)
@@ -22,8 +26,6 @@ def int_id():
     # Convertir la cadena formateada a un número entero
     return int(formatted_time)
 
-
-
 # Creacion de libros
 
 @api_view(['POST'])
@@ -32,68 +34,97 @@ def int_id():
 def book_create(request):
     if request.method == 'POST':
         data = request.data
-        # Obtiene la marca de tiempo actual en segundos
-        
         try:
             # Obtén el vendedor a partir del correo electrónico del usuario autenticado
             user_email = request.user.username
             seller = User.objects.get(email=user_email)
-
         except User.DoesNotExist:
             return Response({'error': 'El vendedor no existe'}, status=status.HTTP_404_NOT_FOUND)
-            
+
         try:
             # Configura el valor predeterminado para BOOK_STATE_id
             book_state_id = 2  # Valor predeterminado deseado
             book_category = BookCategory.objects.get(id=data['book_category'])
-                
-            book = Book.objects.create(
-                id=int_id(),
-                name=data['name'],
-                price=data['price'],
-                description=data['description'],
-                author=data['author'],
-                book_img=data['book_img'],
-                seller=seller,
-                book_state_id=book_state_id,  # Establece el valor predeterminado
-                book_category=book_category,
-                created_at=datetime.now()
-                )
-            book_serialized = BookSerializer(book, many=False)
-            
-            return Response({'BookData': book_serialized.data})
+
+            # Verifica si se proporciona una imagen en formato base64
+            image_data = data['book_img']
+            if image_data.startswith("data:image"):
+                try:
+                    # Extrae la parte base64 de la cadena de datos de la imagen
+                    image_data = image_data.split(",")[1]
+                    # Decodifica la imagen y la guarda en el modelo Book
+                    image_bytes = base64.b64decode(image_data)
+                    image = Image.open(BytesIO(image_bytes))
+
+                    book = Book.objects.create(
+                        id=int_id(),
+                        name=data['name'],
+                        price=data['price'],
+                        description=data['description'],
+                        author=data['author'],
+                        seller=seller,
+                        book_state_id=book_state_id,  # Establece el valor predeterminado
+                        book_category=book_category,
+                        created_at=datetime.now()
+                    )
+
+                    book.book_img.save(f"{book.id}.png", ContentFile(image_bytes), save=True)
+                    book.save()
+
+                    book_serialized = BookSerializer(book, many=False)
+
+                    return Response({'BookData': book_serialized.data})
+                except Exception as e:
+                    return Response({'error': 'Error al decodificar y guardar la imagen'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'error': 'Los datos de la imagen del libro no están en el formato correcto'}, status=status.HTTP_400_BAD_REQUEST)
+
         except BookCategory.DoesNotExist:
             return Response({'error': 'La categoría del libro no existe'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@api_view(['POST'])        
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def review_create(request):
     if request.method == 'POST':
         data = request.data
         try:
-            usuario = User.objects.get(email = request.user.username)
-            reviewUser = Review.objects.get(title = data['title'], user = usuario)
-            if reviewUser:
-                return Response({'error': 'Ya existe esa Reseña'}, status=status.HTTP_400_BAD_REQUEST)
-        except:
-            try:
-                review = Review.objects.create(
-                id = int_id(),
-                title = data['title'],
-                created_at = datetime.now(),
-                description = data['description'],
-                valoration = data['valoration'],
-                updated_at = datetime.now(),
-                review_img = data['review_img'],
-                user = usuario)
-            
-                reviewSerial = ReviewSerializer(review, many=False)
-                return Response({'reviewData': reviewSerial.data})
-            except Exception as e:
-                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            usuario = User.objects.get(email=request.user.username)
+
+            # Verifica si se proporciona una imagen en formato base64
+            image_data = data['review_img']
+            if image_data.startswith("data:image"):
+                try:
+                    # Extrae la parte base64 de la cadena de datos de la imagen
+                    image_data = image_data.split(",")[1]
+                    # Decodifica la imagen y la guarda en el modelo Book
+                    image_bytes = base64.b64decode(image_data)
+                    image = Image.open(BytesIO(image_bytes))
+
+                    review = Review.objects.create(
+                        id=int_id(),
+                        title=data['title'],
+                        created_at=datetime.now(),
+                        description=data['description'],
+                        valoration=data['valoration'],
+                        updated_at=datetime.now(),
+                        user=usuario
+                    )
+
+                    review.review_img.save(f"{review.id}.png", ContentFile(image_bytes), save=True)
+                    review.save()
+
+                    reviewSerial = ReviewSerializer(review, many=False)
+
+                    return Response({'reviewData': reviewSerial.data})
+                except Exception as e:
+                    return Response({'error': 'Error al decodificar y guardar la imagen'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'error': 'Los datos de la imagen de la reseña no están en el formato correcto'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 @api_view(['POST'])        
 @permission_classes([IsAuthenticated])        
@@ -132,21 +163,38 @@ def create_forum(request):
             # Configura el valor predeterminado para FORUM_CATEGORY_id
             forum_category = ForumCategory.objects.get(id=data['forum_category'])
 
-            forum = Forum.objects.create(
-                id=int_id(),
-                name=data['name'],
-                created_at=datetime.now(),
-                forum_img=data.get('forum_img', ''),
-                forum_category=forum_category,
-                user=user  # Asigna al usuario que creó el foro
-            )
+            # Verifica si se proporciona una imagen en formato base64
+            image_data = data['forum_img']
+            if image_data.startswith("data:image"):
+                try:
+                    # Extrae la parte base64 de la cadena de datos de la imagen
+                    image_data = image_data.split(",")[1]
+                    # Decodifica la imagen y la guarda en el modelo Book
+                    image_bytes = base64.b64decode(image_data)
+                    image = Image.open(BytesIO(image_bytes))
 
-            # Añade al usuario como miembro del foro que acaba de crear
-            ForumUser.objects.create(id=int_id(),forum=forum, user=user)
+                    forum = Forum.objects.create(
+                        id=int_id(),
+                        name=data['name'],
+                        created_at=datetime.now(),
+                        forum_category=forum_category,
+                        user=user  # Asigna al usuario que creó el foro
+                    )
 
-            forum_serialized = ForumSerializer(forum, many=False)
+                    forum.forum_img.save(f"{forum.id}.png", ContentFile(image_bytes), save=True)
+                    forum.save()
 
-            return Response({'ForumData': forum_serialized.data})
+                    # Añade al usuario como miembro del foro que acaba de crear
+                    ForumUser.objects.create(id=int_id(), forum=forum, user=user)
+
+                    forum_serialized = ForumSerializer(forum, many=False)
+
+                    return Response({'ForumData': forum_serialized.data})
+                except Exception as e:
+                    return Response({'error': 'Error al decodificar y guardar la imagen'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'error': 'Los datos de la imagen del foro no están en el formato correcto'}, status=status.HTTP_400_BAD_REQUEST)
+
         except ForumCategory.DoesNotExist:
             return Response({'error': 'La categoría del foro no existe'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -174,7 +222,7 @@ def join_forum(request, id):
             except Exception as e:
                 return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
-        return Response({'error': 'Método no permitido'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return Response({'error': 'Hubo un error al unirse al foro'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     
 @api_view(['POST'])
 @permission_classes({IsAuthenticated})
