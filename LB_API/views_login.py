@@ -16,6 +16,7 @@ from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
 from .views_post import send_email
+import os
 
 
 
@@ -137,13 +138,20 @@ def loginUser(request):
                 token, created = Token.objects.get_or_create(user=user)
                 serialToken = TokenSerializer(token)
                 serialUser = userSerializer(user1,many=False)
+                img_path = 'media/' + str(user1.user_photo)
+                if os.path.exists(img_path):
+                    with open(img_path, 'rb') as image_file:
+                        image_data = image_file.read()
+                        image_base64 = base64.b64encode(image_data)
+                else:
+                    image_base64 = None   
+                    
                 user_data = {
                     'id': serialUser.data['id'],
                     'first_name': serialUser.data['first_name'],
                     'last_name': serialUser.data['last_name'],
-                    'user_photo': serialUser.data['user_photo']
-                }
-            # Obtén la dirección del usuario y agrégala a los datos de usuario
+                    'user_photo': image_base64
+                    }
                 user_direction = Direction.objects.get(id=user1.id)
                 direction_data = {
                     'nombre': user_direction.nombre,

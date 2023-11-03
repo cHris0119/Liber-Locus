@@ -42,10 +42,14 @@ def obtainUser(request, token):
             user = User.objects.get(email = token1.user)
             if user:
                 serialUser = userSerializer(user, many=False)
-                with open('media/' + str(user.user_photo), 'rb') as image_file:
-                    image_data = image_file.read()
-                    image_base64 = base64.b64encode(image_data)
-                    # return Response(image_base64, content_type="image/jpg")
+                img_path = 'media/' + str(user.user_photo)
+                if os.path.exists(img_path):
+                    with open(img_path, 'rb') as image_file:
+                        image_data = image_file.read()
+                        image_base64 = base64.b64encode(image_data)
+                else:
+                    image_base64 = None   
+                    
                 user_data = {
                     'id': serialUser.data['id'],
                     'first_name': serialUser.data['first_name'],
