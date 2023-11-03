@@ -12,6 +12,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.core.signing import Signer
 from django.shortcuts import redirect
+from PIL import Image
+import base64
 
 @api_view(['GET']) 
 def getCommunes(request):
@@ -40,11 +42,15 @@ def obtainUser(request, token):
             user = User.objects.get(email = token1.user)
             if user:
                 serialUser = userSerializer(user, many=False)
+                with open('media/' + str(user.user_photo), 'rb') as image_file:
+                    image_data = image_file.read()
+                    image_base64 = base64.b64encode(image_data)
+                    # return Response(image_base64, content_type="image/jpg")
                 user_data = {
                     'id': serialUser.data['id'],
                     'first_name': serialUser.data['first_name'],
                     'last_name': serialUser.data['last_name'],
-                    'user_photo': serialUser.data['user_photo']
+                    'user_photo': image_base64
                     }
                 # Obtén la dirección del usuario y agrégala a los datos de usuario
                 user_direction = Direction.objects.get(id=user.id)
@@ -55,7 +61,7 @@ def obtainUser(request, token):
                     'commune': user_direction.commune.id  # Ajusta esto según tus necesidades
                 }
                 user_data['direction'] = direction_data
-                return Response({'msj': 'Autenticación exitosa', 'userData': user_data}, status=status.HTTP_200_OK)
+                return Response({'msj': 'Autenticación exitosa', 'userData': user_data}, status=status.HTTP_200_OK, content_type="image/png")
             else:
                 return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
         except token1.DoesNotExist:
