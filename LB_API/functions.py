@@ -46,3 +46,12 @@ def get_image_format(image_path):
     except Exception as e:
         # Manejar excepciones si ocurre algún error al abrir la imagen
         return None
+
+def base64_image(image_path):
+    if os.path.exists(image_path):
+        with open(image_path, 'rb') as image_file:
+            image_data = image_file.read()
+            image_base64 = base64.b64encode(image_data)
+            return image_base64.decode('utf-8')  # Decodificar a cadena
+    else:
+        return None
