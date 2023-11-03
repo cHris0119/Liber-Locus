@@ -7,52 +7,15 @@ from rest_framework import status
 from django.contrib.auth.models import User as AdminUser
 from django.contrib.auth import login, authenticate
 from rest_framework.authtoken.models import Token 
-import time
-import re
 from django.contrib.auth.hashers import make_password
 from django.views.decorators.csrf import csrf_exempt
 import base64
+import os
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
 from .views_post import send_email
-import os
-
-
-
-def int_id():
-    # Obtener el tiempo actual en segundos desde la época (timestamp)
-    timestamp = int(time.time())
-    # Formatear el timestamp como DDMMSS
-    formatted_time = time.strftime("%d%H%m%S", time.localtime(timestamp))
-    # Convertir la cadena formateada a un número entero
-    return int(formatted_time)
-
-def validacionCE(passw):
-    special_characters_pattern = r'[!@#$%^&*()_+{}\[\]:;<>,.?~\\]'
-    
-    if re.search(special_characters_pattern, passw):
-        return True
-    else:
-        return False
-    
-def validacionMAYUS(passw):
-    mayus = r'[ABCDEFGHIJKLMNOPQRSTUVWXYZ]'
-    
-    if re.search(mayus, passw):
-        return True
-    else:
-        return False
-    
-def validacionNum(passw):
-    num = r'[1234567890]'
-    
-    if re.search(num, passw):
-        return True
-    else:
-        return False
-
-# Obtiene la marca de tiempo actual en segundos
+from .functions import validacionCE, validacionMAYUS, validacionNum, int_id, get_image_format
 marca_de_tiempo = int_id()
 
 
@@ -143,6 +106,7 @@ def loginUser(request):
                     with open(img_path, 'rb') as image_file:
                         image_data = image_file.read()
                         image_base64 = base64.b64encode(image_data)
+                        format = get_image_format(img_path)
                 else:
                     image_base64 = None   
                     
@@ -150,7 +114,8 @@ def loginUser(request):
                     'id': serialUser.data['id'],
                     'first_name': serialUser.data['first_name'],
                     'last_name': serialUser.data['last_name'],
-                    'user_photo': image_base64
+                    'user_photo': image_base64,
+                    'format' : format
                     }
                 user_direction = Direction.objects.get(id=user1.id)
                 direction_data = {

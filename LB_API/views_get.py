@@ -1,5 +1,5 @@
 import os
-
+from .functions import get_image_format
 from django_backend import settings
 from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer
 from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer
@@ -12,7 +12,6 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.core.signing import Signer
 from django.shortcuts import redirect
-from PIL import Image
 import base64
 
 @api_view(['GET']) 
@@ -47,6 +46,7 @@ def obtainUser(request, token):
                     with open(img_path, 'rb') as image_file:
                         image_data = image_file.read()
                         image_base64 = base64.b64encode(image_data)
+                        format = get_image_format(img_path)
                 else:
                     image_base64 = None   
                     
@@ -54,7 +54,8 @@ def obtainUser(request, token):
                     'id': serialUser.data['id'],
                     'first_name': serialUser.data['first_name'],
                     'last_name': serialUser.data['last_name'],
-                    'user_photo': image_base64
+                    'user_photo': image_base64,
+                    'format' : format
                     }
                 # Obtén la dirección del usuario y agrégala a los datos de usuario
                 user_direction = Direction.objects.get(id=user.id)
@@ -65,7 +66,7 @@ def obtainUser(request, token):
                     'commune': user_direction.commune.id  # Ajusta esto según tus necesidades
                 }
                 user_data['direction'] = direction_data
-                return Response({'msj': 'Autenticación exitosa', 'userData': user_data}, status=status.HTTP_200_OK, content_type="image/png")
+                return Response({'msj': 'Autenticación exitosa', 'userData': user_data}, status=status.HTTP_200_OK, content_type=f"image/{format}")
             else:
                 return Response({'msj': 'El usuario no existe o la contraseña es incorrecta'}, status=status.HTTP_401_UNAUTHORIZED)
         except token1.DoesNotExist:
