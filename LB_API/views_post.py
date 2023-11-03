@@ -50,8 +50,11 @@ def book_create(request):
             image_data = data['book_img']
             if image_data.startswith("data:image"):
                 try:
-                    # Extrae la parte base64 de la cadena de datos de la imagen
-                    image_data = image_data.split(",")[1]
+                   # Extrae la parte base64 de la cadena de datos de la imagen
+                    image_parts = image_data.split(";base64,")
+                    image_format = image_parts[0].split("/")[1]
+                    image_data = image_parts[1]
+
                     # Decodifica la imagen y la guarda en el modelo Book
                     image_bytes = base64.b64decode(image_data)
                     image = Image.open(BytesIO(image_bytes))
@@ -68,8 +71,10 @@ def book_create(request):
                         created_at=datetime.now()
                     )
 
-                    book.book_img.save(f"{book.id}.png", ContentFile(image_bytes), save=True)
+                    image_filename = f"{book.id}.{image_format}"
+                    book.book_img.save(image_filename, ContentFile(image_bytes), save=True)
                     book.save()
+
 
                     book_serialized = BookSerializer(book, many=False)
 
@@ -98,8 +103,11 @@ def review_create(request):
             if image_data.startswith("data:image"):
                 try:
                     # Extrae la parte base64 de la cadena de datos de la imagen
-                    image_data = image_data.split(",")[1]
-                    # Decodifica la imagen y la guarda en el modelo Book
+                    image_parts = image_data.split(";base64,")
+                    image_format = image_parts[0].split("/")[1]
+                    image_data = image_parts[1]
+
+                    # Decodifica la imagen y la guarda en el modelo Review
                     image_bytes = base64.b64decode(image_data)
                     image = Image.open(BytesIO(image_bytes))
 
@@ -113,7 +121,9 @@ def review_create(request):
                         user=usuario
                     )
 
-                    review.review_img.save(f"{review.id}.png", ContentFile(image_bytes), save=True)
+                    # Asegúrate de utilizar la extensión correcta para el archivo de imagen
+                    review_img_filename = f"{review.id}.{image_format}"
+                    review.review_img.save(review_img_filename, ContentFile(image_bytes), save=True)
                     review.save()
 
                     reviewSerial = ReviewSerializer(review, many=False)
@@ -168,8 +178,11 @@ def create_forum(request):
             if image_data.startswith("data:image"):
                 try:
                     # Extrae la parte base64 de la cadena de datos de la imagen
-                    image_data = image_data.split(",")[1]
-                    # Decodifica la imagen y la guarda en el modelo Book
+                    image_parts = image_data.split(";base64,")
+                    image_format = image_parts[0].split("/")[1]
+                    image_data = image_parts[1]
+
+                    # Decodifica la imagen y la guarda en el modelo Forum
                     image_bytes = base64.b64decode(image_data)
                     image = Image.open(BytesIO(image_bytes))
 
@@ -181,7 +194,9 @@ def create_forum(request):
                         user=user  # Asigna al usuario que creó el foro
                     )
 
-                    forum.forum_img.save(f"{forum.id}.png", ContentFile(image_bytes), save=True)
+                    # Asegúrate de utilizar la extensión correcta para el archivo de imagen
+                    forum_img_filename = f"{forum.id}.{image_format}"
+                    forum.forum_img.save(forum_img_filename, ContentFile(image_bytes), save=True)
                     forum.save()
 
                     # Añade al usuario como miembro del foro que acaba de crear
