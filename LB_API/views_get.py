@@ -94,8 +94,13 @@ def get_all_books(request):
             book_data_list = list(
                 map(lambda book: {
                     'id': book.id,
-                    'title': book.name,
+                    'name': book.name,
+                    'price': str(book.price),
+                    'description': book.description,
                     'author': book.author,
+                    'created_at': book.created_at,
+                    'seller': sellerSerializer(book.seller).data,  # Serializa al vendedor
+                    'book_category': BookCategorySerializer(book.book_category).data,  # Serializa la categoría
                     'book_img': base64_image('media/' + str(book.book_img)),
                     'format': get_image_format('media/' + str(book.book_img))
                 }, books)
@@ -218,18 +223,16 @@ def get_user_forums(request, user_id):
         user_forums = ForumUser.objects.filter(user=user)
 
         # Serializa los datos de los foros y las categorías, y convierte las imágenes en base64
-        forum_data_list = []
-        for user_forum in user_forums:
-            forum = user_forum.forum
-            forum_data = {
-                'forum_id': forum.id,
-                'name': forum.name,
-                'created_at': forum.created_at,
-                'forum_category': ForumCategorySerializer(ForumCategory.objects.get(id=forum.forum_category_id)).data['id'],
-                'forum_img': base64_image('media/' + str(forum.forum_img)),
-                'format': get_image_format('media/' + str(forum.forum_img))
-            }
-            forum_data_list.append(forum_data)
+        forum_data_list = list(
+            map(lambda user_forum: {
+                'forum_id': user_forum.forum.id,
+                'name': user_forum.forum.name,
+                'created_at': user_forum.forum.created_at,
+                'forum_category': ForumCategorySerializer(user_forum.forum.forum_category).data['id'],
+                'forum_img': base64_image('media/' + str(user_forum.forum.forum_img)),
+                'format': get_image_format('media/' + str(user_forum.forum.forum_img))
+            }, user_forums)
+        )
 
         return Response({'UserForumsData': forum_data_list}, status=status.HTTP_200_OK)
 
