@@ -1,5 +1,5 @@
 import os
-from .functions import get_image_format
+from .functions import get_image_format, base64_image
 from django_backend import settings
 from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer
 from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer
@@ -87,12 +87,23 @@ def obtainDirection(request, user_id):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_all_books(request):
-    try:
-        books = Book.objects.all()
-        serialized_books = BookSerializer(books, many=True)    
-        return Response(serialized_books.data)
-    except Exception as e:
-        return Response({'error': f'Ha ocurrido un error: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    if request.method == 'GET':
+        try:
+            books = Book.objects.all()
+
+            book_data_list = list(
+                map(lambda book: {
+                    'id': book.id,
+                    'title': book.name,
+                    'author': book.author,
+                    'book_img': base64_image('media/' + str(book.book_img)),
+                    'format': get_image_format('media/' + str(book.book_img))
+                }, books)
+            )
+
+            return Response({'books': book_data_list}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     
 @api_view(['GET'])
@@ -105,11 +116,18 @@ def get_user_books(request):
         # Obtén todos los libros creados por el usuario
         books = Book.objects.filter(seller=user)
 
-        # Serializa los libros para convertirlos en datos JSON
-        serializer = BookSerializer(books, many=True)
+        # Serializa los libros y convierte las imágenes en base64
+        book_data_list = list(
+            map(lambda book: {
+                'id': book.id,
+                'title': book.name,
+                'author': book.author,
+                'book_img': base64_image('media/' + str(book.book_img)),
+                'format': get_image_format('media/' + str(book.book_img))
+            }, books)
+        )
 
-        # Devuelve la lista de libros en la respuesta
-        return Response(serializer.data)
+        return Response({'books': book_data_list}, status=status.HTTP_200_OK)
     except Book.DoesNotExist:
         return Response({'error': 'No se encontraron libros para este usuario.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
@@ -123,16 +141,24 @@ def get_user_reviews(request):
         # Obtén el usuario autenticado
         user = User.objects.get(email=request.user.username)
 
-        # Obtén todos los libros creados por el usuario
-        review = Review.objects.filter(user=user)
+        # Obtén todas las revisiones creadas por el usuario
+        reviews = Review.objects.filter(user=user)
 
-        # Serializa los libros para convertirlos en datos JSON
-        serializer = ReviewSerializer(review, many=True)
+        # Serializa las revisiones y convierte las imágenes en base64
+        review_data_list = list(
+            map(lambda review: {
+                'id': review.id,
+                'title': review.title,
+                'description': review.description,
+                'review_img': base64_image('media/' + str(review.review_img)),
+                'format': get_image_format('media/' + str(review.review_img))
+                # Agrega otros campos de revisión aquí según tu modelo
+            }, reviews)
+        )
 
-        # Devuelve la lista de libros en la respuesta
-        return Response(serializer.data)
-    except Book.DoesNotExist:
-        return Response({'error': 'No se encontraron libros para este usuario.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'reviews': review_data_list}, status=status.HTTP_200_OK)
+    except Review.DoesNotExist:
+        return Response({'error': 'No se encontraron revisiones para este usuario.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
@@ -160,9 +186,24 @@ def reviews_likes(request, id):
 @permission_classes([IsAuthenticated])
 def get_all_forums(request):
     try:
+        user = User.objects.get(email = request.user.username)
         forums = Forum.objects.all()
-        serialized_forums = ForumSerializer(forums, many=True)    
-        return Response({'ForumsData': serialized_forums.data})
+
+        # Serializa los foros y convierte las imágenes en base64
+        forum_data_list = list(
+            map(lambda forum: {
+                'id': forum.id,
+                'name': forum.name,
+                'created_at': forum.created_at,
+                'forum_category': ForumCategorySerializer(ForumCategory.objects.get(id=forum.forum_category_id)).data['id'],
+                'user': userSerializer(User.objects.get(id=forum.user_id)).data['id'],
+                'forum_img': base64_image('media/' + str(forum.forum_img)),
+                'format': get_image_format('media/' + str(forum.forum_img))
+                # Agrega otros campos del foro aquí según tu modelo
+            }, forums)
+        )
+
+        return Response({'ForumsData': forum_data_list}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({'error': f'Ha ocurrido un error: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
@@ -174,10 +215,21 @@ def get_user_forums(request, user_id):
         user = User.objects.get(id=user_id)
 
         # Obtén todos los foros a los que se ha unido el usuario y selecciona los campos deseados
-        user_forums = ForumUser.objects.filter(user=user).values('forum__id', 'forum__name')
+        user_forums = ForumUser.objects.filter(user=user)
 
-        # Serializa los datos de los foros
-        forum_data_list = list(user_forums)
+        # Serializa los datos de los foros y las categorías, y convierte las imágenes en base64
+        forum_data_list = []
+        for user_forum in user_forums:
+            forum = user_forum.forum
+            forum_data = {
+                'forum_id': forum.id,
+                'name': forum.name,
+                'created_at': forum.created_at,
+                'forum_category': ForumCategorySerializer(ForumCategory.objects.get(id=forum.forum_category_id)).data['id'],
+                'forum_img': base64_image('media/' + str(forum.forum_img)),
+                'format': get_image_format('media/' + str(forum.forum_img))
+            }
+            forum_data_list.append(forum_data)
 
         return Response({'UserForumsData': forum_data_list}, status=status.HTTP_200_OK)
 
@@ -195,11 +247,20 @@ def get_forums_by_category(request, category_id):
         # Obtén los foros por categoría
         forums = Forum.objects.filter(forum_category=category_id)
 
-        # Serializa los foros para convertirlos en datos JSON
-        serializer = ForumSerializer(forums, many=True)
+        # Serializa los foros y convierte las imágenes en base64
+        forum_data_list = list(
+            map(lambda forum: {
+                'forum_id': forum.id,
+                'name': forum.name,
+                'created_at': forum.created_at,
+                'forum_category': ForumCategorySerializer(ForumCategory.objects.get(id=forum.forum_category_id)).data['id'],
+                'forum_img': base64_image('media/' + str(forum.forum_img)),
+                'format': get_image_format('media/' + str(forum.forum_img))
+                # Agrega otros campos del foro aquí según tu modelo
+            }, forums)
+        )
 
-        # Devuelve la lista de foros en la respuesta
-        return Response(serializer.data)
+        return Response({'ForumsData': forum_data_list}, status=status.HTTP_200_OK)
     except Forum.DoesNotExist:
         return Response({'error': 'No se encontraron foros para esta categoría.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
