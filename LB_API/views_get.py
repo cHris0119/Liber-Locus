@@ -28,9 +28,20 @@ def getCategories(request):
 
 @api_view(['GET']) 
 def getReviews(request):
-    review = Review.objects.all()
-    reviewSerial = ReviewSerializer(review, many=True)
-    return Response(reviewSerial.data)
+    reviews = Review.objects.all()
+
+    # Serializa los datos de las revisiones y los modelos relacionados
+    review_data_list = list(
+        map(lambda review: {
+            'id': review.id,
+            'title': review.title,
+            'description': review.description,
+            'review_img': base64_image('media/' + str(review.review_img)),
+            'format': get_image_format('media/' + str(review.review_img))
+        }, reviews)
+    )
+
+    return Response(review_data_list)
 
 @api_view(['GET'])
 @csrf_exempt
