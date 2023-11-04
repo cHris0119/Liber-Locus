@@ -35,6 +35,9 @@ def getReviews(request):
         map(lambda review: {
             'id': review.id,
             'title': review.title,
+            'created_at': review.created_at,
+            'valoration': review.valoration,
+            'user': sellerSerializer(review.user).data,
             'description': review.description,
             'review_img': base64_image('media/' + str(review.review_img)),
             'format': get_image_format('media/' + str(review.review_img))
@@ -136,8 +139,13 @@ def get_user_books(request):
         book_data_list = list(
             map(lambda book: {
                 'id': book.id,
-                'title': book.name,
+                'name': book.name,
+                'price': str(book.price),
+                'description': book.description,
                 'author': book.author,
+                'created_at': book.created_at,
+                'seller': sellerSerializer(book.seller).data,  # Serializa al vendedor
+                'book_category': BookCategorySerializer(book.book_category).data,  # Serializa la categoría
                 'book_img': base64_image('media/' + str(book.book_img)),
                 'format': get_image_format('media/' + str(book.book_img))
             }, books)
@@ -165,10 +173,12 @@ def get_user_reviews(request):
             map(lambda review: {
                 'id': review.id,
                 'title': review.title,
+                'created_at': review.created_at,
+                'valoration': review.valoration,
+                'user': sellerSerializer(review.user).data,
                 'description': review.description,
                 'review_img': base64_image('media/' + str(review.review_img)),
                 'format': get_image_format('media/' + str(review.review_img))
-                # Agrega otros campos de revisión aquí según tu modelo
             }, reviews)
         )
 
@@ -212,7 +222,7 @@ def get_all_forums(request):
                 'name': forum.name,
                 'created_at': forum.created_at,
                 'forum_category': ForumCategorySerializer(ForumCategory.objects.get(id=forum.forum_category_id)).data['id'],
-                'user': userSerializer(User.objects.get(id=forum.user_id)).data['id'],
+                'user': sellerSerializer(forum.user).data,
                 'forum_img': base64_image('media/' + str(forum.forum_img)),
                 'format': get_image_format('media/' + str(forum.forum_img))
                 # Agrega otros campos del foro aquí según tu modelo
@@ -236,10 +246,11 @@ def get_user_forums(request, user_id):
         # Serializa los datos de los foros y las categorías, y convierte las imágenes en base64
         forum_data_list = list(
             map(lambda user_forum: {
-                'forum_id': user_forum.forum.id,
+                'id': user_forum.forum.id,
                 'name': user_forum.forum.name,
                 'created_at': user_forum.forum.created_at,
-                'forum_category': ForumCategorySerializer(user_forum.forum.forum_category).data['id'],
+                'forum_category': ForumCategorySerializer(ForumCategory.objects.get(id=user_forum.forum.forum_category_id)).data['id'],
+                'user': sellerSerializer(user_forum.forum.user).data,
                 'forum_img': base64_image('media/' + str(user_forum.forum.forum_img)),
                 'format': get_image_format('media/' + str(user_forum.forum.forum_img))
             }, user_forums)
