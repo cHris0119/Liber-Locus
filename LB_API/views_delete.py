@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
+import os
 
 @api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
@@ -14,10 +15,16 @@ def book_delete(request, pk):
         user = User.objects.get(email=request.user.username)
 
         if user == book.seller:
+            # Borra la imagen del libro
+            if book.book_img:
+                image_path = book.book_img.path
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+
             book.delete()
-            return Response({'message': 'Libro eliminado con éxito'})
+            return Response({'message': 'Libro y su imagen eliminados con éxito'})
         else:
-            return Response({'error': 'No tienes permiso para actualizar este libro.'}, status=status.HTTP_403_FORBIDDEN)
+            return Response({'error': 'No tienes permiso para eliminar este libro.'}, status=status.HTTP_403_FORBIDDEN)
         
     except Book.DoesNotExist:
         return Response({'error': 'El libro no existe'}, status=status.HTTP_404_NOT_FOUND)
@@ -33,13 +40,19 @@ def review_delete(request, pk):
         user = User.objects.get(email=request.user.username)
 
         if user == review.user:
+            # Borra la imagen de la reseña
+            if review.review_img:
+                image_path = review.review_img.path
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+
             review.delete()
-            return Response({'message': 'Reseña eliminada con éxito'})
+            return Response({'message': 'Reseña y su imagen eliminadas con éxito'})
         else:
             return Response({'error': 'No tienes permiso para eliminar esta reseña.'}, status=status.HTTP_403_FORBIDDEN)
         
-    except review.DoesNotExist:
-        return Response({'error': 'la reseña no existe'}, status=status.HTTP_404_NOT_FOUND)
+    except Review.DoesNotExist:
+        return Response({'error': 'La reseña no existe'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
@@ -51,8 +64,14 @@ def delete_forum(request, pk):
         user = User.objects.get(email=request.user.username)
 
         if user == forum.user:
+            # Borra la imagen del foro
+            if forum.forum_img:
+                image_path = forum.forum_img.path
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+
             forum.delete()
-            return Response({'message': 'Foro eliminado con éxito'})
+            return Response({'message': 'Foro y su imagen eliminados con éxito'})
         else:
             return Response({'error': 'No tienes permiso para eliminar este foro.'}, status=status.HTTP_403_FORBIDDEN)
         
