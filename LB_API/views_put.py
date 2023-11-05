@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User as AdminUser
 from rest_framework.authentication import TokenAuthentication
+import base64
 
 
 @api_view(['PUT'])
@@ -37,6 +38,7 @@ def editDirection(request, id):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def editUser(request, id):
+    data = request.data
     try:
         user1 = User.objects.get(id=id)
         user = AdminUser.objects.get(username=user1.email)

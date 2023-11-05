@@ -1,6 +1,11 @@
 from rest_framework import serializers
 from .models import *
 import datetime
+from django.core.files.base import ContentFile
+import base64
+import os
+from  django_backend import settings
+
 
 
 class userSerializer(serializers.ModelSerializer):
@@ -306,24 +311,61 @@ class TokenSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuthtokenToken
         fields = '__all__'
-        
+
 class editUserSerializer(serializers.ModelSerializer):
+    user_photo = serializers.CharField(write_only=True, required=False)
     
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'user_photo']
         
+    def update(self, instance, validated_data):
+        user_photo = validated_data.pop('user_photo', None)
+        if user_photo:
+            format, imgstr = user_photo.split(';base64,')
+            ext = format.split('/')[-1]
+            img = f"{instance.user_photo}"
+            ruta_completa = os.path.join(settings.MEDIA_ROOT, img)
+            print(ruta_completa)
+            if os.path.exists(ruta_completa):
+                os.remove(ruta_completa)
+                data = ContentFile(base64.b64decode(imgstr), name=f'{instance.email}.{ext}')
+            data = ContentFile(base64.b64decode(imgstr), name=f'{instance.email}.{ext}')
+            instance.user_photo.save(f'{instance.email}.{ext}', data, save=True)
+            return instance
+        else:
+            return instance
+        
 class editDirectionSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Direction
         fields = ['nombre','calle', 'numero', 'commune']
+        
+        
+    
 
 class editBooksSerializer(serializers.ModelSerializer):
-    
+    book_img = serializers.CharField(write_only=True, required=False)
     class Meta:
         model = User
         fields = ['name', 'price', 'description', 'author', 'book_img', 'book_category']
+        
+    def update(self, instance, validated_data):
+        book_img = validated_data.pop('book_img', None)
+        if book_img:
+            format, imgstr = book_img.split(';base64,')
+            ext = format.split('/')[-1]
+            img = f"{instance.book_img}"
+            ruta_completa = os.path.join(settings.MEDIA_ROOT, img)
+            print(ruta_completa)
+            if os.path.exists(ruta_completa):
+                os.remove(ruta_completa)
+            data = ContentFile(base64.b64decode(imgstr), name=f'{instance.id}.{ext}')
+            instance.user_photo.save(f'{instance.id}.{ext}', data, save=True)
+            return instance
+        else:
+            return instance
 
 class editReviewSerializer(serializers.ModelSerializer):
     class Meta:
