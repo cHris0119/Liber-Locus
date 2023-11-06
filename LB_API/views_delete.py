@@ -61,6 +61,7 @@ def review_delete(request, pk):
 def delete_forum(request, pk):
     try:
         forum = Forum.objects.get(pk=pk)
+        Fuser = ForumUser.objects.filter(forum = forum)
         user = User.objects.get(email=request.user.username)
 
         if user == forum.user:
@@ -69,7 +70,7 @@ def delete_forum(request, pk):
                 image_path = forum.forum_img.path
                 if os.path.exists(image_path):
                     os.remove(image_path)
-
+            Fuser.delete()
             forum.delete()
             return Response({'message': 'Foro y su imagen eliminados con éxito'})
         else:

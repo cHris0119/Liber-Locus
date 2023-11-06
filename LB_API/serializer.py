@@ -8,7 +8,27 @@ from  django_backend import settings
 
 
 
-
+class userSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+    
+    def update(self, instance, validated_data):
+        user_photo = validated_data.pop('user_photo', None)
+        if user_photo:
+            format, imgstr = user_photo.split(';base64,')
+            ext = format.split('/')[-1]
+            img = f"{instance.user_photo}"
+            ruta_completa = os.path.join(settings.MEDIA_ROOT, img)
+            print(ruta_completa)
+            if os.path.exists(ruta_completa):
+                os.remove(ruta_completa)
+                data = ContentFile(base64.b64decode(imgstr), name=f'{instance.email}.{ext}')
+            data = ContentFile(base64.b64decode(imgstr), name=f'{instance.email}.{ext}')
+            instance.user_photo.save(f'{instance.email}.{ext}', data, save=True)
+            return instance
+        if user_photo is None or user_photo == "":
+            return instance
         
 class roleSerializer(serializers.ModelSerializer):
     
@@ -94,6 +114,7 @@ class DirectionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ForumSerializer(serializers.ModelSerializer):
+    user = userSerializer(many=False, read_only=True)
     class Meta:
         model = Forum
         fields = '__all__'
@@ -298,27 +319,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         model = Subscription
         fields = '__all__'
         
-class userSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = '__all__'
-    
-    def update(self, instance, validated_data):
-        user_photo = validated_data.pop('user_photo', None)
-        if user_photo:
-            format, imgstr = user_photo.split(';base64,')
-            ext = format.split('/')[-1]
-            img = f"{instance.user_photo}"
-            ruta_completa = os.path.join(settings.MEDIA_ROOT, img)
-            print(ruta_completa)
-            if os.path.exists(ruta_completa):
-                os.remove(ruta_completa)
-                data = ContentFile(base64.b64decode(imgstr), name=f'{instance.email}.{ext}')
-            data = ContentFile(base64.b64decode(imgstr), name=f'{instance.email}.{ext}')
-            instance.user_photo.save(f'{instance.email}.{ext}', data, save=True)
-            return instance
-        if user_photo is None or user_photo == "":
-            return instance
+
 
 class UserRoomSerializer(serializers.ModelSerializer):
     class Meta:
