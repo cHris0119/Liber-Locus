@@ -17,6 +17,8 @@ from PIL import Image
 import base64
 from io import BytesIO
 from django.core.files.base import ContentFile
+from .functions import *
+
 
 def int_id():
     # Obtener el tiempo actual en segundos desde la época (timestamp)
@@ -75,7 +77,7 @@ def book_create(request):
                     book.book_img.save(image_filename, ContentFile(image_bytes), save=True)
                     book.save()
 
-                    imgb64 = data['book_img']               
+                    imgb64 = base64.b64encode(image_bytes) 
                     book_serialized = BookSerializer(book, many=False)
 
                     return Response({'BookData': book_serialized.data, 'img': imgb64, 'format':image_format})
@@ -127,7 +129,7 @@ def review_create(request):
                     review.save()
 
                     reviewSerial = ReviewSerializer(review, many=False)
-                    imgb64 = data['review_img']
+                    imgb64 = base64.b64encode(image_bytes)             
                     return Response({'reviewData': reviewSerial.data, 'img':imgb64, 'format':image_format})
                 except Exception as e:
                     return Response({'error': 'Error al decodificar y guardar la imagen'}, status=status.HTTP_400_BAD_REQUEST)
