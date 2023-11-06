@@ -203,10 +203,10 @@ def create_forum(request):
 
                     # Añade al usuario como miembro del foro que acaba de crear
                     ForumUser.objects.create(id=int_id(), forum=forum, user=user)
-
+                    
                     forum_serialized = ForumSerializer(forum, many=False)
-
-                    return Response({'ForumData': forum_serialized.data})
+                    imgb64 = base64.b64encode(image_bytes)          
+                    return Response({'ForumData': forum_serialized.data, 'img': imgb64, 'format':image_format})
                 except Exception as e:
                     return Response({'error': 'Error al decodificar y guardar la imagen'}, status=status.HTTP_400_BAD_REQUEST)
             else:
