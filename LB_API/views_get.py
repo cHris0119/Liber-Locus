@@ -23,28 +23,34 @@ def getCommunes(request):
 @api_view(['GET']) 
 def getCategories(request):
     category = BookCategory.objects.all()
-    categorySerial = BookCategorySerializer(category, many=True)
-    return Response(categorySerial.data)
+    if category:
+        categorySerial = BookCategorySerializer(category, many=True)
+        return Response(categorySerial.data)
+        
 
 @api_view(['GET']) 
 def getReviews(request):
     reviews = Review.objects.all()
-
+    if reviews:
     # Serializa los datos de las revisiones y los modelos relacionados
-    review_data_list = list(
-        map(lambda review: {
-            'id': review.id,
-            'title': review.title,
-            'created_at': review.created_at,
-            'valoration': review.valoration,
-            'user': sellerSerializer(review.user).data,
-            'description': review.description,
-            'review_img': base64_image('media/' + str(review.review_img)),
-            'format': get_image_format('media/' + str(review.review_img))
-        }, reviews)
-    )
+        review_data_list = list(
+            map(lambda review: {
+                'id': review.id,
+                'title': review.title,
+                'created_at': review.created_at,
+                'valoration': review.valoration,
+                'user': sellerSerializer(review.user).data,
+                'description': review.description,
+                'review_img': base64_image('media/' + str(review.review_img)),
+                'format': get_image_format('media/' + str(review.review_img))
+            }, reviews)
+        )
+        return Response(review_data_list)
+    else:
+        review_data_list = []
+        return Response(review_data_list)        
 
-    return Response(review_data_list)
+
 
 @api_view(['GET'])
 @csrf_exempt
@@ -104,23 +110,26 @@ def get_all_books(request):
     if request.method == 'GET':
         try:
             books = Book.objects.all()
+            if books:
+                book_data_list = list(
+                    map(lambda book: {
+                        'id': book.id,
+                        'name': book.name,
+                        'price': str(book.price),
+                        'description': book.description,
+                        'author': book.author,
+                        'created_at': book.created_at,
+                        'seller': sellerSerializer(book.seller).data,  # Serializa al vendedor
+                        'book_category': BookCategorySerializer(book.book_category).data,  # Serializa la categoría
+                        'book_img': base64_image('media/' + str(book.book_img)),
+                        'format': get_image_format('media/' + str(book.book_img))
+                    }, books)
+                )
 
-            book_data_list = list(
-                map(lambda book: {
-                    'id': book.id,
-                    'name': book.name,
-                    'price': str(book.price),
-                    'description': book.description,
-                    'author': book.author,
-                    'created_at': book.created_at,
-                    'seller': sellerSerializer(book.seller).data,  # Serializa al vendedor
-                    'book_category': BookCategorySerializer(book.book_category).data,  # Serializa la categoría
-                    'book_img': base64_image('media/' + str(book.book_img)),
-                    'format': get_image_format('media/' + str(book.book_img))
-                }, books)
-            )
-
-            return Response({'books': book_data_list}, status=status.HTTP_200_OK)
+                return Response({'books': book_data_list}, status=status.HTTP_200_OK)
+            else:
+                book_data_list = []
+                return Response({'books': book_data_list}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -242,21 +251,24 @@ def get_user_forums(request, user_id):
 
         # Obtén todos los foros a los que se ha unido el usuario y selecciona los campos deseados
         user_forums = ForumUser.objects.filter(user=user)
-
+        if user_forums:
         # Serializa los datos de los foros y las categorías, y convierte las imágenes en base64
-        forum_data_list = list(
-            map(lambda user_forum: {
-                'id': user_forum.forum.id,
-                'name': user_forum.forum.name,
-                'created_at': user_forum.forum.created_at,
-                'forum_category': ForumCategorySerializer(ForumCategory.objects.get(id=user_forum.forum.forum_category_id)).data['id'],
-                'user': sellerSerializer(user_forum.forum.user).data,
-                'forum_img': base64_image('media/' + str(user_forum.forum.forum_img)),
-                'format': get_image_format('media/' + str(user_forum.forum.forum_img))
-            }, user_forums)
-        )
+            forum_data_list = list(
+                map(lambda user_forum: {
+                    'id': user_forum.forum.id,
+                    'name': user_forum.forum.name,
+                    'created_at': user_forum.forum.created_at,
+                    'forum_category': ForumCategorySerializer(ForumCategory.objects.get(id=user_forum.forum.forum_category_id)).data['id'],
+                    'user': sellerSerializer(user_forum.forum.user).data,
+                    'forum_img': base64_image('media/' + str(user_forum.forum.forum_img)),
+                    'format': get_image_format('media/' + str(user_forum.forum.forum_img))
+                }, user_forums)
+            )
 
-        return Response({'UserForumsData': forum_data_list}, status=status.HTTP_200_OK)
+            return Response({'UserForumsData': forum_data_list}, status=status.HTTP_200_OK)
+        else:
+            forum_data_list = []
+            return Response({'UserForumsData': forum_data_list}, status=status.HTTP_200_OK)
 
     except User.DoesNotExist:
         return Response({'error': 'El usuario no existe.'}, status=status.HTTP_404_NOT_FOUND)
