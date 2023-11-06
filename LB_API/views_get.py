@@ -436,7 +436,7 @@ def BookQuestion(request, bookID):
 
             return Response({'Data': data}, status=status.HTTP_200_OK)
         else:
-            return Response({'msj': 'No Hay preguntas para este libro'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'Data': []}, status=status.HTTP_200_OK)
     except Book.DoesNotExist:
         return Response({'msj': 'El libro no existe'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
