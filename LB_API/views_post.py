@@ -78,7 +78,7 @@ def book_create(request):
                     imgb64 = data['book_img']               
                     book_serialized = BookSerializer(book, many=False)
 
-                    return Response({'BookData': book_serialized.data, 'img': imgb64})
+                    return Response({'BookData': book_serialized.data, 'img': imgb64, 'format':image_format})
                 except Exception as e:
                     return Response({'error': 'Error al decodificar y guardar la imagen'}, status=status.HTTP_400_BAD_REQUEST)
             else:
@@ -128,7 +128,7 @@ def review_create(request):
 
                     reviewSerial = ReviewSerializer(review, many=False)
                     imgb64 = data['review_img']
-                    return Response({'reviewData': reviewSerial.data, 'img':imgb64})
+                    return Response({'reviewData': reviewSerial.data, 'img':imgb64, 'format':image_format})
                 except Exception as e:
                     return Response({'error': 'Error al decodificar y guardar la imagen'}, status=status.HTTP_400_BAD_REQUEST)
             else:
