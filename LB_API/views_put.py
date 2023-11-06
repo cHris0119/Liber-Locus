@@ -1,4 +1,4 @@
-from .serializer import BookSerializer,  editBooksSerializer, editUserSerializer, editDirectionSerializer, ReviewSerializer, editReviewSerializer, ForumSerializer
+from .serializer import BookSerializer,  editBooksSerializer, editUserSerializer, userSerializer, editDirectionSerializer, ReviewSerializer, editReviewSerializer, ForumSerializer
 from .models import Book, BookCategory, User, Direction, Review, Forum, ForumUser, ForumCategory
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response  
@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User as AdminUser
 from rest_framework.authentication import TokenAuthentication
 import base64
+from .functions import get_image_format
+import os
 
 
 @api_view(['PUT'])
@@ -40,15 +42,15 @@ def editDirection(request, id):
 def editUser(request, id):
     data = request.data
     try:
+        usernow = User.objects.get(email = request.user.username)
         user1 = User.objects.get(id=id)
-        user = AdminUser.objects.get(username=user1.email)
-        userSerial = editUserSerializer(user1, data=request.data)
-        if user1:
-            if userSerial.is_valid():
-                userSerial.save()
-                return Response({'userData':userSerial.data}, status=status.HTTP_200_OK)
+        if user1 == usernow:
+            serialUser = userSerializer(user1, data=data, partial=True)
+            if serialUser.is_valid():
+                serialUser.save()
+                return Response({'userData':serialUser.data}, status=status.HTTP_200_OK)
             else:
-                return Response(userSerial.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(serialUser.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'error': 'El usuario no existe'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:

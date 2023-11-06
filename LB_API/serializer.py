@@ -8,11 +8,7 @@ from  django_backend import settings
 
 
 
-class userSerializer(serializers.ModelSerializer):
-  
-    class Meta:
-        model = User
-        fields = '__all__'
+
         
 class roleSerializer(serializers.ModelSerializer):
     
@@ -301,24 +297,12 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscription
         fields = '__all__'
-
-class UserRoomSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserRoom
-        fields = '__all__'
-
-class TokenSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AuthtokenToken
-        fields = '__all__'
-
-class editUserSerializer(serializers.ModelSerializer):
-    user_photo = serializers.CharField(write_only=True, required=False)
-    
+        
+class userSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'user_photo']
-        
+        fields = '__all__'
+    
     def update(self, instance, validated_data):
         user_photo = validated_data.pop('user_photo', None)
         if user_photo:
@@ -333,8 +317,26 @@ class editUserSerializer(serializers.ModelSerializer):
             data = ContentFile(base64.b64decode(imgstr), name=f'{instance.email}.{ext}')
             instance.user_photo.save(f'{instance.email}.{ext}', data, save=True)
             return instance
-        else:
+        if user_photo is None or user_photo == "":
             return instance
+
+class UserRoomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserRoom
+        fields = '__all__'
+
+class TokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AuthtokenToken
+        fields = '__all__'
+
+class editUserSerializer(serializers.ModelSerializer):
+    user_photo = serializers.CharField(required=False, write_only=True)
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'user_photo']
+        
+    
         
 class editDirectionSerializer(serializers.ModelSerializer):
 
