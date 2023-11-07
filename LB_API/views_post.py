@@ -208,6 +208,7 @@ def create_forum(request):
                     imgb64 = base64.b64encode(image_bytes)          
                     return Response({'ForumData': forum_serialized.data, 'img': imgb64, 'format':image_format})
                 except Exception as e:
+                    print(str(e))
                     return Response({'error': 'Error al decodificar y guardar la imagen'}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response({'error': 'Los datos de la imagen del foro no están en el formato correcto'}, status=status.HTTP_400_BAD_REQUEST)

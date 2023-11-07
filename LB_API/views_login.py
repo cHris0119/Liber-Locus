@@ -30,6 +30,7 @@ def registerUser(request):
             if len(passw) > 8 & validacionCE(data['password']) & validacionMAYUS(data['password']) & validacionNum(data['password']):
                 image_data = data['photo_dir']
                 try:
+                    print(1)
                     user = User.objects.create(
                         id=marca_de_tiempo,
                         first_name=data['first_name'],
@@ -42,12 +43,14 @@ def registerUser(request):
                         confirm_key=None,
                         user_photo=None
                     )
+                    print(2)
                     if image_data:
                         if image_data.startswith("data:image"):
                             image_data = image_data.split(",")[1]
                             image_bytes = base64.b64decode(image_data)
                             user.user_photo.save(f"{user.email}.png", ContentFile(image_bytes), save=True)
                             user.save()
+                            print(3)
                                 
                     if user:
                         dir = Direction.objects.create(
@@ -56,8 +59,9 @@ def registerUser(request):
                             calle=data['calle'],
                             numero=data['numero'],
                             commune=Commune.objects.get(id=data['id_com']),
-                            user_id=user.id
+                            user=user
                         )
+                        print(4)
                         send_email(user.email)
                         AdminUser.objects.create(username=data['email'], password=make_password(data['password']))
                         userSerial = userSerializer(user, many=False)
@@ -65,6 +69,7 @@ def registerUser(request):
                     else:
                         return Response({'error': 'No se pudo crear la direccion'}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
+                    print(str(e))
                     return Response({'error': 'Error al crear al usuario'}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response({'error': 'La contraseña no tiene el formato correcto'}, status=status.HTTP_400_BAD_REQUEST)
