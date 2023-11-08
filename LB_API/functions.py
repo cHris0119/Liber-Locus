@@ -14,6 +14,15 @@ def int_id():
     # Convertir la cadena formateada a un número entero
     return int(formatted_time)
 
+def intCreation(id):
+    # Obtener el tiempo actual en segundos desde la época (timestamp)
+    timestamp = int(time.time())
+    # Formatear el timestamp como DDMMSS
+    formatted_time = time.strftime("%d%H%m", time.localtime(timestamp))
+    idCreate = str(id) + formatted_time
+    return int(idCreate)
+
+
 def validacionCE(passw):
     special_characters_pattern = r'[!@#$%^&*()_+{}\[\]:;<>,.?~\\]'
     

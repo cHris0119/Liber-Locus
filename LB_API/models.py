@@ -253,14 +253,15 @@ class PostVenta(models.Model):
         unique_together = (('id', 'state_post_venta', 'branch'),)
 
 
-class PurchaseDetail(models.Model):
+class PurchaseDetail    (models.Model):
     id = models.IntegerField(primary_key=True)  # The composite primary key (id, PURCHASE_DETAIL_STATE_id) found, that is 
     purchase_date = models.DateTimeField(blank=True, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField()
     chat_room = models.ForeignKey(ChatRoom, models.DO_NOTHING, db_column='CHAT_ROOM_id')  # Field name made lowercase.
-    auction = models.ForeignKey(Auction, models.DO_NOTHING, db_column='AUCTION_id')  # Field name made lowercase.
+    auction = models.ForeignKey(Auction, models.DO_NOTHING, db_column='AUCTION_id', blank=True, null=True)  # Field name made lowercase.
     purchase_detail_state = models.ForeignKey('PurchaseDetailState', models.DO_NOTHING, db_column='PURCHASE_DETAIL_STATE_id')  # Field name made lowercase.
+    book = models.ForeignKey(Book, models.DO_NOTHING, db_column='BOOK_id', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False

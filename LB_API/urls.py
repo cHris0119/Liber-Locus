@@ -5,6 +5,7 @@ from LB_API import views_post as vpo
 from LB_API import views_delete as vd
 from LB_API import views_get as vg
 from LB_API import views_put as vpu
+from LB_API import transbank_view as tv
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -66,7 +67,12 @@ urlpatterns = [
     path('api/editUser/<int:id>/', vpu.editUser, name='editUser'), # editar usuario
     path('api/books/update/<int:pk>/', vpu.book_update, name='book_update'),  # Ruta para actualizar un libro por ID (PUT) 
     path('api/reviews/update/<int:pk>/', vpu.review_update, name='review_update'), # editar reseña
-    path('api/forums/update/<int:pk>/', vpu.update_forum, name='update_forum') # editar foro
+    path('api/forums/update/<int:pk>/', vpu.update_forum, name='update_forum'), # editar foro
+    # Url de transbank
+    path('api/transbank/iniciar_pago', tv.iniciar_pago, name='iniciar_pago'),
+    path('api/transbank/retorno/', tv.url_de_retorno, name='retorno')
+    
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
