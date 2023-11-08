@@ -70,7 +70,7 @@ urlpatterns = [
     path('api/forums/update/<int:pk>/', vpu.update_forum, name='update_forum'), # editar foro
     # Url de transbank
     path('api/transbank/iniciar_pago', tv.iniciar_pago, name='iniciar_pago'),
-    path('api/transbank/retorno/', tv.url_de_retorno, name='retorno')
+    path('api/transbank/retorno/', tv.retorno_pago, name='retorno')
     
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
