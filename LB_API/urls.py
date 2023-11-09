@@ -28,6 +28,7 @@ urlpatterns = [
     path('api/question/create/<int:bookID>/', vpo.askQuestion, name='askQuestion'), # crear una pregunta en el libro
     path('api/answer/create/<int:Q_id>/', vpo.createAnswer, name='createAnswer'), # crear respuesta en un libro
     path('api/create_subasta/<book_id>/', vpo.create_subasta, name='create_subasta'), # crear subasta
+    path('api/subastas/<int:subasta_id>/realizar_puja/', vpo.realizar_puja, name='realizar_puja'), # Realizar puja en subasta
     #Vistas con metodo DELETE
     path('api/books/delete/<int:pk>/', vd.book_delete, name='book_delete'),  # eliminar un libro
     path('api/reviews/delete/<int:pk>/', vd.review_delete, name='review_delete'), # eliminar una reseña

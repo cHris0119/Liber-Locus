@@ -1,6 +1,6 @@
 
 from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer, FollowedSerializer, FollowSerializer, QuestionSerializer, AnswerSerializer, PaymentMethodSerializer, CommentsSerializer, es_fecha_vencimiento_valida, es_cvv_valido, es_rut_valido
-from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser,Auction, Follow, Followed, Discussion, Comments, Question, Answer, PaymentMethod
+from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser,Auction, Follow, Followed, Discussion, Comments, Question, Answer, PaymentMethod, AuctionOffer
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -18,6 +18,7 @@ import base64
 from io import BytesIO
 from django.core.files.base import ContentFile
 from .functions import *
+from django.db import transaction
 
 
 def int_id():
@@ -496,6 +497,10 @@ def create_subasta(request, book_id):
             except Book.DoesNotExist:
                 return Response({'error': 'No tienes un libro con el ID especificado en el marketplace.'}, status=status.HTTP_400_BAD_REQUEST)
 
+            # Verifica si el libro ya está en una subasta
+            if book.book_state_id == 3:  # Estado "IN AUCTION"
+                return Response({'error': 'El libro ya está en una subasta.'}, status=status.HTTP_400_BAD_REQUEST)
+
             # Calcular la fecha y hora de finalización de la subasta
             duration_days = data['duration_days']
             end_datetime = datetime.now() + timedelta(days=duration_days)
@@ -515,10 +520,87 @@ def create_subasta(request, book_id):
             book.book_state_id = 3
             book.save()
 
-            return Response({'message': 'Subasta creada exitosamente.', 'subasta_id': subasta.id, 'end_datetime': end_datetime}, status=status.HTTP_200_OK)
+            # Obtén la imagen del libro y su formato en formato base64
+            book_image_path = 'media/' + str(subasta.book.book_img)
+            book_image = base64_image(book_image_path)
+            book_image_format = get_image_format(book_image_path)
+
+            # Serializa el libro actualizado
+            book_serialized = BookSerializer(book, many=False)
+
+            response_data = {
+                'message': 'Subasta creada exitosamente.',
+                'id': subasta.id,
+                'end_datetime': end_datetime,
+                'book': book_serialized.data,
+                'img': book_image,
+                'format': book_image_format,
+            }
+
+            return Response(response_data, status=status.HTTP_201_CREATED)
 
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     return Response({'error': 'Método no permitido'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-    
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def realizar_puja(request, subasta_id):
+    if request.method == 'POST':
+        data = request.data
+
+        try:
+            # Obtén al usuario autenticado (el postor)
+            postor = User.objects.get(email=request.user.username)
+
+            # Verifica si la subasta con el ID proporcionado existe
+            subasta = Auction.objects.get(id=subasta_id)
+
+            # Verifica si la subasta está disponible
+            if subasta.auction_state_id != 2:  # Asumiendo que el estado 2 significa "AVAILABLE"
+                return Response({'error': 'La subasta no está disponible para pujar.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Validación de datos de entrada
+            amount = data.get('amount', 0)
+            if not isinstance(amount, (int, float)) or amount <= 0:
+                return Response({'error': 'El monto de la puja debe ser un número positivo válido.'}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Realizar la puja dentro de una transacción
+            with transaction.atomic():
+                # Obtén la última puja realizada en esta subasta
+                try:
+                    ultima_puja = AuctionOffer.objects.filter(auction=subasta).latest('created_at')
+                    precio_minimo = ultima_puja.amount
+                except AuctionOffer.DoesNotExist:
+                    # Si no hay pujas anteriores, el precio mínimo es el precio inicial de la subasta
+                    precio_minimo = subasta.initial_price
+
+                # Verifica si la puja es mayor o igual al precio mínimo
+                if amount < precio_minimo:
+                    return Response({'error': 'El monto de la puja debe ser mayor o igual al precio mínimo.'}, status=status.HTTP_400_BAD_REQUEST)
+
+                # Actualiza la subasta con el nuevo monto de la puja
+                subasta.final_price = amount
+                subasta.save()
+
+                # Crea una nueva entrada en la tabla AuctionOffer para rastrear la puja
+                AuctionOffer.objects.create(
+                    id=int_id(),
+                    auction=subasta,
+                    user=postor,
+                    amount=amount,
+                    created_at=timezone.now()
+                )
+
+            return Response({'message': 'Puja realizada con éxito.'}, status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            return Response({'error': 'El usuario autenticado no existe.'}, status=status.HTTP_404_NOT_FOUND)
+        except Auction.DoesNotExist:
+            return Response({'error': 'La subasta especificada no existe.'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response({'error': 'Método no permitido'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
