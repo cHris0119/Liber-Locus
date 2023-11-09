@@ -1,10 +1,12 @@
-from .models import Book, User, Review, Forum, ForumUser, Discussion, Question, Auction
+from .models import Book, User, Review, Forum, ForumUser, Discussion, Question, Auction, AuctionOffer
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 import os
+from django.db import transaction
+
 
 @api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
@@ -187,16 +189,22 @@ def cancel_subasta(request, subasta_id):
         can_cancel = subasta.book.seller == user
 
         if can_cancel:
-            # Cambia el estado de la subasta a "Cancelled" (1)
-            subasta.auction_state_id = 1
-            subasta.save()
+            # Utiliza una transacción para garantizar que todas las operaciones se realicen o ninguna
+            with transaction.atomic():
+                # Encuentra y elimina todas las ofertas relacionadas con la subasta
+                auction_offers = AuctionOffer.objects.filter(auction=subasta)
+                auction_offers.delete()
 
-            # Actualiza el estado del libro a "Available" (2)
-            subasta.book.book_state_id = 2
-            subasta.book.save()
+                # Cambia el estado de la subasta a "Cancelled" (1)
+                subasta.auction_state_id = 1
+                subasta.save()
 
-            # Elimina la subasta
-            subasta.delete()
+                # Actualiza el estado del libro a "Available" (2)
+                subasta.book.book_state_id = 2
+                subasta.book.save()
+
+                # Elimina la subasta
+                subasta.delete()
 
             return Response({'message': 'Subasta cancelada y eliminada con éxito'}, status=status.HTTP_200_OK)
         else:
