@@ -1,0 +1,93 @@
+<!-- bid.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Test</title>
+</head>
+<body>
+
+<h1>WebSocket Test</h1>
+
+<div id="status">Connecting...</div>
+<div id="response"></div>
+
+<!-- Formulario para realizar una puja -->
+<form id="bidForm">
+    <label for="bidAmount">Monto de la Puja:</label>
+    <input type="number" id="bidAmount" name="amount" required>
+    <input type="hidden" id="subastaId" name="subasta_id" value="10161125"> <!-- Reemplaza con el ID de la subasta correcto -->
+    <button type="submit">Realizar Puja</button>
+</form>
+
+<script>
+    const socket = new WebSocket('ws://127.0.0.1:8000/ws/auction/10161125/');
+
+    socket.onopen = (event) => {
+        document.getElementById('status').innerHTML = 'Connected';
+    };
+
+    socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.message) {
+            document.getElementById('response').innerHTML = `Success: ${data.message}`;
+        }
+
+        if (data.error) {
+            document.getElementById('response').innerHTML = `Error: ${data.error}`;
+        }
+    };
+
+    socket.onclose = (event) => {
+        if (event.wasClean) {
+            document.getElementById('status').innerHTML = `Connection closed cleanly, code=${event.code}, reason=${event.reason}`;
+        } else {
+            document.getElementById('status').innerHTML = 'Connection died';
+        }
+    };
+
+    socket.onerror = (error) => {
+        document.getElementById('status').innerHTML = `Error: ${error.message}`;
+    };
+
+    // Manejar el envío del formulario para realizar una puja
+    document.getElementById('bidForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const bidAmount = document.getElementById('bidAmount').value;
+        const subastaId = document.getElementById('subastaId').value;
+
+        if (bidAmount !== '' && subastaId !== '') {
+            const placeBidMessage = {
+                type: 'realizar_puja',  // Cambiado de 'action' a 'type'
+                user_id: 7001147,
+                subasta_id: parseInt(subastaId),
+                amount: parseFloat(bidAmount),
+            };
+
+            // Enviar mensaje al servidor WebSocket
+            socket.send(JSON.stringify(placeBidMessage));
+        }
+    });
+
+    // Manejar eventos de la consola
+    socket.addEventListener('open', (event) => {
+        console.log('WebSocket abierto:', event);
+    });
+
+    socket.addEventListener('message', (event) => {
+        console.log('Mensaje recibido:', event);
+    });
+
+    socket.addEventListener('close', (event) => {
+        console.log('WebSocket cerrado:', event);
+    });
+
+    socket.addEventListener('error', (error) => {
+        console.error('Error en WebSocket:', error);
+    });
+</script>
+
+</body>
+</html>
