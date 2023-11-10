@@ -102,6 +102,7 @@ TEMPLATES = [
 ]
 
 
+
 WSGI_APPLICATION = 'django_backend.wsgi.application'
 
 
@@ -186,3 +187,9 @@ EMAIL_HOST_USER = os.environ.get('EMAIL')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',  # Usa este backend para desarrollo
+    },
+}

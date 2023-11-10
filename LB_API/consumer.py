@@ -3,6 +3,14 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
 from .models import ReviewLike, Review, User, Auction, AuctionOffer
 import time
+from channels.db import database_sync_to_async
+from django.contrib.auth import get_user_model
+from django.db import transaction
+from django.utils import timezone
+from asgiref.sync import sync_to_async
+from asgiref.sync import async_to_sync
+
+
 def int_id():
     # Obtener el tiempo actual en segundos desde la época (timestamp)
     timestamp = int(time.time())
@@ -71,70 +79,76 @@ class LikesConsumer(WebsocketConsumer):
         # Handle review not found error
                 pass
 
-class SubastaConsumer(AsyncWebsocketConsumer):
+# consumer.py
+from channels.generic.websocket import AsyncWebsocketConsumer
+import json
+from django.db import transaction
+from django.utils import timezone
+from .models import Auction, AuctionOffer
+from .functions import int_id
+
+class AuctionConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['subasta_id']
-        self.room_group_name = f"subasta_{self.room_name}"
-
-        try:
-            self.subasta = Auction.objects.get(id=self.room_name)
-        except Auction.DoesNotExist:
-            await self.close()
-
-        if not self.scope['user'].is_authenticated:
-            await self.close()
-
-        if self.subasta.book.seller != self.scope['user']:
-            await self.close()
-
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
-        )
-
         await self.accept()
 
     async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
+        pass
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        mensaje_tipo = data['tipo']
 
-        if mensaje_tipo == 'puja':
-            puja_monto = data['monto']
+        try:
+            subasta_id = data.get('subasta_id')
+            subasta = await self.get_subasta(subasta_id)
 
-            try:
-                nueva_puja = AuctionOffer(auction=self.subasta, amount=puja_monto, user=self.scope['user'])
-                nueva_puja.save()
-            except Exception as e:
-                await self.send(text_data=json.dumps({
-                    'tipo': 'error',
-                    'mensaje': 'Error al procesar la puja.',
-                }))
+            if not subasta:
+                await self.send(text_data=json.dumps({'error': 'La subasta no existe.'}))
                 return
 
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    'type': 'enviar_puja',
-                    'puja_id': nueva_puja.id,
-                    'monto': nueva_puja.amount,
-                    'usuario': self.scope['user'].username,
-                }
-            )
+            if subasta.auction_state_id != 2:
+                await self.send(text_data=json.dumps({'error': 'La subasta no está disponible para pujar.'}))
+                return
 
-    async def enviar_puja(self, event):
-        puja_id = event['puja_id']
-        monto = event['monto']
-        usuario = event['usuario']
+            amount = data.get('amount', 0)
 
-        await self.send(text_data=json.dumps({
-            'tipo': 'nueva_puja',
-            'puja_id': puja_id,
-            'monto': monto,
-            'usuario': usuario,
-        }))
+            if not isinstance(amount, (int, float)) or amount <= 0:
+                await self.send(text_data=json.dumps({'error': 'El monto de la puja debe ser un número positivo válido.'}))
+                return
+
+            async with transaction.atomic():
+                ultima_puja = await self.get_ultima_puja(subasta)
+                precio_minimo = ultima_puja.amount if ultima_puja else subasta.initial_price
+
+                if amount < precio_minimo:
+                    await self.send(text_data=json.dumps({'error': 'El monto de la puja debe ser mayor o igual al precio mínimo.'}))
+                    return
+
+                subasta.final_price = amount
+                subasta.save()
+
+                await self.create_puja(subasta, amount)
+
+            await self.send(text_data=json.dumps({'message': 'Puja realizada con éxito.'}))
+
+        except Auction.DoesNotExist:
+            await self.send(text_data=json.dumps({'error': 'La subasta especificada no existe.'}))
+        except Exception as e:
+            await self.send(text_data=json.dumps({'error': str(e)}))
+
+    async def get_subasta(self, subasta_id):
+        try:
+            return await Auction.objects.get(id=subasta_id)
+        except Auction.DoesNotExist:
+            return None
+
+    async def get_ultima_puja(self, subasta):
+        return await AuctionOffer.objects.filter(auction=subasta).latest('created_at')
+
+    async def create_puja(self, subasta, amount):
+        await AuctionOffer.objects.create(
+            id=int_id(),
+            auction=subasta,
+            user=self.scope['user'],
+            amount=amount,
+            created_at=timezone.now()
+        )
