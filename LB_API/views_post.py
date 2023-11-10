@@ -1,5 +1,5 @@
 
-from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer, FollowedSerializer, FollowSerializer, QuestionSerializer, AnswerSerializer, PaymentMethodSerializer, CommentsSerializer, es_fecha_vencimiento_valida, es_cvv_valido, es_rut_valido
+from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer, AuctionOfferSerializer, FollowedSerializer, FollowSerializer, QuestionSerializer, AnswerSerializer, PaymentMethodSerializer, CommentsSerializer, es_fecha_vencimiento_valida, es_cvv_valido, es_rut_valido
 from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser,Auction, Follow, Followed, Discussion, Comments, Question, Answer, PaymentMethod, AuctionOffer
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
@@ -19,6 +19,9 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 from .functions import *
 from django.db import transaction
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 
 
 def int_id():
@@ -516,6 +519,12 @@ def create_subasta(request, book_id):
                 book=book
             )
 
+            # Crea un canal único para la subasta
+            channel_layer = get_channel_layer()
+            group_name = f"auction_{subasta.id}"
+            subasta.channel_name = group_name
+            subasta.save()
+
             # Actualiza el estado del libro a "IN AUCTION" (estado 3)
             book.book_state_id = 3
             book.save()
@@ -538,6 +547,7 @@ def create_subasta(request, book_id):
             }
 
             return Response(response_data, status=status.HTTP_201_CREATED)
+            
 
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -549,58 +559,35 @@ def create_subasta(request, book_id):
 @permission_classes([IsAuthenticated])
 def realizar_puja(request, subasta_id):
     if request.method == 'POST':
-        data = request.data
+        user = request.user
+        subasta = Auction.objects.get(id=subasta_id)
+        amount = request.data.get('amount')
 
         try:
-            # Obtén al usuario autenticado (el postor)
-            postor = User.objects.get(email=request.user.username)
+            if subasta.auction_state_id != 2:
+                return Response({'error': 'La subasta no está disponible para pujar.'}, status=400)
 
-            # Verifica si la subasta con el ID proporcionado existe
-            subasta = Auction.objects.get(id=subasta_id)
+            ultima_puja = AuctionOffer.objects.filter(auction=subasta).latest('created_at')
+            precio_minimo = ultima_puja.amount if ultima_puja else subasta.initial_price
 
-            # Verifica si la subasta está disponible
-            if subasta.auction_state_id != 2:  # Asumiendo que el estado 2 significa "AVAILABLE"
-                return Response({'error': 'La subasta no está disponible para pujar.'}, status=status.HTTP_400_BAD_REQUEST)
+            if amount < precio_minimo:
+                return Response({'error': 'El monto de la puja debe ser mayor o igual al precio mínimo.'}, status=400)
 
-            # Validación de datos de entrada
-            amount = data.get('amount', 0)
-            if not isinstance(amount, (int, float)) or amount <= 0:
-                return Response({'error': 'El monto de la puja debe ser un número positivo válido.'}, status=status.HTTP_400_BAD_REQUEST)
+            subasta.final_price = amount
+            subasta.save()
 
-            # Realizar la puja dentro de una transacción
-            with transaction.atomic():
-                # Obtén la última puja realizada en esta subasta
-                try:
-                    ultima_puja = AuctionOffer.objects.filter(auction=subasta).latest('created_at')
-                    precio_minimo = ultima_puja.amount
-                except AuctionOffer.DoesNotExist:
-                    # Si no hay pujas anteriores, el precio mínimo es el precio inicial de la subasta
-                    precio_minimo = subasta.initial_price
+            auction_offer = AuctionOffer.objects.create(
+                id=int_id(),
+                auction=subasta,
+                user=user,
+                amount=amount,
+                created_at=timezone.now()
+            )
 
-                # Verifica si la puja es mayor o igual al precio mínimo
-                if amount < precio_minimo:
-                    return Response({'error': 'El monto de la puja debe ser mayor o igual al precio mínimo.'}, status=status.HTTP_400_BAD_REQUEST)
+            serializer = AuctionOfferSerializer(auction_offer)
+            return Response(serializer.data)
 
-                # Actualiza la subasta con el nuevo monto de la puja
-                subasta.final_price = amount
-                subasta.save()
-
-                # Crea una nueva entrada en la tabla AuctionOffer para rastrear la puja
-                AuctionOffer.objects.create(
-                    id=int_id(),
-                    auction=subasta,
-                    user=postor,
-                    amount=amount,
-                    created_at=timezone.now()
-                )
-
-            return Response({'message': 'Puja realizada con éxito.'}, status=status.HTTP_200_OK)
-
-        except User.DoesNotExist:
-            return Response({'error': 'El usuario autenticado no existe.'}, status=status.HTTP_404_NOT_FOUND)
         except Auction.DoesNotExist:
-            return Response({'error': 'La subasta especificada no existe.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'La subasta especificada no existe.'}, status=404)
         except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    else:
-        return Response({'error': 'Método no permitido'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            return Response({'error': str(e)}, status=500)
