@@ -14,6 +14,7 @@ import os
 from django.core.files.base import ContentFile
 from .views_post import send_email
 from .functions import validacionCE, validacionMAYUS, validacionNum, int_id, get_image_format
+
 marca_de_tiempo = int_id()
 
 

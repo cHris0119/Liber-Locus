@@ -1,0 +1,21 @@
+<!-- payment/templates/payment/mostrar_formulario.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mostrar Formulario</title>
+</head>
+<body>
+    <h1>Mostrar Formulario</h1>
+    <form method="post" action="{% url 'iniciar_pago' %}">
+        {% csrf_token %}
+        <label for="monto">Monto a pagar:</label>
+        <input type="number" step="0.01" name="monto" id="monto" required>
+        <br>
+        <label for="orden_compra">Orden de compra:</label>
+        <input type="text" name="orden_compra" id="orden_compra" required>
+        <br>
+        <button type="submit">Iniciar Pago</button>
+    </form>
+</body>
+</html>

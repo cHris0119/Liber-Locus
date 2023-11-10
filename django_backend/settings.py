@@ -88,7 +88,7 @@ ROOT_URLCONF = 'django_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'LB_API/templates/LB_API')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -169,9 +169,6 @@ CORS_ALLOWED_ORIGINS = [
 
 ASGI_APPLICATION = 'django_backend.asgi.application'
 # Ruta base del proyecto
-
-TRANSBANK_API_KEY = '579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C'
-TRANSBANK_COMMERCE_CODE = 	597020000540
 
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
