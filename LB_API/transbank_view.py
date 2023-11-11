@@ -70,3 +70,6 @@ from django.shortcuts import render
 
 def mostrar_formulario(request):
     return render(request, 'mostrar_formulario.html')
+
+def websocket(request):
+    return render(request, 'websocket.html')
