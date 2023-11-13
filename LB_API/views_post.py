@@ -53,10 +53,10 @@ def book_create(request):
             book_category = BookCategory.objects.get(id=data['book_category'])
 
             # Verifica si se proporciona una imagen en formato base64
-            image_data = data['book_img']
+            image_data = data.get('book_img', '')
             if image_data.startswith("data:image"):
                 try:
-                   # Extrae la parte base64 de la cadena de datos de la imagen
+                    # Extrae la parte base64 de la cadena de datos de la imagen
                     image_parts = image_data.split(";base64,")
                     image_format = image_parts[0].split("/")[1]
                     image_data = image_parts[1]
@@ -79,22 +79,20 @@ def book_create(request):
 
                     image_filename = f"{book.id}.{image_format}"
                     book.book_img.save(image_filename, ContentFile(image_bytes), save=True)
-                    book.save()
 
-                    imgb64 = base64.b64encode(image_bytes) 
+                    imgb64 = base64.b64encode(image_bytes).decode('utf-8')
                     book_serialized = BookSerializer(book, many=False)
 
-                    return Response({'BookData': book_serialized.data, 'img': imgb64, 'format':image_format})
+                    return Response({'BookData': book_serialized.data, 'img': imgb64, 'format': image_format})
                 except Exception as e:
-                    return Response({'error': 'Error al decodificar y guardar la imagen'}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({'error': f'Error al decodificar y guardar la imagen: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response({'error': 'Los datos de la imagen del libro no están en el formato correcto'}, status=status.HTTP_400_BAD_REQUEST)
 
         except BookCategory.DoesNotExist:
             return Response({'error': 'La categoría del libro no existe'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+            return Response({'error': f'Error al crear el libro: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
