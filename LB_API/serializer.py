@@ -74,6 +74,7 @@ class sellerSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id','first_name', 'last_name']
+
 class BookSerializer(serializers.ModelSerializer):
     book_category = BookCategorySerializer(many=False, read_only=True,)
     seller = sellerSerializer(many=False, read_only=True)
@@ -114,7 +115,7 @@ class DirectionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ForumSerializer(serializers.ModelSerializer):
-    user = userSerializer(many=False, read_only=True)
+    user = sellerSerializer(many=False, read_only=True)
     class Meta:
         model = Forum
         fields = '__all__'
@@ -348,29 +349,94 @@ class editDirectionSerializer(serializers.ModelSerializer):
         
     
 
-class editBooksSerializer(serializers.ModelSerializer):
+class EditBooksSerializer(serializers.ModelSerializer):
     book_img = serializers.CharField(write_only=True, required=False)
-    class Meta:
-        model = User
-        fields = ['name', 'price', 'description', 'author', 'book_img', 'book_category']
-        
-    def update(self, instance, validated_data):
-        book_img = validated_data.pop('book_img', None)
-        if book_img:
-            format, imgstr = book_img.split(';base64,')
-            ext = format.split('/')[-1]
-            img = f"{instance.book_img}"
-            ruta_completa = os.path.join(settings.MEDIA_ROOT, img)
-            print(ruta_completa)
-            if os.path.exists(ruta_completa):
-                os.remove(ruta_completa)
-            data = ContentFile(base64.b64decode(imgstr), name=f'{instance.id}.{ext}')
-            instance.user_photo.save(f'{instance.id}.{ext}', data, save=True)
-            return instance
-        else:
-            return instance
 
-class editReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        fields = ['id', 'name', 'price', 'description', 'created_at', 'author', 'book_img', 'book_category', 'seller']
+
+    def update(self, instance, validated_data):
+        book_img_data = validated_data.pop('book_img', None)
+
+        if book_img_data:
+            format, imgstr = book_img_data.split(';base64,')
+            ext = format.split('/')[-1]
+
+            # Elimina la imagen anterior
+            if instance.book_img:
+                instance.book_img.delete()
+
+            # Guarda la nueva imagen
+            data = ContentFile(base64.b64decode(imgstr), name=f'{instance.id}.{ext}')
+            instance.book_img.save(f'{instance.id}.{ext}', data, save=True)
+
+        # Actualiza otros campos si es necesario
+        instance.name = validated_data.get('name', instance.name)
+        instance.price = validated_data.get('price', instance.price)
+        instance.description = validated_data.get('description', instance.description)
+        instance.author = validated_data.get('author', instance.author)
+        instance.book_category = validated_data.get('book_category', instance.book_category)
+
+        instance.save()
+
+        return instance
+
+class EditReviewSerializer(serializers.ModelSerializer):
+    review_img = serializers.CharField(write_only=True, required=False)
+
     class Meta:
         model = Review
-        fields = ['title', 'description', 'valoration']
+        fields = ['id', 'title', 'created_at', 'valoration', 'description', 'review_img', 'user']
+
+    def update(self, instance, validated_data):
+        review_img = validated_data.pop('review_img', None)
+
+        # Actualiza otros campos si es necesario
+        instance.title = validated_data.get('title', instance.title)
+        instance.valoration = validated_data.get('valoration', instance.valoration)
+        instance.description = validated_data.get('description', instance.description)
+
+        if review_img:
+            format, imgstr = review_img.split(';base64,')
+            ext = format.split('/')[-1]
+
+            # Elimina la imagen anterior
+            if instance.review_img:
+                instance.review_img.delete()
+
+            # Guarda la nueva imagen
+            data = ContentFile(base64.b64decode(imgstr), name=f'{instance.id}.{ext}')
+            instance.review_img.save(f'{instance.id}.{ext}', data, save=True)
+
+        instance.save()
+        return instance
+    
+class EditForumSerializer(serializers.ModelSerializer):
+    forum_img = serializers.CharField(write_only=True, required=False)
+
+    class Meta:
+        model = Forum
+        fields = ['id', 'name', 'forum_img', 'forum_category', 'created_at', 'user']
+
+    def update(self, instance, validated_data):
+        forum_img = validated_data.pop('forum_img', None)
+
+        # Actualiza otros campos si es necesario
+        instance.name = validated_data.get('name', instance.name)
+        instance.forum_category = validated_data.get('forum_category', instance.forum_category)
+
+        if forum_img:
+            format, imgstr = forum_img.split(';base64,')
+            ext = format.split('/')[-1]
+
+            # Elimina la imagen anterior
+            if instance.forum_img:
+                instance.forum_img.delete()
+
+            # Guarda la nueva imagen
+            data = ContentFile(base64.b64decode(imgstr), name=f'{instance.id}.{ext}')
+            instance.forum_img.save(f'{instance.id}.{ext}', data, save=True)
+
+        instance.save()
+        return instance
