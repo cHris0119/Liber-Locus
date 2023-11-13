@@ -83,50 +83,86 @@ class LikesConsumer(WebsocketConsumer):
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
-from .models import Auction, AuctionOffer
+from .models import Auction, AuctionOffer, Notification
 from django.utils import timezone
 
 class AuctionConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        self.auction = self.scope['url_route']['kwargs']['auction_id']
+        self.auction_group_name = 'auction_%s' % self.auction
+        
+        await self.channel_layer.group_add(
+            self.auction_group_name,
+            self.channel_name
+        )
+        
         await self.accept()
-
+        
+        subasta = await self.get_subasta(self.auction)
+        await self.channel_layer.group_send(
+            self.auction_group_name,
+                {
+                    'type': 'send_price_update',
+                    'message': int(subasta.final_price),
+                }
+            )
+        
+        
     async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(            
+            self.auction_group_name,
+            self.channel_name
+        )
         pass
 
     async def receive(self, text_data):
         data = json.loads(text_data)
         try:
-            subasta_id = data.get('subasta_id')
-            subasta = await self.get_subasta(subasta_id)
-
-            if not subasta:
-                await self.send(text_data=json.dumps({'error': 'La subasta no existe.'}))
-                return
-
-            if subasta.auction_state_id != 2:
-                await self.send(text_data=json.dumps({'error': 'La subasta no está disponible para pujar.'}))
-                return
-
-            amount = data.get('amount', 0)
-
-            if not isinstance(amount, (int, float)) or amount <= 0:
-                await self.send(text_data=json.dumps({'error': 'El monto de la puja debe ser un número positivo válido.'}))
-                return
             
-            if subasta.final_price is None:
-                if subasta.initial_price is not None and subasta.initial_price >= amount:
-                    await self.send(text_data=json.dumps({'error': 'El monto de la puja debe ser mayor a la actual.'}))
+
+            if data['type'] == 'Sell':
+                puja = await self.get_ultima_puja(subasta)
+                if puja:
+                    user_email = data.get('user_email')                     
+                    
+                
+            if data['type'] == 'Pujar':
+                subasta_id = data.get('subasta_id')
+                user_email = data.get('user_email')
+                amount = data.get('amount', 0)
+                await self.alter_subasta(amount, subasta_id)
+                subasta = await self.get_subasta(subasta_id)
+                user = await self.get_user(user_email)
+                if not subasta:
+                    await self.send(text_data=json.dumps({'error': 'La subasta no existe.'}))
                     return
-            else:
-                if subasta.final_price is not None and subasta.final_price >= amount:
-                    await self.send(text_data=json.dumps({'error': 'El monto de la puja debe ser mayor a la actual.'}))
+
+                if subasta.auction_state_id != 2:
+                    await self.send(text_data=json.dumps({'error': 'La subasta no está disponible para pujar.'}))
+                    return
+
+                if not isinstance(amount, (int, float)) or amount <= 0:
+                    await self.send(text_data=json.dumps({'error': 'El monto de la puja debe ser un número positivo válido.'}))
                     return
             
-            await self.create_puja(subasta, amount)
+                if subasta.final_price is None:
+                    if subasta.initial_price is not None and subasta.initial_price >= amount:
+                        await self.send(text_data=json.dumps({'error': 'El monto de la puja debe ser mayor a la actual.'}))
+                        return
+                else:
+                    if subasta.final_price is not None and subasta.final_price >= amount:
+                        await self.send(text_data=json.dumps({'error': 'El monto de la puja debe ser mayor a la actual.'}))
+                        return
             
-            await self.alter_subasta(amount, subasta_id)
+                await self.create_puja(subasta, amount, user)
 
-            await self.send(text_data=json.dumps({'message': int(subasta.final_price)}))
+                await self.channel_layer.group_send(
+                    self.auction_group_name,
+                    {
+                        'type': 'send_price_update',
+                        'message': int(subasta.final_price),
+                    }
+                )
 
         except Auction.DoesNotExist:
             await self.send(text_data=json.dumps({'error': 'La subasta especificada no existe.'}))
@@ -139,6 +175,13 @@ class AuctionConsumer(AsyncWebsocketConsumer):
             return Auction.objects.get(id=subasta_id)
         except Auction.DoesNotExist:
             return None
+    @database_sync_to_async
+    def get_user(self, user_email):    
+        try:
+            return User.objects.get(email = user_email)
+        except:
+            return None
+            
     @database_sync_to_async
     def alter_subasta(self, amount, subasta_id):
         try:
@@ -153,14 +196,23 @@ class AuctionConsumer(AsyncWebsocketConsumer):
         return AuctionOffer.objects.filter(auction=subasta).latest('created_at')
 
     @database_sync_to_async
-    def create_puja(self, subasta, amount):
-        us = User.objects.get(id =7191112)
+    def create_puja(self, subasta, amount, user):
         
         AuctionOffer.objects.create(
                     id=int_id(),
                     auction=subasta,
-                    user=us,
+                    user=user,
                     amount=amount,
                     created_at=timezone.now()
                 )
-        
+    @database_sync_to_async
+    def create_notification(self, user, message):
+        Notification.objects.create(
+            id=int_id(),
+            message=message,
+            created_at=timezone.now(),
+            is_read='no',
+            user=user
+        )
+    async def send_price_update(self, event):
+            await self.send(text_data=json.dumps({'message': event['message']}))

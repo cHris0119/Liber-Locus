@@ -26,13 +26,13 @@ def iniciar_pago(request):
         
         tx = Transaction(WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST))
         resp = tx.create(buy_order, session_id,  amount, return_url)
-        return redirect('{}/{}'.format(resp['url'], resp['token']))
+        return Response({'url': resp['url'], 'token':resp['token']})
     except Exception as e:
         return Response({'error': str(e)})
 
 
 @api_view(['GET'])
-def retorno_pago(request):
+def retorno_pago(request): 
     pdetail = PurchaseDetailState.objects.get(id = 2)
     token = request.GET['token_ws']
     tx = Transaction(WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST))

@@ -32,6 +32,16 @@
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
 
+        if (data.type === 'Pujar') {
+            // Mostrar los datos específicos del mensaje de "Pujar"
+            document.getElementById('puja').innerHTML = `
+                <p>Mensaje de Puja:</p>
+                <p>Usuario: ${data.user_email}</p>
+                <p>ID de Subasta: ${data.subasta_id}</p>
+                <p>Monto: ${data.amount}</p>
+            `;
+        }
+
         if (data.message) {
             document.getElementById('response').innerHTML = `Success: ${data.message}`;
         }
@@ -61,8 +71,8 @@
 
         if (bidAmount !== '' && subastaId !== '') {
             const placeBidMessage = {
-                type: 'realizar_puja',  // Cambiado de 'action' a 'type'
-                user_id: 7001147,
+                type: 'Pujar',  // Cambiado de 'action' a 'type'
+                user_email: 'artur.cisterna@gmail.com',
                 subasta_id: parseInt(subastaId),
                 amount: parseFloat(bidAmount),
             };
