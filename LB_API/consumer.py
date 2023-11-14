@@ -1,8 +1,9 @@
 
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
-from .models import ReviewLike, Review, User, Auction, AuctionOffer
-import time
+from .models import ReviewLike, Review, User, Auction, AuctionOffer, ChatRoom, UserRoom, Message
+from .functions import int_id
+from datetime import datetime
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 from django.db import transaction
@@ -10,14 +11,6 @@ from django.utils import timezone
 from asgiref.sync import sync_to_async
 from asgiref.sync import async_to_sync
 
-
-def int_id():
-    # Obtener el tiempo actual en segundos desde la época (timestamp)
-    timestamp = int(time.time())
-    # Formatear el timestamp como DDMMSS
-    formatted_time = time.strftime("%d%H%m%S", time.localtime(timestamp))
-    # Convertir la cadena formateada a un número entero
-    return int(formatted_time)
 
 class LikesConsumer(WebsocketConsumer):
     def connect(self):
@@ -146,11 +139,11 @@ class AuctionConsumer(AsyncWebsocketConsumer):
                     return
             
                 if subasta.final_price is None:
-                    if subasta.initial_price is not None and subasta.initial_price >= amount:
+                    if  subasta.initial_price >= amount:
                         await self.send(text_data=json.dumps({'error': 'El monto de la puja debe ser mayor a la actual.'}))
                         return
                 else:
-                    if subasta.final_price is not None and subasta.final_price >= amount:
+                    if subasta.final_price >= amount:
                         await self.send(text_data=json.dumps({'error': 'El monto de la puja debe ser mayor a la actual.'}))
                         return
             
@@ -216,3 +209,130 @@ class AuctionConsumer(AsyncWebsocketConsumer):
         )
     async def send_price_update(self, event):
             await self.send(text_data=json.dumps({'message': event['message']}))
+            
+            
+            
+class ChatRoom(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.chat = self.scope['url_route']['kwargs']['chatroom_id']
+        self.chat_group_name = 'chatroom_%s' % self.chat
+        
+        user = await self.get_user()
+        
+        if await self.user_chatroom == False:
+            self.close()
+            
+        await self.channel_layer.group_add(
+            self.chat_group_name,
+            self.channel_name
+        )
+        
+        await self.accept()    
+        chat = await self.get_chatroom(self.chat)
+        
+        messages = await self.get_messages(chat)
+        for message in messages:
+            await self.send(text_data=json.dumps({
+                'type': 'chat.message',
+                'message': message.content,
+                'username': message.user.email,
+                'timestamp': message.created_at.isoformat(),
+            }))
+        
+        
+        
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(            
+            self.auction_group_name,
+            self.channel_name
+        )
+        pass
+    
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        content = data['message']
+        user1 = self.scope['user']
+        user = User.objects.get(email = user1.username)
+        chat = await self.get_chatroom(self.chat)
+        
+        # Agrega el mensaje a la base de datos
+        await self.add_message(chat, user, content)
+        
+        await self.channel_layer.group_send(
+            self.chat_group_name,
+            {
+                'type': 'chat.message',
+                'message': content,
+                'username': user.email,
+                'timestamp': datetime.now().isoformat(),
+            }
+        )
+        
+        async def chat_message(self, event):
+        # Envía el mensaje al WebSocket del usuario
+            await self.send(text_data=json.dumps({
+                'type': 'chat.message',
+                'message': event['message'],
+                'username': event['username'],
+                'timestamp': event['timestamp'],
+            }))
+        
+        
+    @database_sync_to_async
+    def user_chatroom(self, user, chatroom_id):
+        try:
+            user = User.objects.get(email=user)
+            chat = ChatRoom.objects.get(id = chatroom_id)
+            userroom = UserRoom.objects.filter(user=user, chat_room=chat).exists()
+            if userroom:
+                return True
+            else: 
+                return False            
+        except:
+            return None
+        
+    @database_sync_to_async  
+    def get_chatroom(chatroom_id):
+        try:
+            chat = ChatRoom.objects.get(id = chatroom_id)
+            return chat
+        except Exception as e:
+            return None
+        
+    @database_sync_to_async   
+    def get_user_chat(user, chatroom):
+        try:
+            useroom = UserRoom.objects.get(user = user)
+            chat = UserRoom.objects.get(chat_room=chatroom)
+            if useroom and chat:
+                if chatroom.id == chat.id:
+                    return True
+                else:
+                    return False            
+        except Exception as e:
+            return None 
+           
+    @database_sync_to_async        
+    def add_message(chatroom, user, content):
+        try:
+            Message.objects.create(
+                id = int_id(),
+                content = content,
+                created_at=datetime.now(),
+                user=user,
+                chat_room=chatroom
+            )
+            return content   
+        except:
+            return None
+        
+    @database_sync_to_async
+    def get_messages(self, chatroom):
+        try:
+            messages = Message.objects.filter(chat_room = chatroom)
+            return messages
+        except:
+            return None
+            
+        
+        

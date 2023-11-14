@@ -6,7 +6,7 @@ from transbank.webpay.webpay_plus.transaction import Transaction
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated
-from .models import PurchaseDetail, PurchaseDetailState, User, ChatRoom, Book
+from .models import PurchaseDetail, PurchaseDetailState, User, ChatRoom, Book, UserRoom
 from .functions import int_id, intCreation
 from rest_framework import status
 from rest_framework.parsers import FormParser
@@ -21,7 +21,7 @@ def iniciar_pago(request):
         amount = request.data.get('monto')
         buy_order = str(request.data.get('orden_compra'))
         return_url = 'http://127.0.0.1:8000/LB_API/api/transbank/retorno/'
-        session_id = "sessionid"
+        session_id = request.data.get('user_id')
         
         tx = Transaction(WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST))
         resp = tx.create(buy_order, session_id,  amount, return_url)
@@ -38,21 +38,32 @@ def retorno_pago(request):
     if response.get('status') == 'AUTHORIZED':
         
         try:
-            # book = Book.objects.get(id = response.get('buy_order'))
-            # chatroom = ChatRoom.objects.create(
-            #     id = int(response.get('buy_order')),
-            #     book = book     
-            # )
-            # purchase = PurchaseDetail.objects.create(
-            #     id = response.get('buy_order'),
-            #     purchase_date=datetime.now(),
-            #     amount=response.get('amount'),
-            #     created_at=datetime.now(),
-            #     chat_room=chatroom,
-            #     auction=None,
-            #     purchase_detail_state=pdetail,
-            #     book=book
-            # )
+            book = Book.objects.get(id = response.get('buy_order'))
+            user = User.objects.get(id = response.get('user_id'))
+            chatroom = ChatRoom.objects.create(
+                id = int(response.get('buy_order')),
+                book = book     
+            )
+            userRoom = UserRoom.objects.create(
+                id = int(response.get('buy_order')),
+                user= user,
+                chat_room=chatroom
+            )
+            userroom1 = UserRoom.objects.create(
+                id = book.seller.id,
+                user= book.seller,
+                chat_room=chatroom
+            )    
+            purchase = PurchaseDetail.objects.create(
+                id = response.get('buy_order'),
+                purchase_date=datetime.now(),
+                amount=response.get('amount'),
+                created_at=datetime.now(),
+                chat_room=chatroom,
+                auction=None,
+                purchase_detail_state=pdetail,
+                book=book
+            )
             return redirect('http://localhost:5173/detalleEnvio/correct')
         except Exception as e:
             return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
