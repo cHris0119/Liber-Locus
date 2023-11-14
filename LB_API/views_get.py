@@ -1,7 +1,7 @@
 import os
 from .functions import get_image_format, base64_image
 from django_backend import settings
-from .serializer import CommuneSerializer, buyerSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer
+from .serializer import CommuneSerializer, BookStateSerializer, buyerSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer
 from .models import Commune, BookCategory, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -122,6 +122,7 @@ def get_all_books(request):
                         'created_at': book.created_at,
                         'seller': sellerSerializer(book.seller).data,  # Serializa al vendedor
                         'book_category': BookCategorySerializer(book.book_category).data,  # Serializa la categoría
+                        'book_state': BookStateSerializer(book.book_state).data,
                         'book_img': base64_image('media/' + str(book.book_img)),
                         'format': get_image_format('media/' + str(book.book_img))
                     }, books)
@@ -156,6 +157,7 @@ def get_user_books(request):
                 'created_at': book.created_at,
                 'seller': sellerSerializer(book.seller).data,  # Serializa al vendedor
                 'book_category': BookCategorySerializer(book.book_category).data,  # Serializa la categoría
+                'book_state': BookStateSerializer(book.book_state).data,
                 'book_img': base64_image('media/' + str(book.book_img)),
                 'format': get_image_format('media/' + str(book.book_img))
             }, books)
