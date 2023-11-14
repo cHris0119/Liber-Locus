@@ -62,6 +62,7 @@ def obtainUser(request, token):
             if user:
                 serialUser = userSerializer(user, many=False)
                 img_path = 'media/' + str(user.user_photo)
+                format = None
                 if os.path.exists(img_path):
                     with open(img_path, 'rb') as image_file:
                         image_data = image_file.read()

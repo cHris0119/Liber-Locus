@@ -21,13 +21,13 @@ def iniciar_pago(request):
         amount = request.data.get('monto')
         buy_order = str(request.data.get('orden_compra'))
         return_url = 'http://127.0.0.1:8000/LB_API/api/transbank/retorno/'
-        session_id = request.data.get('user_id')
+        session_id = str(request.data.get('user_id'))
         
         tx = Transaction(WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST))
         resp = tx.create(buy_order, session_id,  amount, return_url)
         return Response({'url': resp['url'], 'token':resp['token']})
     except Exception as e:
-        return Response({'error': str(e)})
+        return Response({'errorIniciar': str(e)})
 
 @api_view(['GET'])
 def retorno_pago(request): 
@@ -39,7 +39,7 @@ def retorno_pago(request):
         
         try:
             book = Book.objects.get(id = response.get('buy_order'))
-            user = User.objects.get(id = response.get('user_id'))
+            user = User.objects.get(id = response.get('session_id'))
             chatroom = ChatRoom.objects.create(
                 id = int(response.get('buy_order')),
                 book = book     
@@ -66,7 +66,7 @@ def retorno_pago(request):
             )
             return redirect('http://localhost:5173/detalleEnvio/correct')
         except Exception as e:
-            return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'errorRetorno': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         # La transacción fue rechazada
         return Response({'message': 'La transacción fue rechazada'})
