@@ -253,7 +253,7 @@ class PostVenta(models.Model):
         unique_together = (('id', 'state_post_venta', 'branch'),)
 
 
-class PurchaseDetail    (models.Model):
+class PurchaseDetail(models.Model):
     id = models.IntegerField(primary_key=True)  # The composite primary key (id, PURCHASE_DETAIL_STATE_id) found, that is 
     purchase_date = models.DateTimeField(blank=True, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)

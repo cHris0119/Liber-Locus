@@ -63,6 +63,8 @@ urlpatterns = [
     path('api/discussions/<int:discussion_id>/', vg.get_discussion_by_id, name='get_discussion_by_id'), # Obtener discusiones/hilos por el ID
     path('api/discussions/<int:discussion_id>/comments/', vg.get_comments, name='get_comments'), #Obtener todos los comentarios dentro de un hilo/discusion
     path('media/<path:path>', vg.getimage, name='getimage'),
+    path('api/mis_compras/', vg.get_my_purchases, name='get_my_purchases'), #Obtener las compras del individuo
+    path('api/mis_ventas/', vg.get_my_sales, name='get_my_sales'), #Obtener las ventas del individuo
     # Vistas con metodo PUT
     path('api/editDirection/<int:id>/', vpu.editDirection, name='editDirection'), # editar direccion
     path('api/editUser/<int:id>/', vpu.editUser, name='editUser'), # editar usuario

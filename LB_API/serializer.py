@@ -75,6 +75,12 @@ class sellerSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id','first_name', 'last_name']
 
+class buyerSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = User
+        fields = ['id','first_name', 'last_name']
+
 class BookSerializer(serializers.ModelSerializer):
     book_category = BookCategorySerializer(many=False, read_only=True,)
     seller = sellerSerializer(many=False, read_only=True)

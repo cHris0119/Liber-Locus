@@ -1,8 +1,8 @@
 import os
 from .functions import get_image_format, base64_image
 from django_backend import settings
-from .serializer import CommuneSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer
-from .models import Commune, BookCategory, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer
+from .serializer import CommuneSerializer, buyerSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer
+from .models import Commune, BookCategory, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -505,3 +505,69 @@ def getimage(request, path):
             return Response(image_file.read(), content_type='image/jpeg')  # Ajusta el tipo MIME según el tipo de imagen
 
     return Response(status=404)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_my_purchases(request):
+    try:
+        # Obtén el usuario autenticado
+        user = User.objects.get(email=request.user.username)
+
+        # Obtén todas las compras realizadas por el usuario a través de la sala de chat
+        purchases = PurchaseDetail.objects.filter(
+            chat_room__userroom__user=user  # Aseguramos que el vendedor del libro sea el usuario actual
+        )
+
+        # Serializa las compras y obtén los datos necesarios
+        purchase_data_list = list(
+            map(lambda purchase: {
+                'id': purchase.id,
+                'fecha_compra': purchase.purchase_date,
+                'monto_con_envio': str(purchase.amount),
+                'nombre_libro': purchase.book.name,
+                'precio_del_libro': str(purchase.book.price),
+                'comprador': buyerSerializer(purchase.chat_room.userroom_set.first().user).data if purchase.chat_room.userroom_set.exists() else None,
+                'vendedor': sellerSerializer(purchase.book.seller).data,
+                'estado_libro': purchase.purchase_detail_state.state,
+                'id_chat': purchase.chat_room.id,
+            }, purchases)
+        )
+
+        return Response({'mis_compras': purchase_data_list}, status=status.HTTP_200_OK)
+    except PurchaseDetail.DoesNotExist:
+        return Response({'error': 'No se encontraron compras para este usuario.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_my_sales(request):
+    try:
+        # Obtén el usuario autenticado
+        user = User.objects.get(email=request.user.username)
+
+        # Obtén todas las ventas realizadas por el usuario como vendedor
+        sales = PurchaseDetail.objects.filter(
+            book__seller=user  # Aseguramos que el vendedor del libro sea el usuario actual
+        )
+
+        # Serializa las ventas y obtén los datos necesarios
+        sale_data_list = list(
+            map(lambda sale: {
+                'id': sale.id,
+                'fecha_venta': sale.purchase_date,
+                'monto_con_envio': str(sale.amount),
+                'nombre_libro': sale.book.name,
+                'precio_del_libro': str(sale.book.price),
+                'vendedor': sellerSerializer(sale.book.seller).data,
+                'comprador': buyerSerializer(sale.chat_room.userroom_set.first().user).data if sale.chat_room.userroom_set.exists() else None,
+                'estado_libro': sale.purchase_detail_state.state,
+                'id_chat': sale.chat_room.id,
+            }, sales)
+        )
+
+        return Response({'mis_ventas': sale_data_list}, status=status.HTTP_200_OK)
+    except PurchaseDetail.DoesNotExist:
+        return Response({'error': 'No se encontraron ventas para este usuario.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
