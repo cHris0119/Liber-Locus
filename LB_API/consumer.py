@@ -219,7 +219,7 @@ class ChatRoom(AsyncWebsocketConsumer):
         
         user = await self.get_user()
         
-        if await self.user_chatroom == False:
+        if not self.user_chatroom == False:
             self.close()
             
         await self.channel_layer.group_add(
@@ -243,7 +243,7 @@ class ChatRoom(AsyncWebsocketConsumer):
         
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(            
-            self.auction_group_name,
+            self.chat_group_name,
             self.channel_name
         )
         pass
