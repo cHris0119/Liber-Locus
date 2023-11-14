@@ -1,4 +1,4 @@
-from .serializer import BookSerializer, ForumCategorySerializer, EditForumSerializer, EditReviewSerializer, BookCategorySerializer , EditBooksSerializer, sellerSerializer, userSerializer, editDirectionSerializer, ReviewSerializer, ForumSerializer
+from .serializer import BookSerializer, EditUserSerializer, ForumCategorySerializer, EditForumSerializer, EditReviewSerializer, BookCategorySerializer , EditBooksSerializer, sellerSerializer, userSerializer, editDirectionSerializer, ReviewSerializer, ForumSerializer
 from .models import Book, BookCategory, User, Direction, Review, Forum, ForumUser, ForumCategory
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response  
@@ -41,15 +41,25 @@ def editDirection(request, id):
 def editUser(request, id):
     data = request.data
     try:
-        usernow = User.objects.get(email = request.user.username)
+        usernow = User.objects.get(email=request.user.username)
         user1 = User.objects.get(id=id)
         if user1 == usernow:
-            serialUser = userSerializer(user1, data=data, partial=True)
-            if serialUser.is_valid():
-                serialUser.save()
-                return Response({'userData':serialUser.data}, status=status.HTTP_200_OK)
+            serializer = EditUserSerializer(user1, data=data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+
+                # Personaliza la respuesta para incluir información adicional
+                response_data = {
+                    'id': user1.id,
+                    'first_name': serializer.data['first_name'],
+                    'last_name': serializer.data['last_name'],
+                    'user_photo': base64_image(f'media/{user1.user_photo}'),
+                    'format': get_image_format(f'media/{user1.user_photo}'),
+                }
+
+                return Response({'userData': response_data}, status=status.HTTP_200_OK)
             else:
-                return Response(serialUser.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'error': 'El usuario no existe'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:

@@ -531,6 +531,8 @@ def get_my_purchases(request):
                 'vendedor': sellerSerializer(purchase.book.seller).data,
                 'estado_libro': purchase.purchase_detail_state.state,
                 'id_chat': purchase.chat_room.id,
+                'book_img': base64_image('media/' + str(purchase.book.book_img)),
+                'format': get_image_format('media/' + str(purchase.book.book_img))
             }, purchases)
         )
 
@@ -564,6 +566,8 @@ def get_my_sales(request):
                 'comprador': buyerSerializer(sale.chat_room.userroom_set.first().user).data if sale.chat_room.userroom_set.exists() else None,
                 'estado_libro': sale.purchase_detail_state.state,
                 'id_chat': sale.chat_room.id,
+                'book_img': base64_image('media/' + str(sale.book.book_img)),
+                'format': get_image_format('media/' + str(sale.book.book_img))
             }, sales)
         )
 

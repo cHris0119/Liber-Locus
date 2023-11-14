@@ -338,12 +338,40 @@ class TokenSerializer(serializers.ModelSerializer):
         model = AuthtokenToken
         fields = '__all__'
 
-class editUserSerializer(serializers.ModelSerializer):
+# serializers.py
+
+from rest_framework import serializers
+from .models import User
+
+class EditUserSerializer(serializers.ModelSerializer):
     user_photo = serializers.CharField(required=False, write_only=True)
+
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'user_photo']
-        
+
+    def update(self, instance, validated_data):
+        user_photo = validated_data.pop('user_photo', None)
+
+        # Actualiza otros campos si es necesario
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+
+        if user_photo:
+            format, imgstr = user_photo.split(';base64,')
+            ext = format.split('/')[-1]
+
+            # Elimina la imagen anterior
+            if instance.user_photo:
+                instance.user_photo.delete()
+
+            # Guarda la nueva imagen
+            data = ContentFile(base64.b64decode(imgstr), name=f'{instance.id}.{ext}')
+            instance.user_photo.save(f'{instance.id}.{ext}', data, save=True)
+
+        instance.save()
+        return instance
+
     
         
 class editDirectionSerializer(serializers.ModelSerializer):
