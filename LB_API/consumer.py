@@ -216,11 +216,12 @@ class ChatRoom(AsyncWebsocketConsumer):
     async def connect(self):
         self.chat = self.scope['url_route']['kwargs']['chatroom_id']
         self.chat_group_name = 'chatroom_%s' % self.chat
+        user_email = self.scope.get('user').username
+        user = await self.get_user(user_email)
         
-        user = await self.get_user()
         
-        if not self.user_chatroom == False:
-            self.close()
+        if await self.user_chatroom(user, self.chat) == False:
+            await self.close()
             
         await self.channel_layer.group_add(
             self.chat_group_name,
@@ -228,17 +229,12 @@ class ChatRoom(AsyncWebsocketConsumer):
         )
         
         await self.accept()    
+        
         chat = await self.get_chatroom(self.chat)
-        
-        messages = await self.get_messages(chat)
-        for message in messages:
-            await self.send(text_data=json.dumps({
-                'type': 'chat.message',
-                'message': message.content,
-                'username': message.user.email,
-                'timestamp': message.created_at.isoformat(),
-            }))
-        
+        messages_data = await self.get_messages_data(chat)
+
+        # Envía todos los mensajes al conectar
+        await self.send(text_data=json.dumps(messages_data))
         
         
     async def disconnect(self, close_code):
@@ -246,13 +242,13 @@ class ChatRoom(AsyncWebsocketConsumer):
             self.chat_group_name,
             self.channel_name
         )
-        pass
+        
     
     async def receive(self, text_data):
         data = json.loads(text_data)
         content = data['message']
-        user1 = self.scope['user']
-        user = User.objects.get(email = user1.username)
+        user_email = self.scope.get('user').username
+        user = await self.get_user(user_email)
         chat = await self.get_chatroom(self.chat)
         
         # Agrega el mensaje a la base de datos
@@ -261,22 +257,37 @@ class ChatRoom(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.chat_group_name,
             {
-                'type': 'chat.message',
+                'type': 'chat_message',
                 'message': content,
                 'username': user.email,
                 'timestamp': datetime.now().isoformat(),
             }
         )
         
-        async def chat_message(self, event):
+    async def chat_message(self, event):
         # Envía el mensaje al WebSocket del usuario
-            await self.send(text_data=json.dumps({
-                'type': 'chat.message',
-                'message': event['message'],
-                'username': event['username'],
-                'timestamp': event['timestamp'],
-            }))
+        await self.send(text_data=json.dumps({
+            'type': 'chat_message',
+            'message': event['message'],
+            'username': event['username'],
+            'timestamp': event['timestamp'],
+        }))
         
+    async def get_messages_data(self, chatroom):
+        try:
+            messages = await self.get_messages(chatroom)
+            messages_data = [
+                {
+                    'type': 'chat_message',
+                    'message': message.content,
+                    'username': message.user.email,
+                    'timestamp': message.created_at.isoformat(),
+                }
+                for message in messages
+            ]
+            return messages_data
+        except:
+            return None 
         
     @database_sync_to_async
     def user_chatroom(self, user, chatroom_id):
@@ -292,7 +303,7 @@ class ChatRoom(AsyncWebsocketConsumer):
             return None
         
     @database_sync_to_async  
-    def get_chatroom(chatroom_id):
+    def get_chatroom(self, chatroom_id):
         try:
             chat = ChatRoom.objects.get(id = chatroom_id)
             return chat
@@ -300,7 +311,7 @@ class ChatRoom(AsyncWebsocketConsumer):
             return None
         
     @database_sync_to_async   
-    def get_user_chat(user, chatroom):
+    def get_user_chat(self, user, chatroom):
         try:
             useroom = UserRoom.objects.get(user = user)
             chat = UserRoom.objects.get(chat_room=chatroom)
@@ -313,7 +324,7 @@ class ChatRoom(AsyncWebsocketConsumer):
             return None 
            
     @database_sync_to_async        
-    def add_message(chatroom, user, content):
+    def add_message(self, chatroom, user, content):
         try:
             Message.objects.create(
                 id = int_id(),
@@ -334,5 +345,11 @@ class ChatRoom(AsyncWebsocketConsumer):
         except:
             return None
             
+    @database_sync_to_async
+    def get_user(self, email):
+        try:
+            return User.objects.get(email=email)
+        except:
+            return None
         
         
