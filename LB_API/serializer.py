@@ -280,9 +280,13 @@ class PostVentaSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class PurchaseDetailSerializer(serializers.ModelSerializer):
+    # Definir campos y configuraciones necesarios aquí
+    seller = sellerSerializer(source='book.seller', read_only=True)
+    buyer = sellerSerializer(source='chat_room.userroom_set.first().user', read_only=True)
     class Meta:
         model = PurchaseDetail
         fields = '__all__'
+        
 
 class PurchaseDetailStateSerializer(serializers.ModelSerializer):
     class Meta:
