@@ -246,10 +246,11 @@ class ChatRoom(AsyncWebsocketConsumer):
     
     async def receive(self, text_data):
         data = json.loads(text_data)
-        content = data['message']
+        content = data.get('message')
         user_email = self.scope.get('user').username
         user = await self.get_user(user_email)
         chat = await self.get_chatroom(self.chat)
+        print(content)
         
         # Agrega el mensaje a la base de datos
         await self.add_message(chat, user, content)
@@ -259,7 +260,7 @@ class ChatRoom(AsyncWebsocketConsumer):
             {
                 'type': 'chat_message',
                 'message': content,
-                'username': user.email,
+                'username': user_email,
                 'timestamp': datetime.now().isoformat(),
             }
         )
