@@ -1,8 +1,8 @@
 import os
 from .functions import get_image_format, base64_image
 from django_backend import settings
-from .serializer import CommuneSerializer, BookStateSerializer, buyerSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer
-from .models import Commune, BookCategory, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer
+from .serializer import CommuneSerializer, PurchaseDetailSerializer, BookStateSerializer, buyerSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer
+from .models import Commune, BookCategory, UserRoom, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -13,6 +13,9 @@ from rest_framework.permissions import IsAuthenticated
 from django.core.signing import Signer
 from django.shortcuts import redirect
 import base64
+from django.core.serializers import serialize
+import json
+
 
 @api_view(['GET']) 
 def getCommunes(request):
@@ -513,68 +516,113 @@ def getimage(request, path):
 @permission_classes([IsAuthenticated])
 def get_my_purchases(request):
     try:
-        # Obtén el usuario autenticado
+        # Obtén el usuario utilizando el ID de la sesión en la respuesta
         user = User.objects.get(email=request.user.username)
 
-        # Obtén todas las compras realizadas por el usuario a través de la sala de chat
-        purchases = PurchaseDetail.objects.filter(
-            chat_room__userroom__user=user  # Aseguramos que el vendedor del libro sea el usuario actual
-        )
+        # Filtra todas las compras donde el usuario es comprador
+        user_purchases_as_buyer = PurchaseDetail.objects.filter(
+            chat_room__userroom__user=user
+        ).exclude(book__seller=user)
 
-        # Serializa las compras y obtén los datos necesarios
-        purchase_data_list = list(
-            map(lambda purchase: {
+        # Verifica si hay compras para el usuario como comprador
+        if not user_purchases_as_buyer.exists():
+            return Response({'message': 'No hay compras para este usuario como comprador.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Serializa el queryset con la información del vendedor y comprador
+        serialized_purchases = []
+        for purchase in user_purchases_as_buyer:
+            seller_info = purchase.book.seller
+
+            serialized_purchase = {
                 'id': purchase.id,
-                'fecha_compra': purchase.purchase_date,
-                'monto_con_envio': str(purchase.amount),
-                'nombre_libro': purchase.book.name,
-                'precio_del_libro': str(purchase.book.price),
-                'comprador': buyerSerializer(purchase.chat_room.userroom_set.first().user).data if purchase.chat_room.userroom_set.exists() else None,
-                'vendedor': sellerSerializer(purchase.book.seller).data,
-                'estado_libro': purchase.purchase_detail_state.state,
-                'id_chat': purchase.chat_room.id,
-                'book_img': base64_image('media/' + str(purchase.book.book_img)),
-                'format': get_image_format('media/' + str(purchase.book.book_img))
-            }, purchases)
-        )
+                'seller': {
+                    'id': seller_info.id,
+                    'first_name': seller_info.first_name,
+                    'last_name': seller_info.last_name,
+                },
+                'buyer': {
+                    'id': user.id,  # Utiliza el ID del usuario autenticado
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                },
+                'purchase_date': purchase.purchase_date,
+                'amount': purchase.amount,
+                'created_at': purchase.created_at,
+                'chat_room': purchase.chat_room.id,
+                'auction': None,  # Asegúrate de manejar correctamente la propiedad 'auction'
+                'book': {
+                    'id': purchase.book.id,
+                    'name': purchase.book.name,
+                    'price': purchase.book.price,
+                    'state': purchase.purchase_detail_state.state,
+                    'format': get_image_format('media/' + str(purchase.book.book_img)),
+                    'book_img': base64_image('media/' + str(purchase.book.book_img))
+                },
+            }
+            serialized_purchases.append(serialized_purchase)
 
-        return Response({'mis_compras': purchase_data_list}, status=status.HTTP_200_OK)
-    except PurchaseDetail.DoesNotExist:
-        return Response({'error': 'No se encontraron compras para este usuario.'}, status=status.HTTP_404_NOT_FOUND)
+        # Devuelve la información de compras en el formato deseado
+        return Response({'compras': serialized_purchases}, status=status.HTTP_200_OK)
+
+    except User.DoesNotExist:
+        return Response({'message': 'Usuario no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
-        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({'error': f'Error al obtener las compras: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_my_sales(request):
     try:
-        # Obtén el usuario autenticado
+        # Obtén el usuario utilizando el ID de la sesión en la respuesta
         user = User.objects.get(email=request.user.username)
 
-        # Obtén todas las ventas realizadas por el usuario como vendedor
-        sales = PurchaseDetail.objects.filter(
-            book__seller=user  # Aseguramos que el vendedor del libro sea el usuario actual
+        # Filtra todas las ventas donde el usuario es vendedor
+        user_sales_as_seller = PurchaseDetail.objects.filter(
+            chat_room__userroom__user=user,
+            book__seller=user
         )
 
-        # Serializa las ventas y obtén los datos necesarios
-        sale_data_list = list(
-            map(lambda sale: {
+        # Verifica si hay ventas para el usuario como vendedor
+        if not user_sales_as_seller.exists():
+            return Response({'message': 'No hay ventas para este usuario como vendedor.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Serializa el queryset con la información del comprador y vendedor
+        serialized_sales = []
+        for sale in user_sales_as_seller:
+            buyer_info = sale.chat_room.userroom_set.exclude(user=user).first().user
+
+            serialized_sale = {
                 'id': sale.id,
-                'fecha_venta': sale.purchase_date,
-                'monto_con_envio': str(sale.amount),
-                'nombre_libro': sale.book.name,
-                'precio_del_libro': str(sale.book.price),
-                'vendedor': sellerSerializer(sale.book.seller).data,
-                'comprador': buyerSerializer(sale.chat_room.userroom_set.first().user).data if sale.chat_room.userroom_set.exists() else None,
-                'estado_libro': sale.purchase_detail_state.state,
-                'id_chat': sale.chat_room.id,
-                'book_img': base64_image('media/' + str(sale.book.book_img)),
-                'format': get_image_format('media/' + str(sale.book.book_img))
-            }, sales)
-        )
+                'seller': {
+                    'id': user.id,  # Utiliza el ID del usuario autenticado
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                },
+                'buyer': {
+                    'id': buyer_info.id,
+                    'first_name': buyer_info.first_name,
+                    'last_name': buyer_info.last_name,
+                },
+                'purchase_date': sale.purchase_date,
+                'amount': sale.amount,
+                'created_at': sale.created_at,
+                'chat_room': sale.chat_room.id,
+                'auction': None,  # Asegúrate de manejar correctamente la propiedad 'auction'
+                'book': {
+                    'id': sale.book.id,
+                    'name': sale.book.name,
+                    'price': sale.book.price,
+                    'state': sale.purchase_detail_state.state,
+                    'format': get_image_format('media/' + str(sale.book.book_img)),
+                    'book_img': base64_image('media/' + str(sale.book.book_img))
+                },
+            }
+            serialized_sales.append(serialized_sale)
 
-        return Response({'mis_ventas': sale_data_list}, status=status.HTTP_200_OK)
-    except PurchaseDetail.DoesNotExist:
-        return Response({'error': 'No se encontraron ventas para este usuario.'}, status=status.HTTP_404_NOT_FOUND)
+        # Devuelve la información de ventas en el formato deseado
+        return Response({'ventas': serialized_sales}, status=status.HTTP_200_OK)
+
+    except User.DoesNotExist:
+        return Response({'message': 'Usuario no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
-        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({'error': f'Error al obtener las ventas: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
