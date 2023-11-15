@@ -253,13 +253,13 @@ class ChatRoom(AsyncWebsocketConsumer):
         print(content)
         
         # Agrega el mensaje a la base de datos
-        await self.add_message(chat, user, content)
+        content1 = await self.add_message(chat, user, content)
         
         await self.channel_layer.group_send(
             self.chat_group_name,
             {
                 'type': 'chat_message',
-                'message': content,
+                'message': content1,
                 'username': user_email,
                 'timestamp': datetime.now().isoformat(),
             }
