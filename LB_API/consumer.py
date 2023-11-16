@@ -257,8 +257,10 @@ class Chat_Room(AsyncWebsocketConsumer):
             self.chat_group_name,
             {
                 'type': 'chat_message',
-                'message': content1,
-                'username': user.id,
+                'id': content1.id,
+                'message': content1.content,
+                'user_id': user.id,
+                'username': user.email,
                 'timestamp': datetime.now().isoformat(),
             }
         )
@@ -268,30 +270,13 @@ class Chat_Room(AsyncWebsocketConsumer):
         # Envía el mensaje al WebSocket del usuario
         await self.send(text_data=json.dumps({
             'type': 'chat_message',
+            'id': event['id'],
             'message': event['message'],
+            'user_id':event['user_id'],
             'username': event['username'],
             'timestamp': event['timestamp'],
         }))
-        
-    async def get_messages_data(self, chatroom):
-        try:
-            chat = await self.get_chatroom(chatroom)
-            messages = await self.get_messages(chat)
             
-            messages_data = [
-                {
-                    'type': 'chat_message',
-                    'message': message.content,
-                    'username': message.user.id,
-                    'timestamp': message.created_at.isoformat(),
-                }
-                for message in messages
-            ]
-            
-            return messages_data
-        except Exception as e:
-            return e
-        
         
     @database_sync_to_async
     def user_chatroom(self, user, chatroom_id):
@@ -329,14 +314,14 @@ class Chat_Room(AsyncWebsocketConsumer):
     @database_sync_to_async        
     def add_message(self, chatroom, user, content):
         try:
-            Message.objects.create(
+            message = Message.objects.create(
                 id = int_id(),
                 content = content,
                 created_at=datetime.now(),
                 user=user,
                 chat_room=chatroom
             )
-            return content   
+            return message   
         except:
             return None
         

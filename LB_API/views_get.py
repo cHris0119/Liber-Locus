@@ -2,7 +2,7 @@ import os
 from .functions import get_image_format, base64_image
 from django_backend import settings
 from .serializer import CommuneSerializer, PurchaseDetailSerializer, BookStateSerializer, buyerSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer
-from .models import Commune, BookCategory, UserRoom, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer
+from .models import Commune, BookCategory, UserRoom, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer, ChatRoom, Message
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -626,3 +626,25 @@ def get_my_sales(request):
         return Response({'message': 'Usuario no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': f'Error al obtener las ventas: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_messages_chatroom(request, chat_id):
+    try:
+        chat = ChatRoom.objects.get(id = chat_id)
+        message = Message.objects.filter(chat_room=chat)
+        message_data_list = list(
+            map(lambda message: {
+                'id': message.id,
+                'content': message.content,
+                'created_at': message.created_at,
+                'user_id': message.user.id,
+                'username': message.user.email,
+            }, message)
+        )
+        return Response({'message':message_data_list}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    
+    
