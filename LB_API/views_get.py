@@ -636,7 +636,7 @@ def get_messages_chatroom(request, chat_id):
         message_data_list = list(
             map(lambda message: {
                 'id': message.id,
-                'content': message.content,
+                'message': message.content,
                 'created_at': message.created_at,
                 'user_id': message.user.id,
                 'username': message.user.email,
