@@ -65,6 +65,7 @@ urlpatterns = [
     path('media/<path:path>', vg.getimage, name='getimage'),
     path('api/mis_compras/', vg.get_my_purchases, name='get_my_purchases'), #Obtener las compras del individuo
     path('api/mis_ventas/', vg.get_my_sales, name='get_my_sales'), #Obtener las ventas del individuo
+    path('api/auction/get_all_auctions/', vg.get_all_auctions, name='get_all_auctions'), # obtener todos los libros
     path('api/chatroom/get_msg/<int:chat_id>/', vg.get_messages_chatroom, name='get_messages_chat'),
     # Vistas con metodo PUT
     path('api/editDirection/<int:id>/', vpu.editDirection, name='editDirection'), # editar direccion

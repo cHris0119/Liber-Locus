@@ -1,8 +1,8 @@
 import os
 from .functions import get_image_format, base64_image
 from django_backend import settings
-from .serializer import CommuneSerializer, PurchaseDetailSerializer, BookStateSerializer, buyerSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer
-from .models import Commune, BookCategory, UserRoom, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer, ChatRoom, Message
+from .serializer import CommuneSerializer, AuctionStateSerializer, PurchaseDetailSerializer, BookStateSerializer, buyerSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer
+from .models import Commune, BookCategory, UserRoom, Auction, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer, ChatRoom, Message
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -647,4 +647,31 @@ def get_messages_chatroom(request, chat_id):
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     
-    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_all_auctions(request):
+    if request.method == 'GET':
+        try:
+            auctions = Auction.objects.all()
+            if auctions:
+                auction_data_list = list(
+                    map(lambda auction: {
+                        'id': auction.id,
+                        'initial_price': str(auction.initial_price),
+                        'created_at': auction.created_at,
+                        'duration_days': auction.duration_days,
+                        'final_price': str(auction.final_price) if auction.final_price else None,
+                        'auction_state': AuctionStateSerializer(auction.auction_state).data,
+                        'book': BookSerializer(auction.book).data,  # Serializa el libro asociada
+                        'format': get_image_format('media/' + str(auction.book.book_img)),
+                        'book_img': base64_image('media/' + str(auction.book.book_img))
+                        
+                    }, auctions)
+                )
+
+                return Response({'auctions': auction_data_list}, status=status.HTTP_200_OK)
+            else:
+                auction_data_list = []
+                return Response({'auctions': auction_data_list}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
