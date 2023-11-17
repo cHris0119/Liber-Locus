@@ -1,6 +1,6 @@
 
-from .serializer import BookSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer, AuctionOfferSerializer, FollowedSerializer, FollowSerializer, QuestionSerializer, AnswerSerializer, PaymentMethodSerializer, CommentsSerializer, es_fecha_vencimiento_valida, es_cvv_valido, es_rut_valido
-from .models import Book, BookCategory, User, Review, ReviewLike, Forum, ForumCategory, ForumUser,Auction, Follow, Followed, Discussion, Comments, Question, Answer, PaymentMethod, AuctionOffer
+from .serializer import BookSerializer, AuctionStateSerializer, ReviewSerializer, ReviewLikeSerializer, ForumSerializer, AuctionOfferSerializer, FollowedSerializer, FollowSerializer, QuestionSerializer, AnswerSerializer, PaymentMethodSerializer, CommentsSerializer, es_fecha_vencimiento_valida, es_cvv_valido, es_rut_valido
+from .models import Book, BookCategory, User, BookState, Review, ReviewLike, Forum, ForumCategory, ForumUser,Auction, Follow, Followed, Discussion, Comments, Question, Answer, PaymentMethod, AuctionOffer
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response  
 from rest_framework import status
@@ -51,6 +51,7 @@ def book_create(request):
             # Configura el valor predeterminado para BOOK_STATE_id
             book_state_id = 2  # Valor predeterminado deseado
             book_category = BookCategory.objects.get(id=data['book_category'])
+
 
             # Verifica si se proporciona una imagen en formato base64
             image_data = data.get('book_img', '')
@@ -535,11 +536,16 @@ def create_subasta(request, book_id):
             # Serializa el libro actualizado
             book_serialized = BookSerializer(book, many=False)
 
+            #Serializa el estado de la subasta
+            # Obtén los datos del estado de la subasta y del libro
+            auction_state_serialized = AuctionStateSerializer(subasta.auction_state, many=False)
+
             response_data = {
                 'message': 'Subasta creada exitosamente.',
                 'id': subasta.id,
                 'end_datetime': end_datetime,
                 'book': book_serialized.data,
+                'auction_state': auction_state_serialized.data,
                 'img': book_image,
                 'format': book_image_format,
             }
