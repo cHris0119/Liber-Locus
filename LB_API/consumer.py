@@ -108,16 +108,13 @@ class AuctionConsumer(AsyncWebsocketConsumer):
             if data['type'] == 'Sell':
                 puja = await self.get_ultima_puja(subasta)
                 if puja:
-                    user_email = data.get('user_email')                     
+                    user_id = data.get('user_id')                     
                     
                 
             if data['type'] == 'Pujar':
                 subasta_id = data.get('subasta_id')
-                user_email = data.get('user_email')
+                user_id = data.get('user_id')
                 amount = data.get('amount', 0)
-                await self.alter_subasta(amount, subasta_id)
-                subasta = await self.get_subasta(subasta_id)
-                user = await self.get_user(user_email)
                 if not subasta:
                     await self.send(text_data=json.dumps({'error': 'La subasta no existe.'}))
                     return
@@ -138,7 +135,10 @@ class AuctionConsumer(AsyncWebsocketConsumer):
                     if subasta.final_price >= amount:
                         await self.send(text_data=json.dumps({'error': 'El monto de la puja debe ser mayor a la actual.'}))
                         return
-            
+                    
+                await self.alter_subasta(amount, subasta_id)
+                subasta = await self.get_subasta(subasta_id)
+                user = await self.get_user(user_id)
                 await self.create_puja(subasta, amount, user)
 
                 await self.channel_layer.group_send(
@@ -161,9 +161,9 @@ class AuctionConsumer(AsyncWebsocketConsumer):
         except Auction.DoesNotExist:
             return None
     @database_sync_to_async
-    def get_user(self, user_email):    
+    def get_user(self, user_id):    
         try:
-            return User.objects.get(email = user_email)
+            return User.objects.get(id= user_id)
         except:
             return None
             
