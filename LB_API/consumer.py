@@ -115,6 +115,7 @@ class AuctionConsumer(AsyncWebsocketConsumer):
                 subasta_id = data.get('subasta_id')
                 user_id = data.get('user_id')
                 amount = data.get('amount', 0)
+                subasta = await self.get_subasta(subasta_id)
                 if not subasta:
                     await self.send(text_data=json.dumps({'error': 'La subasta no existe.'}))
                     return
@@ -137,7 +138,8 @@ class AuctionConsumer(AsyncWebsocketConsumer):
                         return
                     
                 await self.alter_subasta(amount, subasta_id)
-                subasta = await self.get_subasta(subasta_id)
+                subasta1 = await self.get_subasta(subasta_id)
+
                 user = await self.get_user(user_id)
                 await self.create_puja(subasta, amount, user)
 
@@ -145,7 +147,7 @@ class AuctionConsumer(AsyncWebsocketConsumer):
                     self.auction_group_name,
                     {
                         'type': 'send_price_update',
-                        'message': int(subasta.final_price),
+                        'message': int(subasta1.final_price),
                     }
                 )
 
@@ -173,6 +175,7 @@ class AuctionConsumer(AsyncWebsocketConsumer):
             auc = Auction.objects.get(id=subasta_id)
             auc.final_price = amount
             auc.save()
+            return auc
         except Auction.DoesNotExist:
             return None
 
