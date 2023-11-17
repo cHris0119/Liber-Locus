@@ -47,21 +47,21 @@ class AnswerSerializer(serializers.ModelSerializer):
         model = Answer
         fields = '__all__'
 
-class AuctionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Auction
-        fields = '__all__'
-
-class AuctionOfferSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AuctionOffer
-        fields = '__all__'
-
 class AuctionStateSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuctionState
         fields = '__all__'
 
+class AuctionSerializer(serializers.ModelSerializer):
+    auction_state = AuctionStateSerializer(many=False, read_only=True)
+    class Meta:
+        model = Auction
+        fields = ['id', 'initial_price', 'created_at', 'duration_days', 'final_price', 'auction_state', 'book']
+
+class AuctionOfferSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AuctionOffer
+        fields = '__all__'
 
 class BookCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -81,17 +81,18 @@ class buyerSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id','first_name', 'last_name']
 
-class BookSerializer(serializers.ModelSerializer):
-    book_category = BookCategorySerializer(many=False, read_only=True,)
-    seller = sellerSerializer(many=False, read_only=True)
-    class Meta:
-        model = Book
-        fields = ['id', 'name', 'price', 'description', 'author', 'book_img', 'created_at', 'seller', 'book_category']
-
 class BookStateSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookState
         fields = '__all__'
+
+class BookSerializer(serializers.ModelSerializer):
+    book_category = BookCategorySerializer(many=False, read_only=True,)
+    seller = sellerSerializer(many=False, read_only=True)
+    book_state = BookStateSerializer(many=False, read_only=True,)
+    class Meta:
+        model = Book
+        fields = ['id', 'name', 'price', 'description', 'author', 'book_img', 'created_at', 'seller', 'book_category', 'book_state']
 
 class BranchSerializer(serializers.ModelSerializer):
     class Meta:

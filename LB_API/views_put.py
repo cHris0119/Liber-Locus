@@ -1,4 +1,4 @@
-from .serializer import BookSerializer, EditUserSerializer, ForumCategorySerializer, EditForumSerializer, EditReviewSerializer, BookCategorySerializer , EditBooksSerializer, sellerSerializer, userSerializer, editDirectionSerializer, ReviewSerializer, ForumSerializer
+from .serializer import BookSerializer, BookStateSerializer, EditUserSerializer, ForumCategorySerializer, EditForumSerializer, EditReviewSerializer, BookCategorySerializer , EditBooksSerializer, sellerSerializer, userSerializer, editDirectionSerializer, ReviewSerializer, ForumSerializer
 from .models import Book, BookCategory, User, Direction, Review, Forum, ForumUser, ForumCategory
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response  
@@ -94,6 +94,7 @@ def book_update(request, pk):
                 'created_at': serializer.data['created_at'],
                 'seller': sellerSerializer(book.seller).data,
                 'book_category': BookCategorySerializer(book.book_category).data,
+                'state': BookStateSerializer(book.book_state).data,
                 'book_img': base64_image('media/' + str(book.book_img)),
                 'format': get_image_format('media/' + str(book.book_img))
             }
