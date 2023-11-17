@@ -543,6 +543,8 @@ def create_subasta(request, book_id):
             response_data = {
                 'message': 'Subasta creada exitosamente.',
                 'id': subasta.id,
+                'initial_price': subasta.initial_price,
+                'final_price': subasta.final_price,
                 'end_datetime': end_datetime,
                 'book': book_serialized.data,
                 'auction_state': auction_state_serialized.data,
