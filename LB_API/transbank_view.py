@@ -6,7 +6,7 @@ from transbank.webpay.webpay_plus.transaction import Transaction
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated
-from .models import PurchaseDetail, PurchaseDetailState, User, ChatRoom, Book, UserRoom
+from .models import PurchaseDetail, PurchaseDetailState, User, ChatRoom, Book, UserRoom, Notification, AuctionOffer
 from .functions import int_id, intCreation
 from rest_framework import status
 from rest_framework.parsers import FormParser
@@ -64,6 +64,40 @@ def retorno_pago(request):
                 purchase_detail_state=pdetail,
                 book=book
             )
+
+            # Generar la notificación al vendedor
+            message_to_seller  = f"¡Tu libro '{book.title}' ha sido comprado en el marketplace!"
+            Notification.objects.create(
+                message=message_to_seller,
+                created_at=datetime.now(),
+                is_read=False,
+                user=book.seller,
+            )
+
+            # Verificar si la compra es una subasta ganada
+            is_auction_winner = False
+            
+            # Verificar si la compra está relacionada con una subasta
+            if purchase.auction:
+                # Obtener la oferta más alta para la subasta
+                highest_bid = AuctionOffer.objects.filter(auction=purchase.auction).order_by('-amount').first()
+
+                # Verificar si el comprador ganó la subasta
+                if highest_bid and highest_bid.user == user:
+                    is_auction_winner = True
+
+            # Si el usuario es el ganador de la subasta, generar la notificación
+            if is_auction_winner:
+                auction_winner_message = f"¡Felicidades! Has ganado la subasta para el libro '{book.title}'."
+                Notification.objects.create(
+                    message=auction_winner_message,
+                    created_at=datetime.now(),
+                    is_read=False,
+                    user=user,
+                )
+
+
+
             return redirect('http://localhost:5173/detalleEnvio/correct')
         except Exception as e:
             return Response({'errorRetorno': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -72,6 +106,10 @@ def retorno_pago(request):
         return Response({'message': 'La transacción fue rechazada'})
     
     
+
+
+
+
 
 # views.py
 
