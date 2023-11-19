@@ -347,18 +347,18 @@ class Chat_Room(AsyncWebsocketConsumer):
 
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        if self.scope['user'].is_authenticated:
-            user_id = self.scope['user'].id
-            # Agrégate al grupo de canales correspondiente al usuario
-            await self.channel_layer.group_add(f"notifications_{user_id}", self.channel_name)
-            await self.accept()
-        else:
-            await self.close()
+        await self.accept()
+
+        # Agregar el canal al grupo de notificaciones
+        await self.channel_layer.group_add('notifications', self.channel_name)
 
     async def disconnect(self, close_code):
-        # Maneja la desconexión del WebSocket
-        print("WebSocket desconectado.")
+        # Sacar el canal del grupo de notificaciones
+        await self.channel_layer.group_discard('notifications', self.channel_name)
+
+    async def receive(self, text_data):
+        pass
 
     async def send_notification(self, event):
-        # Envía el mensaje de notificación al cliente conectado
-        await self.send(text_data=json.dumps(event))
+        message = event['message']
+        await self.send(text_data=message)
