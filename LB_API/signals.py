@@ -21,7 +21,7 @@ def send_notification(sender, instance, created, **kwargs):
 @receiver(post_save, sender=PurchaseDetail)
 def notify_seller_book_purchased(sender, instance, created, **kwargs):
     if created and instance.book.seller:
-        message = f"Tu libro '{instance.book.title}' ha sido comprado en el marketplace."
+        message = f"Tu libro '{instance.book.name}' ha sido comprado en el marketplace."
         Notification.objects.create(
             message=message,
             created_at=timezone.now(),
@@ -40,29 +40,3 @@ def notify_seller_book_purchased(sender, instance, created, **kwargs):
             }
         )
 
-@receiver(post_save, sender=AuctionOffer)
-def notify_auction_winner(sender, instance, created, **kwargs):
-    if created:
-        auction = instance.auction
-        # Obtener la oferta máxima actual para la subasta
-        winning_offer = AuctionOffer.objects.filter(auction=auction).order_by('-amount').first()
-        if winning_offer and instance == winning_offer:
-            winner = instance.user
-            # Crear la notificación para el ganador de la subasta
-            message = f"¡Felicidades! Has ganado la subasta del libro {auction.book.title}. Por favor, procede con el pago."
-            Notification.objects.create(
-                message=message,
-                created_at=timezone.now(),
-                is_read=False,
-                user=winner,
-                related_auction=auction,
-            )
-            # Envío a través de WebSocket
-            channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                f"notifications_{winner.id}",
-                {
-                    'type': 'send_notification',
-                    'message': message,
-                }
-            )

@@ -476,11 +476,6 @@ def get_discussion_by_id(request, discussion_id):
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-from .models import Comments  # Asegúrate de importar el modelo de tus comentarios
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_comments(request, discussion_id):
