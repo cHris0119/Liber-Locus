@@ -81,7 +81,7 @@ def retorno_pago(request):
 
             # Si el usuario es el ganador de la subasta, generar la notificación
             if is_auction_winner:
-                auction_winner_message = f"¡Felicidades! Has ganado la subasta para el libro '{book.title}'."
+                auction_winner_message = f"¡Felicidades! Has ganado la subasta para el libro '{book.name}'."
                 Notification.objects.create(
                     message=auction_winner_message,
                     created_at=datetime.now(),
@@ -90,7 +90,7 @@ def retorno_pago(request):
                 )
 
             # Generar la notificación al vendedor por la compra
-            message_to_seller = f"¡Tu libro '{book.title}' ha sido comprado en el marketplace!"
+            message_to_seller = f"¡Tu libro '{book.name}' ha sido comprado en el marketplace!"
             Notification.objects.create(
                 message=message_to_seller,
                 created_at=datetime.now(),
