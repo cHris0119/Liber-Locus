@@ -15,7 +15,7 @@ def send_notification(sender, instance, created, **kwargs):
         channel_layer = get_channel_layer()
         message = json.dumps({
             'type': 'notification',
-            'message': 'Nueva notificación: {}'.format(instance.text),
+            'message': 'Nueva notificación: {}'.format(instance.message),
         })
         async_to_sync(channel_layer.group_send)('notifications', {'type': 'send_notification', 'message': message})
 
