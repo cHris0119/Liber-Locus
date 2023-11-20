@@ -50,7 +50,7 @@ def retorno_pago(request):
                 chat_room=chatroom
             )
             userroom1 = UserRoom.objects.create(
-                id = book.seller.id,
+                id = int_id(),
                 user= book.seller,
                 chat_room=chatroom
             )    

@@ -1,7 +1,7 @@
 
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
-from .models import ReviewLike, Review, User, Auction, AuctionOffer, UserRoom, Message, Notification, ChatRoom
+from .models import ReviewLike, Review, User, Auction, AuctionOffer, UserRoom, Message, Notification, ChatRoom, AuctionState
 from .functions import int_id
 from datetime import datetime
 from channels.db import database_sync_to_async
@@ -102,28 +102,18 @@ class AuctionConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        try:
-            
-
-            if data['type'] == 'Sell':
-                puja = await self.get_ultima_puja(subasta)
-                if puja:
-                    user_id = data.get('user_id')                     
-                    
-                
+        subasta_id = data.get('subasta_id')
+        user_id = data.get('user_id')
+        amount = data.get('amount', 0)
+        try:    
             if data['type'] == 'Pujar':
-                subasta_id = data.get('subasta_id')
-                user_id = data.get('user_id')
-                amount = data.get('amount', 0)
                 subasta = await self.get_subasta(subasta_id)
-                if not subasta:
-                    await self.send(text_data=json.dumps({'error': 'La subasta no existe.'}))
-                    return
-
                 if subasta.auction_state_id != 2:
                     await self.send(text_data=json.dumps({'error': 'La subasta no está disponible para pujar.'}))
                     return
-
+                if not subasta:
+                    await self.send(text_data=json.dumps({'error': 'La subasta no existe.'}))
+                    return
                 if not isinstance(amount, (int, float)) or amount <= 0:
                     await self.send(text_data=json.dumps({'error': 'El monto de la puja debe ser un número positivo válido.'}))
                     return
@@ -193,15 +183,29 @@ class AuctionConsumer(AsyncWebsocketConsumer):
                     amount=amount,
                     created_at=timezone.now()
                 )
+        
+    @database_sync_to_async
+    def delete_subasta(self, subasta_id):
+        try:
+            aucState = AuctionState.objects.get(id = 3)
+            auc = Auction.objects.get(id=subasta_id)
+            auc.auction_state = aucState
+            auc.save()
+        except Auction.DoesNotExist:
+            pass
+        
     @database_sync_to_async
     def create_notification(self, user, message):
-        Notification.objects.create(
+        try:
+            Notification.objects.create(
             id=int_id(),
             message=message,
             created_at=timezone.now(),
             is_read='no',
             user=user
-        )
+            )
+        except:
+            return None
     async def send_price_update(self, event):
             await self.send(text_data=json.dumps({'message': event['message']}))
             
