@@ -597,3 +597,35 @@ def realizar_puja(request, subasta_id):
             return Response({'error': 'La subasta especificada no existe.'}, status=404)
         except Exception as e:
             return Response({'error': str(e)}, status=500)
+        
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def finalizar_subasta(request, subasta_id):
+    try:
+        subasta = Auction.objects.get(id=subasta_id)
+        user = User.objects.get(email=request.user.username)
+
+        # Verifica si el usuario autenticado es el vendedor del libro relacionado con la subasta
+        es_vendedor = subasta.book.seller == user
+
+        if es_vendedor:
+            # Encuentra y elimina todas las ofertas relacionadas con la subasta
+            ofertas_subasta = AuctionOffer.objects.filter(auction=subasta)
+            ofertas_subasta.delete()
+
+            # Cambia el estado de la subasta a "Finalizada" 
+            subasta.auction_state_id = 1  # Asigna el ID correcto del estado "Finalizada"
+            subasta.save()
+
+            # Actualiza el estado del libro a "Vendido" 
+            subasta.book.book_state_id = 1  # Asigna el ID correcto del estado "Vendido"
+            subasta.book.save()
+
+            return Response({'message': 'Subasta finalizada con éxito'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'No tienes permiso para finalizar esta subasta.'}, status=status.HTTP_403_FORBIDDEN)
+
+    except Auction.DoesNotExist:
+        return Response({'error': 'La subasta no existe'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

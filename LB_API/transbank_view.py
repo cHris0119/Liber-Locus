@@ -65,20 +65,10 @@ def retorno_pago(request):
                 book=book
             )
 
-            # Generar la notificación al vendedor
-            message_to_seller  = f"¡Tu libro '{book.title}' ha sido comprado en el marketplace!"
-            Notification.objects.create(
-                message=message_to_seller,
-                created_at=datetime.now(),
-                is_read=False,
-                user=book.seller,
-            )
-
             # Verificar si la compra es una subasta ganada
             is_auction_winner = False
-            
-            # Verificar si la compra está relacionada con una subasta
-            if purchase.auction:
+
+            if purchase.auction_id is not None:  # Verifica si la compra está vinculada a una subasta
                 # Obtener la oferta más alta para la subasta
                 highest_bid = AuctionOffer.objects.filter(auction=purchase.auction).order_by('-amount').first()
 
@@ -96,7 +86,14 @@ def retorno_pago(request):
                     user=user,
                 )
 
-
+            # Generar la notificación al vendedor por la compra
+            message_to_seller = f"¡Tu libro '{book.title}' ha sido comprado en el marketplace!"
+            Notification.objects.create(
+                message=message_to_seller,
+                created_at=datetime.now(),
+                is_read=False,
+                user=book.seller,
+            )
 
             return redirect('http://localhost:5173/detalleEnvio/correct')
         except Exception as e:
