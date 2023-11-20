@@ -6,7 +6,7 @@ from transbank.webpay.webpay_plus.transaction import Transaction
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.permissions import IsAuthenticated
-from .models import PurchaseDetail, PurchaseDetailState, User, ChatRoom, Book, UserRoom, Notification, AuctionOffer
+from .models import PurchaseDetail, PurchaseDetailState, User, ChatRoom, Book, UserRoom, Notification, AuctionOffer, BookState
 from .functions import int_id, intCreation
 from rest_framework import status
 from rest_framework.parsers import FormParser
@@ -39,7 +39,10 @@ def retorno_pago(request):
         
         try:
             book = Book.objects.get(id = response.get('buy_order'))
+            bookC = BookState.objects.get(id = 1)
             user = User.objects.get(id = response.get('session_id'))
+            book.book_state = bookC
+            book.save()
             chatroom = ChatRoom.objects.create(
                 id = int(response.get('buy_order')),
                 book = book     
