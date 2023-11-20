@@ -614,11 +614,11 @@ def finalizar_subasta(request, subasta_id):
             ofertas_subasta.delete()
 
             # Cambia el estado de la subasta a "Finalizada" 
-            subasta.estado_subasta_id = 1
+            subasta.auction_state_id = 1  # Asigna el ID correcto del estado "Finalizada"
             subasta.save()
 
             # Actualiza el estado del libro a "Vendido" 
-            subasta.book.estado_libro_id = 1
+            subasta.book.book_state_id = 1  # Asigna el ID correcto del estado "Vendido"
             subasta.book.save()
 
             return Response({'message': 'Subasta finalizada con éxito'}, status=status.HTTP_200_OK)
