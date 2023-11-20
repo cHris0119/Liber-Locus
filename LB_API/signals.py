@@ -25,7 +25,7 @@ def notify_seller_book_purchased(sender, instance, created, **kwargs):
         Notification.objects.create(
             message=message,
             created_at=timezone.now(),
-            is_read=False,
+            is_read='no',
             user=instance.book.seller,
         )
         # Envío a través de WebSocket
