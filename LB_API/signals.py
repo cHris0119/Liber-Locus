@@ -19,24 +19,24 @@ def send_notification(sender, instance, created, **kwargs):
         })
         async_to_sync(channel_layer.group_send)('notifications', {'type': 'send_notification', 'message': message})
 
-@receiver(post_save, sender=PurchaseDetail)
-def notify_seller_book_purchased(sender, instance, created, **kwargs):
-    if created and instance.book.seller:
-        message = f"Tu libro '{instance.book.name}' ha sido comprado en el marketplace."
-        Notification.objects.create(
-            id=int_id(),
-            message=message,
-            created_at=timezone.now(),
-            is_read='no',
-            user=instance.book.seller,
-        )
-        # Envío a través de WebSocket
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            f"notifications_{instance.book.seller.id}",
-            {
-                'type': 'send_notification',
-                'message': message,
-            }
-        )
+# @receiver(post_save, sender=PurchaseDetail)
+# def notify_seller_book_purchased(sender, instance, created, **kwargs):
+#     if created and instance.book.seller:
+#         message = f"Tu libro '{instance.book.name}' ha sido comprado en el marketplace."
+#         Notification.objects.create(
+#             id=int_id(),
+#             message=message,
+#             created_at=timezone.now(),
+#             is_read='no',
+#             user=instance.book.seller,
+#         )
+#         # Envío a través de WebSocket
+#         channel_layer = get_channel_layer()
+#         async_to_sync(channel_layer.group_send)(
+#             f"notifications_{instance.book.seller.id}",
+#             {
+#                 'type': 'send_notification',
+#                 'message': message,
+#             }
+#         )
 
