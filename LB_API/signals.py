@@ -6,6 +6,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import json
 from .models import Notification, PurchaseDetail, AuctionOffer
+from .functions import int_id
 from django.utils import timezone
 
 @receiver(post_save, sender=Notification)
@@ -23,6 +24,7 @@ def notify_seller_book_purchased(sender, instance, created, **kwargs):
     if created and instance.book.seller:
         message = f"Tu libro '{instance.book.name}' ha sido comprado en el marketplace."
         Notification.objects.create(
+            id=int_id(),
             message=message,
             created_at=timezone.now(),
             is_read='no',
