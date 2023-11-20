@@ -27,8 +27,6 @@ def notify_seller_book_purchased(sender, instance, created, **kwargs):
             created_at=timezone.now(),
             is_read=False,
             user=instance.book.seller,
-            related_book=instance.book,
-            related_purchase=instance,
         )
         # Envío a través de WebSocket
         channel_layer = get_channel_layer()
