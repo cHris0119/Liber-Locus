@@ -68,6 +68,7 @@ urlpatterns = [
     path('api/mis_ventas/', vg.get_my_sales, name='get_my_sales'), #Obtener las ventas del individuo
     path('api/auction/get_all_auctions/', vg.get_all_auctions, name='get_all_auctions'), # obtener todos los libros
     path('api/chatroom/get_msg/<int:chat_id>/', vg.get_messages_chatroom, name='get_messages_chat'),
+    path('api/forums/get_popular_forums/', vg.get_popular_forums, name='get_popular_forums'),
     # Vistas con metodo PUT
     path('api/editDirection/<int:id>/', vpu.editDirection, name='editDirection'), # editar direccion
     path('api/editUser/<int:id>/', vpu.editUser, name='editUser'), # editar usuario
