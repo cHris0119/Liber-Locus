@@ -352,8 +352,6 @@ class Chat_Room(AsyncWebsocketConsumer):
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
-
-        # Agregar el canal al grupo de notificaciones
         await self.channel_layer.group_add('notifications', self.channel_name)
 
     async def disconnect(self, close_code):
@@ -361,8 +359,9 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard('notifications', self.channel_name)
 
     async def receive(self, text_data):
-        pass
+        data = json.loads(text_data)
 
     async def send_notification(self, event):
         message = event['message']
         await self.send(text_data=message)
+        print(message)
