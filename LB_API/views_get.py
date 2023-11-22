@@ -15,6 +15,7 @@ from django.shortcuts import redirect
 import base64
 from django.core.serializers import serialize
 import json
+from django.db.models import Count
 
 
 @api_view(['GET']) 
@@ -671,3 +672,30 @@ def get_all_auctions(request):
                 return Response({'auctions': auction_data_list}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_popular_forums(request):
+    try:
+        user = User.objects.get(email = request.user.username)
+        # Ordena los foros por la cantidad de usuarios en orden descendente
+        forums = Forum.objects.annotate(user_count=Count('user')).order_by('-user_count')
+
+        # Serializa los foros y convierte las imágenes en base64
+        forum_data_list = list(
+            map(lambda forum: {
+                'id': forum.id,
+                'name': forum.name,
+                'created_at': forum.created_at,
+                'forum_category': ForumCategorySerializer(ForumCategory.objects.get(id=forum.forum_category_id)).data['id'],
+                'user_count': forum.user_count,  # Agrega la cantidad de usuarios
+                'user': sellerSerializer(forum.user).data,
+                'forum_img': base64_image('media/' + str(forum.forum_img)),
+                'format': get_image_format('media/' + str(forum.forum_img))
+            }, forums)
+        )
+
+        return Response({'ForumsData': forum_data_list}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'error': f'Ha ocurrido un error: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
