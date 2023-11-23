@@ -44,6 +44,7 @@ urlpatterns = [
     path('api/obtainDirection/<int:user_id>/', vg.obtainDirection, name='obtainDirection'), # obtener la direccion
     path('api/communeGet/', vg.getCommunes, name='communeGet'), # obtener las comunas
     path('api/getCategories/', vg.getCategories, name='getCategories'), # obtener las categorias
+    path('api/getSubscriptions/', vg.getSubcriptions, name='getSubscription'),
     path('api/books/get_all_books/', vg.get_all_books, name='get_all_books'), # obtener todos los libros
     path('api/books/get_user_books/', vg.get_user_books, name='get_user_books'), # obtener los libros de los usuarios
     path('api/getReviews/', vg.getReviews, name='getReviews'), # obtener una reseña
