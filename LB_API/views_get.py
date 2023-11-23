@@ -79,7 +79,7 @@ def obtainUser(request, token):
                     'id': serialUser.data['id'],
                     'first_name': serialUser.data['first_name'],
                     'last_name': serialUser.data['last_name'],
-                    'subscription': serialUser['subscription'],
+                    'subscription': serialUser.data['subscription'],
                     'user_photo': image_base64,
                     'format' : format
                     }
