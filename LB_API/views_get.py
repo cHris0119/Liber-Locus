@@ -2,7 +2,7 @@ import os
 from .functions import get_image_format, base64_image
 from django_backend import settings
 from .serializer import CommuneSerializer, AuctionStateSerializer, PurchaseDetailSerializer, BookStateSerializer, buyerSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer, SubscriptionSerializer
-from .models import Commune, BookCategory, UserRoom, Auction, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer, ChatRoom, Message, Subscription
+from .models import Commune, BookCategory, Notification, UserRoom, Auction, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer, ChatRoom, Message, Subscription
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -706,3 +706,34 @@ def get_popular_forums(request):
         return Response({'ForumsData': forum_data_list}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({'error': f'Ha ocurrido un error: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_notifications(request, user_id):
+    try:
+        # Obtén el usuario específico por su ID
+        user = User.objects.get(id=user_id)
+
+        # Obtén todas las notificaciones del usuario
+        user_notifications = Notification.objects.filter(user=user)
+        if user_notifications:
+            # Serializa los datos de las notificaciones
+            notification_data_list = list(
+                map(lambda user_notification: {
+                    'id': user_notification.id,
+                    'message': user_notification.message,
+                    'created_at': user_notification.created_at,
+                    'is_read': user_notification.is_read,
+                    'user': user_notification.user.id
+                }, user_notifications)
+            )
+
+            return Response({'UserNotificationsData': notification_data_list}, status=status.HTTP_200_OK)
+        else:
+            notification_data_list = []
+            return Response({'UserNotificationsData': notification_data_list}, status=status.HTTP_200_OK)
+
+    except User.DoesNotExist:
+        return Response({'error': 'El usuario no existe.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
