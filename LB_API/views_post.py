@@ -48,6 +48,13 @@ def book_create(request):
             return Response({'error': 'El vendedor no existe'}, status=status.HTTP_404_NOT_FOUND)
 
         try:
+            # Verifica si la suscripción del usuario es la suscripción gratuita (ID 1)
+            if seller.subscription_id == 1:
+                # Verifica la cantidad de libros creados por el usuario
+                available_book_count = Book.objects.filter(seller=seller, book_state_id=2).count()
+                if available_book_count >= 3:
+                    return Response({'error': 'Has alcanzado el límite de libros para la suscripción gratuita'}, status=status.HTTP_400_BAD_REQUEST)
+            
             # Configura el valor predeterminado para BOOK_STATE_id
             book_state_id = 2  # Valor predeterminado deseado
             book_category = BookCategory.objects.get(id=data['book_category'])
@@ -175,6 +182,10 @@ def create_forum(request):
             return Response({'error': 'El usuario no existe'}, status=status.HTTP_404_NOT_FOUND)
 
         try:
+            # Verifica la cantidad de foros en los que el usuario está participando
+            user_forum_count = ForumUser.objects.filter(user=user).count()
+            if user_forum_count >= 3:
+                return Response({'error': 'Has alcanzado el límite de foros en los que puedes participar'}, status=status.HTTP_400_BAD_REQUEST)
             # Configura el valor predeterminado para FORUM_CATEGORY_id
             forum_category = ForumCategory.objects.get(id=data['forum_category'])
 
@@ -229,6 +240,11 @@ def join_forum(request, id):
         user = User.objects.get(email=request.user.username)
         forum = Forum.objects.get(id=id)
         if user:
+            # Verifica la cantidad de foros en los que el usuario está participando
+            user_forum_count = ForumUser.objects.filter(user=user).count()
+            if user_forum_count >= 3:
+                return Response({'error': 'Has alcanzado el límite de foros en los que puedes participar'}, status=status.HTTP_400_BAD_REQUEST)
+
             # Verifica si el usuario ya es miembro del foro
             if ForumUser.objects.filter(user=user, forum=forum).exists():
                 return Response({'message': 'Ya eres miembro de este foro.'}, status=status.HTTP_400_BAD_REQUEST)
