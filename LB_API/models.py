@@ -4,8 +4,8 @@ from django.db import models
 class Answer(models.Model):
     id = models.IntegerField(primary_key=True)
     description = models.TextField(blank=True, null=True)
-    question = models.ForeignKey('Question', models.DO_NOTHING, db_column='QUESTION_id')  # Field name made lowercase.
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
+    question = models.ForeignKey('Question', on_delete=models.CASCADE, db_column='QUESTION_id')  # Field name made lowercase.
+    user = models.ForeignKey('User', on_delete=models.CASCADE, db_column='USER_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -18,8 +18,8 @@ class Auction(models.Model):
     created_at = models.DateTimeField()
     duration_days = models.IntegerField()
     final_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    auction_state = models.ForeignKey('AuctionState', models.DO_NOTHING, db_column='AUCTION_STATE_id')  # Field name made 
-    book = models.ForeignKey('Book', models.DO_NOTHING, db_column='BOOK_id')  # Field name made lowercase.
+    auction_state = models.ForeignKey('AuctionState', on_delete=models.CASCADE, db_column='AUCTION_STATE_id')  # Field name made 
+    book = models.ForeignKey('Book', on_delete=models.CASCADE, db_column='BOOK_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -31,8 +31,8 @@ class AuctionOffer(models.Model):
     id = models.IntegerField(primary_key=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField()
-    auction = models.ForeignKey(Auction, models.DO_NOTHING, db_column='AUCTION_id')  # Field name made lowercase.
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
+    auction = models.ForeignKey(Auction, on_delete=models.CASCADE, db_column='AUCTION_id')  # Field name made lowercase.
+    user = models.ForeignKey('User', on_delete=models.CASCADE, db_column='USER_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -55,10 +55,10 @@ class Book(models.Model):
     description = models.CharField(max_length=200)
     author = models.CharField(max_length=45)
     book_img = models.ImageField(upload_to='books',max_length=255, db_comment='URL')
-    seller = models.ForeignKey('User', models.DO_NOTHING)
-    book_state = models.ForeignKey('BookState', models.DO_NOTHING, db_column='BOOK_STATE_id')  # Field name made lowercase.
+    seller = models.ForeignKey('User', on_delete=models.CASCADE)
+    book_state = models.ForeignKey('BookState', on_delete=models.CASCADE, db_column='BOOK_STATE_id')  # Field name made lowercase.
     created_at = models.DateTimeField()
-    book_category = models.ForeignKey('BookCategory', models.DO_NOTHING, db_column='BOOK_CATEGORY_id')  # Field name made
+    book_category = models.ForeignKey('BookCategory', on_delete=models.CASCADE, db_column='BOOK_CATEGORY_id')  # Field name made
 
     class Meta:
         managed = False
@@ -96,7 +96,7 @@ class Branch(models.Model):
 
 class ChatRoom(models.Model):
     id = models.IntegerField(primary_key=True)
-    book = models.ForeignKey(Book, models.DO_NOTHING, db_column='BOOK_id')  # Field name made lowercase.
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, db_column='BOOK_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -107,8 +107,8 @@ class Comments(models.Model):
     id = models.IntegerField(primary_key=True)
     content = models.TextField()
     created_at = models.DateTimeField()
-    discussion = models.ForeignKey('Discussion', models.DO_NOTHING, db_column='DISCUSSION_id')  # Field name made lowercase.
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
+    discussion = models.ForeignKey('Discussion', on_delete=models.CASCADE, db_column='DISCUSSION_id')  # Field name made lowercase.
+    user = models.ForeignKey('User', on_delete=models.CASCADE, db_column='USER_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -129,8 +129,8 @@ class Direction(models.Model):
     nombre = models.CharField(max_length=100)
     calle = models.CharField(max_length=50)
     numero = models.IntegerField()
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
-    commune = models.ForeignKey(Commune, models.DO_NOTHING, db_column='COMMUNE_id')  # Field name made lowercase.
+    user = models.ForeignKey('User', on_delete=models.CASCADE, db_column='USER_id')  # Field name made lowercase.
+    commune = models.ForeignKey(Commune, on_delete=models.CASCADE, db_column='COMMUNE_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -143,7 +143,7 @@ class Discussion(models.Model):
     created_by = models.CharField(max_length=45)
     title = models.CharField(max_length=255)
     created_at = models.DateTimeField()
-    forum_user = models.ForeignKey('ForumUser', models.DO_NOTHING, db_column='FORUM_USER_id')  # Field name made lowercase.
+    forum_user = models.ForeignKey('ForumUser', on_delete=models.CASCADE, db_column='FORUM_USER_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -152,8 +152,8 @@ class Discussion(models.Model):
 
 class Follow(models.Model):
     id = models.IntegerField(primary_key=True)
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
-    followed = models.ForeignKey('Followed', models.DO_NOTHING, db_column='FOLLOWED_id')  # Field name made lowercase.
+    user = models.ForeignKey('User', on_delete=models.CASCADE, db_column='USER_id')  # Field name made lowercase.
+    followed = models.ForeignKey('Followed', on_delete=models.CASCADE, db_column='FOLLOWED_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -162,7 +162,7 @@ class Follow(models.Model):
 
 class Followed(models.Model):
     id = models.IntegerField(primary_key=True)
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
+    user = models.ForeignKey('User', on_delete=models.CASCADE, db_column='USER_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -174,8 +174,8 @@ class Forum(models.Model):
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField()
     forum_img = models.ImageField(upload_to='forums',max_length=255, blank=True, null=True, db_comment='URL')
-    forum_category = models.ForeignKey('ForumCategory', models.DO_NOTHING, db_column='FORUM_CATEGORY_id')  # Field name made lowercase.
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='user', blank=True, null=True)
+    forum_category = models.ForeignKey('ForumCategory', on_delete=models.CASCADE, db_column='FORUM_CATEGORY_id')  # Field name made lowercase.
+    user = models.ForeignKey('User', on_delete=models.CASCADE, db_column='user', blank=True, null=True)
     class Meta:
         managed = False
         db_table = 'FORUM'
@@ -193,8 +193,8 @@ class ForumCategory(models.Model):
 
 class ForumUser(models.Model):
     id = models.IntegerField(primary_key=True)
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
-    forum = models.ForeignKey(Forum, models.DO_NOTHING, db_column='FORUM_id')  # Field name made lowercase.
+    user = models.ForeignKey('User', on_delete=models.CASCADE, db_column='USER_id')  # Field name made lowercase.
+    forum = models.ForeignKey(Forum, on_delete=models.CASCADE, db_column='FORUM_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -205,8 +205,8 @@ class Message(models.Model):
     id = models.IntegerField(primary_key=True)
     content = models.CharField(max_length=200)
     created_at = models.DateTimeField()
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
-    chat_room = models.ForeignKey(ChatRoom, models.DO_NOTHING, db_column='CHAT_ROOM_id')  # Field name made lowercase.
+    user = models.ForeignKey('User', on_delete=models.CASCADE, db_column='USER_id')  # Field name made lowercase.
+    chat_room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, db_column='CHAT_ROOM_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -218,7 +218,7 @@ class Notification(models.Model):
     message = models.TextField()
     created_at = models.DateTimeField()
     is_read = models.CharField(max_length=10)
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
+    user = models.ForeignKey('User', on_delete=models.CASCADE, db_column='USER_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -233,7 +233,7 @@ class PaymentMethod(models.Model):
     expiration_month = models.IntegerField()
     expiration_year = models.IntegerField()
     cvv = models.CharField(max_length=4)
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
+    user = models.ForeignKey('User', on_delete=models.CASCADE, db_column='USER_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -243,9 +243,9 @@ class PaymentMethod(models.Model):
 
 class PostVenta(models.Model):
     id = models.IntegerField(primary_key=True)  # The composite primary key (id, STATE_POST_VENTA_id, BRANCH_id) found, that is not supported. The first column is selected.
-    purchase_detail = models.ForeignKey('PurchaseDetail', models.DO_NOTHING, db_column='PURCHASE_DETAIL_id')  # Field name made lowercase.
-    state_post_venta = models.ForeignKey('StatePostVenta', models.DO_NOTHING, db_column='STATE_POST_VENTA_id')  # Field name made lowercase.
-    branch = models.ForeignKey(Branch, models.DO_NOTHING, db_column='BRANCH_id')  # Field name made lowercase.
+    purchase_detail = models.ForeignKey('PurchaseDetail', on_delete=models.CASCADE, db_column='PURCHASE_DETAIL_id')  # Field name made lowercase.
+    state_post_venta = models.ForeignKey('StatePostVenta', on_delete=models.CASCADE, db_column='STATE_POST_VENTA_id')  # Field name made lowercase.
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, db_column='BRANCH_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -258,10 +258,10 @@ class PurchaseDetail(models.Model):
     purchase_date = models.DateTimeField(blank=True, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField()
-    chat_room = models.ForeignKey(ChatRoom, models.DO_NOTHING, db_column='CHAT_ROOM_id')  # Field name made lowercase.
-    auction = models.ForeignKey(Auction, models.DO_NOTHING, db_column='AUCTION_id', blank=True, null=True)  # Field name made lowercase.
-    purchase_detail_state = models.ForeignKey('PurchaseDetailState', models.DO_NOTHING, db_column='PURCHASE_DETAIL_STATE_id')  # Field name made lowercase.
-    book = models.ForeignKey(Book, models.DO_NOTHING, db_column='BOOK_id', blank=True, null=True)  # Field name made lowercase.
+    chat_room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, db_column='CHAT_ROOM_id')  # Field name made lowercase.
+    auction = models.ForeignKey(Auction, on_delete=models.CASCADE, db_column='AUCTION_id', blank=True, null=True)  # Field name made lowercase.
+    purchase_detail_state = models.ForeignKey('PurchaseDetailState', on_delete=models.CASCADE, db_column='PURCHASE_DETAIL_STATE_id')  # Field name made lowercase.
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, db_column='BOOK_id', blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -281,8 +281,8 @@ class PurchaseDetailState(models.Model):
 class Question(models.Model):
     id = models.IntegerField(primary_key=True)
     description = models.TextField(blank=True, null=True)
-    book = models.ForeignKey(Book, models.DO_NOTHING, db_column='BOOK_id')  # Field name made lowercase.
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, db_column='BOOK_id')  # Field name made lowercase.
+    user = models.ForeignKey('User', on_delete=models.CASCADE, db_column='USER_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -293,7 +293,7 @@ class Refund(models.Model):
     id = models.IntegerField(primary_key=True)
     reason = models.TextField()
     date_refund = models.DateTimeField()
-    post_venta = models.ForeignKey(PostVenta, models.DO_NOTHING, db_column='POST_VENTA_id')  # Field name made lowercase.
+    post_venta = models.ForeignKey(PostVenta, on_delete=models.CASCADE, db_column='POST_VENTA_id')  # Field name made lowercase.
     post_venta_state_post_venta_id = models.IntegerField(db_column='POST_VENTA_STATE_POST_VENTA_id')  # Field name made lowercase.
     post_venta_branch_id = models.IntegerField(db_column='POST_VENTA_BRANCH_id')  # Field name made lowercase.
 
@@ -305,7 +305,7 @@ class Refund(models.Model):
 class Report(models.Model):
     id = models.IntegerField(primary_key=True)
     description = models.TextField()
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
+    user = models.ForeignKey('User', on_delete=models.CASCADE, db_column='USER_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -320,7 +320,7 @@ class Review(models.Model):
     valoration = models.IntegerField()
     updated_at = models.DateTimeField(blank=True, null=True)
     review_img = models.ImageField(upload_to='reviews',max_length=255, blank=True, null=True)
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
+    user = models.ForeignKey('User', on_delete=models.CASCADE, db_column='USER_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -329,8 +329,8 @@ class Review(models.Model):
 
 class ReviewLike(models.Model):
     id = models.IntegerField(primary_key=True)
-    user = models.ForeignKey('User', models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
-    review = models.ForeignKey(Review, models.DO_NOTHING, db_column='REVIEW_id')  # Field name made lowercase.
+    user = models.ForeignKey('User', on_delete=models.CASCADE, db_column='USER_id')  # Field name made lowercase.
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, db_column='REVIEW_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -374,7 +374,7 @@ class User(models.Model):
     password = models.CharField(max_length=45)
     created_at = models.DateTimeField()
     user_photo = models.ImageField(upload_to='user',max_length=255, blank=True, null=True, db_comment='URL')
-    subscription = models.ForeignKey(Subscription, models.DO_NOTHING, db_column='SUBSCRIPTION_id', db_comment='FREE/SUB_1/SUB_2/SUB_3')  # Field name made lowercase.
+    subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, db_column='SUBSCRIPTION_id', db_comment='FREE/SUB_1/SUB_2/SUB_3')  # Field name made lowercase.
     is_active = models.BooleanField(blank=True, null=True)
     confirm_key = models.CharField(max_length=100, blank=True, null=True)
     class Meta:
@@ -385,8 +385,8 @@ class User(models.Model):
 
 class UserRole(models.Model):
     id = models.IntegerField(primary_key=True)  # The composite primary key (id, USER_id, ROLE_id) found, that is not supported. The first column is selected.
-    user = models.ForeignKey(User, models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
-    role = models.ForeignKey(Role, models.DO_NOTHING, db_column='ROLE_id')  # Field name made lowercase.
+    user = models.ForeignKey(User, on_delete=models.CASCADE, db_column='USER_id')  # Field name made lowercase.
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, db_column='ROLE_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -396,8 +396,8 @@ class UserRole(models.Model):
 
 class UserRoom(models.Model):
     id = models.IntegerField(primary_key=True)
-    user = models.ForeignKey(User, models.DO_NOTHING, db_column='USER_id')  # Field name made lowercase.
-    chat_room = models.ForeignKey(ChatRoom, models.DO_NOTHING, db_column='CHAT_ROOM_id')  # Field name made lowercase.
+    user = models.ForeignKey(User, on_delete=models.CASCADE, db_column='USER_id')  # Field name made lowercase.
+    chat_room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, db_column='CHAT_ROOM_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
@@ -414,8 +414,8 @@ class AuthGroup(models.Model):
 
 class AuthGroupPermissions(models.Model):
     id = models.BigAutoField(primary_key=True)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
+    group = models.ForeignKey(AuthGroup, on_delete=models.CASCADE)
+    permission = models.ForeignKey('AuthPermission', on_delete=models.CASCADE)
 
     class Meta:
         managed = False
@@ -425,7 +425,7 @@ class AuthGroupPermissions(models.Model):
 
 class AuthPermission(models.Model):
     name = models.CharField(max_length=255)
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
+    content_type = models.ForeignKey('DjangoContentType', on_delete=models.CASCADE)
     codename = models.CharField(max_length=100)
 
     class Meta:
@@ -453,8 +453,8 @@ class AuthUser(models.Model):
 
 class AuthUserGroups(models.Model):
     id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
+    user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
+    group = models.ForeignKey(AuthGroup, on_delete=models.CASCADE)
 
     class Meta:
         managed = False
@@ -464,8 +464,8 @@ class AuthUserGroups(models.Model):
 
 class AuthUserUserPermissions(models.Model):
     id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
+    user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
+    permission = models.ForeignKey(AuthPermission, on_delete=models.CASCADE)
 
     class Meta:
         managed = False
@@ -476,7 +476,7 @@ class AuthUserUserPermissions(models.Model):
 class AuthtokenToken(models.Model):
     key = models.CharField(primary_key=True, max_length=40)
     created = models.DateTimeField()
-    user = models.OneToOneField(AuthUser, models.DO_NOTHING)
+    user = models.OneToOneField(AuthUser, on_delete=models.CASCADE)
 
     class Meta:
         managed = False
@@ -489,8 +489,8 @@ class DjangoAdminLog(models.Model):
     object_repr = models.CharField(max_length=200)
     action_flag = models.PositiveSmallIntegerField()
     change_message = models.TextField()
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    content_type = models.ForeignKey('DjangoContentType', on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
 
     class Meta:
         managed = False

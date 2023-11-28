@@ -5,7 +5,7 @@ from transbank.common.integration_type import IntegrationType
 from transbank.webpay.webpay_plus.transaction import Transaction
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, parser_classes
-from .models import PurchaseDetail, PurchaseDetailState, User, ChatRoom, Book, UserRoom, Notification, AuctionOffer, BookState
+from .models import PurchaseDetail, PurchaseDetailState, User, ChatRoom, Book, UserRoom, Notification, AuctionOffer, BookState, Auction
 from .functions import int_id
 from rest_framework import status
 from datetime import datetime
@@ -51,21 +51,53 @@ def retorno_pago(request):
                 id = int_id(),
                 user= book.seller,
                 chat_room=chatroom
-            )    
-            purchase = PurchaseDetail.objects.create(
-                id = response.get('buy_order'),
-                purchase_date=datetime.now(),
-                amount=response.get('amount'),
-                created_at=datetime.now(),
-                chat_room=chatroom,
-                auction=None,
-                purchase_detail_state=pdetail,
-                book=book
             )
-            
-            book.book_state = bookC
-            book.save()
-            return redirect('http://localhost:5173/detalleEnvio/correct')
+            try:
+                auc = Auction.objects.get(id = response.get('buy_order'))
+                if auc:
+                    purchase = PurchaseDetail.objects.create(
+                        id = response.get('buy_order'),
+                        purchase_date=datetime.now(),
+                        amount=response.get('amount'),
+                        created_at=datetime.now(),
+                        chat_room=chatroom,
+                        auction=auc,
+                        purchase_detail_state=pdetail,
+                        book=book
+                    )
+                    message = Notification.objects.create(
+                        id = response.get('buy_order'),
+                        message = f'Su subasta ha sido vendida por el precio {auc.final_price}, el dia {datetime.now()}',
+                        created_at = datetime.now(),
+                        is_read = 'no',
+                        user = book.seller
+                    )
+                    book.book_state = bookC
+                    book.save()
+                    return redirect('http://localhost:5173/detalleEnvio/correct')
+            except:
+                purchase = PurchaseDetail.objects.create(
+                    id = response.get('buy_order'),
+                    purchase_date=datetime.now(),
+                    amount=response.get('amount'),
+                    created_at=datetime.now(),
+                    chat_room=chatroom,
+                    auction=None,
+                    purchase_detail_state=pdetail,
+                    book=book
+                )
+                
+                message = Notification.objects.create(
+                        id = response.get('buy_order'),
+                        message = f'Su libro ha sido vendida por el precio {book.price}, el dia {datetime.now()}',
+                        created_at = datetime.now(),
+                        is_read = 'no',
+                        user = book.seller
+                )
+                
+                book.book_state = bookC
+                book.save()
+                return redirect('http://localhost:5173/detalleEnvio/correct')
         except Exception as e:
             return Response({'errorRetorno': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:

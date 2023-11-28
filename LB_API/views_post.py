@@ -604,24 +604,20 @@ def finalizar_subasta(request, subasta_id):
     try:
         subasta = Auction.objects.get(id=subasta_id)
         user = User.objects.get(email=request.user.username)
+        es_vendedor = subasta.book.seller
 
-        # Verifica si el usuario autenticado es el vendedor del libro relacionado con la subasta
-        es_vendedor = subasta.book.seller == user
-
-        if es_vendedor:
-            # Encuentra y elimina todas las ofertas relacionadas con la subasta
-            ofertas_subasta = AuctionOffer.objects.filter(auction=subasta)
-            ofertas_subasta.delete()
-
-            # Cambia el estado de la subasta a "Finalizada" 
-            subasta.auction_state_id = 1  # Asigna el ID correcto del estado "Finalizada"
-            subasta.save()
-
-            # Actualiza el estado del libro a "Vendido" 
-            subasta.book.book_state_id = 1  # Asigna el ID correcto del estado "Vendido"
-            subasta.book.save()
-
-            return Response({'message': 'Subasta finalizada con éxito'}, status=status.HTTP_200_OK)
+        if es_vendedor == user:
+            ultima_oferta = AuctionOffer.objects.filter(auction=subasta).order_by('-created_at').first() 
+            if ultima_oferta:           
+                ofertas_subasta = AuctionOffer.objects.filter(auction=subasta).exclude(ultima_oferta.id)
+                ofertas_subasta.delete()
+                subasta.auction_state_id = 1  # Asigna el ID correcto del estado "Finalizada"
+                subasta.save()
+                subasta.book.book_state_id = 1  # Asigna el ID correcto del estado "Vendido"
+                subasta.book.save()
+                return Response({'message': 'Subasta finalizada con éxito'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'No se pudo finalizar la subasta porque no existen pujas'}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'No tienes permiso para finalizar esta subasta.'}, status=status.HTTP_403_FORBIDDEN)
 
