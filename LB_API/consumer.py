@@ -351,18 +351,21 @@ class Chat_Room(AsyncWebsocketConsumer):
 
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        self.chat = self.scope['url_route']['kwargs']['user_id']
         await self.accept()
-        await self.channel_layer.group_add('notifications', self.channel_name)
+        print(self.scope)
+        await self.channel_layer.group_add(f'notifications_{self.chat}', self.channel_name)
 
     async def disconnect(self, close_code):
         # Sacar el canal del grupo de notificaciones
-        await self.channel_layer.group_discard('notifications', self.channel_name)
+        await self.channel_layer.group_discard(f'notifications_{self.chat}', self.channel_name)
 
     async def receive(self, text_data):
         data = json.loads(text_data)
 
     async def send_notification(self, event):
         message = event['message']
+        print(message)
         await self.send(text_data=json.dumps({
             'type': 'send_notification',
             'message': message,
