@@ -14,7 +14,7 @@ def send_notification(sender, instance, created, **kwargs):
     if created:
         channel_layer = get_channel_layer()
         message = json.dumps({
-            'type': 'notification',
+            'type': 'send_notification',
             'id': instance.id,
             'message': f'Nueva notificación: {instance.message}',
             'created_at': instance.created_at.strftime("%Y-%m-%d"), 
