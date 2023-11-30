@@ -22,6 +22,5 @@ import LB_API.transbank_view as views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('LB_API/', include('LB_API.urls')),
-    path('mostrar-formulario/', views.mostrar_formulario, name='mostrar_formulario'),
-    path('websocket/', views.websocket, name='websocket'),
+
 ]
