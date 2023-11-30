@@ -82,7 +82,8 @@ urlpatterns = [
     path('api/transbank/iniciar_pago_suscripcion/', tv.iniciar_pago_suscripcion, name='iniciar_pago_suscripcion'),
     path('api/transbank/retorno_suscripcion/', tv.retorno_pago_suscripcion, name='retorno_pago_suscripcion'),
     path('api/transbank/retorno/', tv.retorno_pago, name='retorno')
-    
+    # Url de contador
+    path('api/counter/get_all_sales', count_v.get_all_sales, name='get_all_sales')
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
