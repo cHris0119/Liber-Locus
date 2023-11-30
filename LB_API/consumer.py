@@ -353,7 +353,6 @@ class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.chat = self.scope['url_route']['kwargs']['user_id']
         await self.accept()
-        print(self.scope)
         await self.channel_layer.group_add(f'notifications_{self.chat}', self.channel_name)
 
     async def disconnect(self, close_code):
