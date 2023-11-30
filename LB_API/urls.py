@@ -79,6 +79,8 @@ urlpatterns = [
     path('api/forums/update/<int:pk>/', vpu.update_forum, name='update_forum'), # editar foro
     # Url de transbank
     path('api/transbank/iniciar_pago', tv.iniciar_pago, name='iniciar_pago'),
+    path('api/transbank/iniciar_pago_suscripcion/', tv.iniciar_pago_suscripcion, name='iniciar_pago_suscripcion'),
+    path('api/transbank/retorno_suscripcion/', tv.retorno_pago_suscripcion, name='retorno_pago_suscripcion'),
     path('api/transbank/retorno/', tv.retorno_pago, name='retorno')
     
     
