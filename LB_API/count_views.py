@@ -1,9 +1,14 @@
 from .serializer import  BookSerializer, sellerSerializer, PurchaseDetailSerializer, PurchaseDetailStateSerializer, ChatRoomSerializer
-from .models import Commune, BookCategory, Notification, UserRoom, Auction, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer, ChatRoom, Message, Subscription
+from .models import Commune, BookCategory, Notification, UserRoom, PurchaseDetailState, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer, ChatRoom, Message, Subscription
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from rest_framework import status
-
+from transbank.common.options import WebpayOptions
+from transbank.common.integration_commerce_codes import IntegrationCommerceCodes
+from transbank.common.integration_api_keys import IntegrationApiKeys
+from transbank.common.integration_type import IntegrationType
+from transbank.webpay.webpay_plus.transaction import Transaction
+from rest_framework.response import Response
+from django.shortcuts import redirect
 
 
 
@@ -41,3 +46,44 @@ def get_all_sales(request):
         return Response({'error': 'No se encontraron revisiones para este usuario.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    
+# Transbank contador
+@api_view(['POST'])
+def iniciar_pago_contador(request):
+    try:
+        # Obtén los datos de la solicitud, como el monto a pagar y la orden de compra
+        amount = request.data.get('monto')
+        buy_order = str(request.data.get('orden_compra'))
+        return_url = 'http://127.0.0.1:8000/LB_API/api/transbank/retorno_contador/'  # Asegúrate de cambiar esto a la URL de tu nueva vista de retorno
+        session_id = str(request.data.get('user_id'))
+        
+        tx = Transaction(WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST))
+        resp = tx.create(buy_order, session_id,  amount, return_url)
+        return Response({'url': resp['url'], 'token':resp['token']})
+    except Exception as e:
+        return Response({'errorIniciar': str(e)})
+    
+@api_view(['GET'])
+def retorno_pago_contador(request): 
+    token = request.GET['token_ws']
+    tx = Transaction(WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST))
+    response = tx.commit(token)
+    if response.get('status') == 'AUTHORIZED':
+        try:
+            pdetail = PurchaseDetailState.objects.get(id = 4)
+            id = response.get('buy_order')
+            monto = response.get('amount')
+            user = response.get('session_id')
+            p_detail  = PurchaseDetail.objects.get(id = id, amount = monto)
+            if p_detail.book.seller == user:
+                p_detail.purchase_detail_state = pdetail
+                p_detail.save()
+            return redirect('http://localhost:5173/detalleEnvio/correct')
+        except Exception as e:
+            return Response({'errorRetorno': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        # La transacción fue rechazada
+        return Response({'message': 'La transacción fue rechazada'})
+
+
