@@ -2,7 +2,7 @@ import os
 from .functions import get_image_format, base64_image
 from django_backend import settings
 from .serializer import CommuneSerializer, AuctionStateSerializer, PurchaseDetailSerializer, BookStateSerializer, buyerSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer, SubscriptionSerializer
-from .models import Commune, BookCategory, Notification, UserRoom, Auction, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer, ChatRoom, Message, Subscription
+from .models import Commune, BookCategory, Notification, UserRole, Auction, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer, ChatRoom, Message, Subscription
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -70,6 +70,9 @@ def obtainUser(request, token):
         try:
             token1 = Token.objects.get(key = token)
             user = User.objects.get(email = token1.user)
+            user_role = UserRole.objects.filter(user = user)
+            if user_role is None:
+                user_role = None
             if user:
                 serialUser = userSerializer(user, many=False)
                 img_path = 'media/' + str(user.user_photo)

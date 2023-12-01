@@ -6,6 +6,7 @@ from LB_API import views_delete as vd
 from LB_API import views_get as vg
 from LB_API import views_put as vpu
 from LB_API import transbank_view as tv
+from LB_API import count_views as count_v
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -81,7 +82,7 @@ urlpatterns = [
     path('api/transbank/iniciar_pago', tv.iniciar_pago, name='iniciar_pago'),
     path('api/transbank/iniciar_pago_suscripcion/', tv.iniciar_pago_suscripcion, name='iniciar_pago_suscripcion'),
     path('api/transbank/retorno_suscripcion/', tv.retorno_pago_suscripcion, name='retorno_pago_suscripcion'),
-    path('api/transbank/retorno/', tv.retorno_pago, name='retorno')
+    path('api/transbank/retorno/', tv.retorno_pago, name='retorno'),
     # Url de contador
     path('api/counter/get_all_sales', count_v.get_all_sales, name='get_all_sales')
     

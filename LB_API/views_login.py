@@ -31,7 +31,6 @@ def registerUser(request):
             if len(passw) > 8 & validacionCE(data['password']) & validacionMAYUS(data['password']) & validacionNum(data['password']):
                 image_data = data['photo_dir']
                 try:
-                    print(1)
                     user = User.objects.create(
                         id=marca_de_tiempo,
                         first_name=data['first_name'],
@@ -44,7 +43,6 @@ def registerUser(request):
                         confirm_key=None,
                         user_photo=None
                     )
-                    print(2)
                     if image_data:
                         if image_data.startswith("data:image"):
                             image_data = image_data.split(",")[1]
@@ -62,7 +60,6 @@ def registerUser(request):
                             commune=Commune.objects.get(id=data['id_com']),
                             user=user
                         )
-                        print(4)
                         send_email(user.email)
                         AdminUser.objects.create(username=data['email'], password=make_password(data['password']))
                         userSerial = userSerializer(user, many=False)
@@ -85,6 +82,9 @@ def loginUser(request):
         try:
             data = request.data
             user1 = User.objects.get(email = data['email'])
+            user_role = UserRole.objects.filter(user = user1)
+            if user_role is None:
+                user_role = None
             if user1 is not None:
                 user = authenticate(username=data['email'], password=data['password'])
                 if user1.is_active:
@@ -106,6 +106,7 @@ def loginUser(request):
                         'last_name': serialUser.data['last_name'],
                         'subscription': serialUser.data['subscription'],
                         'user_photo': image_base64,
+                        'role': user_role,
                         'format' : format
                     }
                     user_direction = Direction.objects.get(id=user1.id)
