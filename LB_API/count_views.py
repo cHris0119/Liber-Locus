@@ -16,6 +16,8 @@ from django.shortcuts import redirect
 def get_all_sales(request):
     try:
         purchase = PurchaseDetail.objects.all()
+        if purchase is None:
+            return Response({'purchases': []}, status=status.HTTP_200_OK)
 
         UserRoom.objects.filter()
         def buyer(chatroom, user):
@@ -42,8 +44,6 @@ def get_all_sales(request):
         )
 
         return Response({'purchases': purchase_detail_list}, status=status.HTTP_200_OK)
-    except Review.DoesNotExist:
-        return Response({'error': 'No se encontraron revisiones para este usuario.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
