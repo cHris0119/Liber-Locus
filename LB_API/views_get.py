@@ -70,7 +70,8 @@ def obtainUser(request, token):
         try:
             token1 = Token.objects.get(key = token)
             user = User.objects.get(email = token1.user)
-            user_role = UserRole.objects.filter(user = user)
+            user_role = UserRole.objects.filter(user=user).first()
+
             if user_role is None:
                 user_role = None
             if user:
@@ -91,6 +92,7 @@ def obtainUser(request, token):
                     'last_name': serialUser.data['last_name'],
                     'subscription': serialUser.data['subscription'],
                     'user_photo': image_base64,
+                    'role': str(user_role), 
                     'format' : format
                     }
                 # Obtén la dirección del usuario y agrégala a los datos de usuario

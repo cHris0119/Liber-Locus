@@ -82,7 +82,7 @@ def loginUser(request):
         try:
             data = request.data
             user1 = User.objects.get(email = data['email'])
-            user_role = UserRole.objects.filter(user = user1)
+            user_role = UserRole.objects.filter(user=user1).first()
             if user_role is None:
                 user_role = None
             if user1 is not None:
@@ -106,7 +106,7 @@ def loginUser(request):
                         'last_name': serialUser.data['last_name'],
                         'subscription': serialUser.data['subscription'],
                         'user_photo': image_base64,
-                        'role': user_role,
+                        'role': str(user_role), 
                         'format' : format
                     }
                     user_direction = Direction.objects.get(id=user1.id)
