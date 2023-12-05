@@ -28,7 +28,7 @@ SECRET_KEY =  os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '192.168.100.23']
 
 
 # Application definition
@@ -165,7 +165,6 @@ CSRF_TRUSTED_ORIGINS = 'http://localhost:5173',
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    'http://192.168.100.1',
     "https://j39p4gkg-5173.use.devtunnels.ms"
 ]
 
