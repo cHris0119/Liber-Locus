@@ -7,6 +7,7 @@ from LB_API import views_get as vg
 from LB_API import views_put as vpu
 from LB_API import transbank_view as tv
 from LB_API import count_views as count_v
+from LB_API import mobile_views as mv
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -86,8 +87,9 @@ urlpatterns = [
     # Url de contador
     path('api/counter/get_all_sales', count_v.get_all_sales, name='get_all_sales'),
     path('api/transbank/iniciar_pago_contador/', count_v.iniciar_pago_contador, name='iniciar_pago_contador'),
-    path('api/transbank/retorno_contador/', count_v.retorno_pago_contador, name='retorno_contador')
-    
+    path('api/transbank/retorno_contador/', count_v.retorno_pago_contador, name='retorno_contador'),
+    # Url de la app
+    path('api/app/confirm_key/<int:id>/', mv.productReceived, name="confirm_key")
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

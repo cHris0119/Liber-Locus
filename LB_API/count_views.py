@@ -1,4 +1,4 @@
-from .serializer import  BookSerializer, sellerSerializer, PurchaseDetailSerializer, PurchaseDetailStateSerializer, ChatRoomSerializer
+from .serializer import  BookSerializer, sellerSerializer, PurchaseDetailSerializer, PurchaseDetailStateSerializer, ChatRoomSerializer, DirectionSerializer
 from .models import Commune, BookCategory, Notification, UserRoom, PurchaseDetailState, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer, ChatRoom, Message, Subscription
 from rest_framework.decorators import api_view
 from rest_framework import status
@@ -9,6 +9,7 @@ from transbank.common.integration_type import IntegrationType
 from transbank.webpay.webpay_plus.transaction import Transaction
 from rest_framework.response import Response
 from django.shortcuts import redirect
+from .functions import get_image_format, base64_image
 
 
 
@@ -29,6 +30,14 @@ def get_all_sales(request):
             elif userroom.user.id != user.id:
                 user = User.objects.get(id = userroom.user.id)
                 return user
+        def getDireccion(user):
+            try:
+                direct = Direction.objects.get(user = user)
+                if direct:
+                    return direct
+            except:
+                direct = None
+            
             
         # Serializa las revisiones y convierte las imágenes en base64
         purchase_detail_list = list(
@@ -40,6 +49,9 @@ def get_all_sales(request):
                 'purchase_detail_state': PurchaseDetailStateSerializer(purchases.purchase_detail_state).data,
                 'book': BookSerializer(purchases.book).data,
                 'buyer': sellerSerializer(buyer(purchases.chat_room, purchases.book.seller)).data,
+                'Direction': DirectionSerializer(getDireccion(buyer(purchases.chat_room, purchases.book.seller))).data,
+                'format': get_image_format('media/' + str(purchases.book.book_img)),
+                'book_img': base64_image('media/' + str(purchases.book.book_img))
             }, purchase)
         )
 

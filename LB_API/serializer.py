@@ -119,7 +119,7 @@ class CommuneSerializer(serializers.ModelSerializer):
 class DirectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Direction
-        fields = '__all__'
+        fields = ['nombre', 'calle', 'numero']
 
 class ForumSerializer(serializers.ModelSerializer):
     user = sellerSerializer(many=False, read_only=True)
