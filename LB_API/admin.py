@@ -36,4 +36,3 @@ admin.site.register(StatePostVenta)
 admin.site.register(Subscription)
 admin.site.register(Question)
 
-

@@ -39,7 +39,7 @@ def get_all_sales(request):
                 'created_at': purchases.created_at,
                 'purchase_detail_state': PurchaseDetailStateSerializer(purchases.purchase_detail_state).data,
                 'book': BookSerializer(purchases.book).data,
-                'buyer': sellerSerializer(buyer(purchases.chat_room, purchases.book.seller)).data
+                'buyer': sellerSerializer(buyer(purchases.chat_room, purchases.book.seller)).data,
             }, purchase)
         )
 

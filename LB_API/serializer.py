@@ -133,9 +133,10 @@ class ForumCategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ForumUserSerializer(serializers.ModelSerializer):
+    user = sellerSerializer(many=False, read_only=True)
     class Meta:
         model = ForumUser
-        fields = '__all__'
+        fields = ['user']
 
 class DiscussionSerializer(serializers.ModelSerializer):
     forum_user = ForumUserSerializer(many=False, read_only=True)  # Usamos el serializador de ForumUser

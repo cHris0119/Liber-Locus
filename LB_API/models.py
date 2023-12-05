@@ -262,7 +262,7 @@ class PurchaseDetail(models.Model):
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE, db_column='AUCTION_id', blank=True, null=True)  # Field name made lowercase.
     purchase_detail_state = models.ForeignKey('PurchaseDetailState', on_delete=models.CASCADE, db_column='PURCHASE_DETAIL_STATE_id')  # Field name made lowercase.
     book = models.ForeignKey(Book, on_delete=models.CASCADE, db_column='BOOK_id', blank=True, null=True)  # Field name made lowercase.
-
+    code_verify = models.IntegerField(blank=True, null=True)
     class Meta:
         managed = False
         db_table = 'PURCHASE_DETAIL'

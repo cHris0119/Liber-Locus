@@ -305,7 +305,6 @@ def send_email(email):
         )
         try:
             email.send(fail_silently=True)
-            print(email)
             return Response('Correo de confirmación enviado con éxito', status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

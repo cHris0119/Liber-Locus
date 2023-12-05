@@ -559,6 +559,7 @@ def get_my_purchases(request):
                 'created_at': purchase.created_at,
                 'chat_room': purchase.chat_room.id,
                 'auction': None,  # Asegúrate de manejar correctamente la propiedad 'auction'
+                'code_verify': purchase.code_verify,
                 'book': {
                     'id': purchase.book.id,
                     'name': purchase.book.name,

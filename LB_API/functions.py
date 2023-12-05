@@ -3,8 +3,15 @@ import re
 import os
 import time
 from PIL import Image
+import random
 
 
+
+
+def generar_codigo():
+    codigo = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+    return codigo
+    
 
 def int_id():
     # Obtener el tiempo actual en segundos desde la época (timestamp)

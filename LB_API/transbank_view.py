@@ -6,7 +6,7 @@ from transbank.webpay.webpay_plus.transaction import Transaction
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from .models import PurchaseDetail, PurchaseDetailState, User, ChatRoom, Book, UserRoom, Notification, AuctionOffer, BookState, Auction, Subscription
-from .functions import int_id
+from .functions import int_id, generar_codigo
 from rest_framework import status
 from datetime import datetime
 from django.shortcuts import redirect
@@ -63,7 +63,8 @@ def retorno_pago(request):
                         chat_room=chatroom,
                         auction=auc,
                         purchase_detail_state=pdetail,
-                        book=book
+                        book=book,
+                        code_verify = generar_codigo()
                     )
                     message = Notification.objects.create(
                         id = response.get('buy_order'),
@@ -84,7 +85,9 @@ def retorno_pago(request):
                     chat_room=chatroom,
                     auction=None,
                     purchase_detail_state=pdetail,
-                    book=book
+                    book=book,
+                    code_verify = generar_codigo()
+                    
                 )
                 
                 message = Notification.objects.create(
