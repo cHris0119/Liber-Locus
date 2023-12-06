@@ -20,7 +20,7 @@ def productReceived(request, id):
         if data['confirm_key'] == purchase.code_verify:
             purchase.purchase_detail_state = state
             purchase.save()
-        return Response({'Ok': "El pedido fue confirmado correctamente"}, status=status.HTTP_200_OK)
+            return Response({'Ok': "El pedido fue confirmado correctamente"}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"Error": e}, status=status.HTTP_400_BAD_REQUEST)
     
