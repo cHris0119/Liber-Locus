@@ -92,6 +92,8 @@ def retorno_pago_contador(request):
                 p_detail.purchase_detail_state = pdetail
                 p_detail.save()
                 return redirect('http://localhost:5173/detalleEnvio/correct')
+            else:
+                 return Response({'message': 'La transacción fue rechazada, porque no el vendedor no se encuentra'})
         except Exception as e:
             return Response({'errorRetorno': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
