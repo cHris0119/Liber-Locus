@@ -1,7 +1,7 @@
 import os
 from .functions import get_image_format, base64_image
 from django_backend import settings
-from .serializer import CommuneSerializer, AuctionStateSerializer, PurchaseDetailSerializer, BookStateSerializer, buyerSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer, SubscriptionSerializer
+from .serializer import CommuneSerializer, AuctionStateSerializer, PurchaseDetailStateSerializer , PurchaseDetailSerializer, BookStateSerializer, buyerSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer, SubscriptionSerializer
 from .models import Commune, BookCategory, Notification, UserRole, Auction, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer, ChatRoom, Message, Subscription
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -564,7 +564,7 @@ def get_my_purchases(request):
                     'id': purchase.book.id,
                     'name': purchase.book.name,
                     'price': purchase.book.price,
-                    'state': purchase.purchase_detail_state.state,
+                    'state': PurchaseDetailStateSerializer(purchase.purchase_detail_state.state).data,
                     'format': get_image_format('media/' + str(purchase.book.book_img)),
                     'book_img': base64_image('media/' + str(purchase.book.book_img))
                 },
@@ -622,7 +622,7 @@ def get_my_sales(request):
                     'id': sale.book.id,
                     'name': sale.book.name,
                     'price': sale.book.price,
-                    'state': sale.purchase_detail_state.state,
+                    'state': PurchaseDetailStateSerializer(sale.purchase_detail_state.state).data,
                     'format': get_image_format('media/' + str(sale.book.book_img)),
                     'book_img': base64_image('media/' + str(sale.book.book_img))
                 },
