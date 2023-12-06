@@ -23,12 +23,12 @@ def get_all_sales(request):
         UserRoom.objects.filter()
         def buyer(chatroom, user):
             userroom = UserRoom.objects.filter(chat_room=chatroom).first()
-            userroom = UserRoom.objects.filter(chat_room=chatroom).last()
+            userroom1 = UserRoom.objects.filter(chat_room=chatroom).last()
             if userroom.user.id != user.id:
                 user = User.objects.get(id = userroom.user.id)
                 return user
-            elif userroom.user.id != user.id:
-                user = User.objects.get(id = userroom.user.id)
+            elif userroom1.user.id != user.id:
+                user = User.objects.get(id = userroom1.user.id)
                 return user
         def getDireccion(user):
             try:
