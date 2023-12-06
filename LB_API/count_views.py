@@ -88,7 +88,7 @@ def retorno_pago_contador(request):
             monto = response.get('amount')
             user = response.get('session_id')
             p_detail  = PurchaseDetail.objects.get(id = id, amount = monto)
-            if p_detail.book.seller == user:
+            if p_detail.book.seller.id == user:
                 p_detail.purchase_detail_state = pdetail
                 p_detail.save()
             return redirect('http://localhost:5173/detalleEnvio/correct')
