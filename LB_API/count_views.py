@@ -67,7 +67,7 @@ def iniciar_pago_contador(request):
         # Obtén los datos de la solicitud, como el monto a pagar y la orden de compra
         amount = request.data.get('monto')
         buy_order = str(request.data.get('orden_compra'))
-        return_url = 'http://127.0.0.1:8000/LB_API/api/transbank/retorno_contador/'  # Asegúrate de cambiar esto a la URL de tu nueva vista de retorno
+        return_url = 'http://192.168.100.23:8000/LB_API/api/transbank/retorno_contador/'  # Asegúrate de cambiar esto a la URL de tu nueva vista de retorno
         session_id = str(request.data.get('user_id'))
         
         tx = Transaction(WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST))
@@ -87,9 +87,12 @@ def retorno_pago_contador(request):
             id = response.get('buy_order')
             monto = response.get('amount')
             user = response.get('session_id')
-            p_detail  = PurchaseDetail.objects.get(id = id, amount = monto)
-            if p_detail.book.seller.id == user:
+            print(user)
+            p_detail  = PurchaseDetail.objects.get(id = id)
+            print(p_detail.book.seller.id)
+            if int(p_detail.book.seller.id) == int(user):
                 p_detail.purchase_detail_state = pdetail
+                print('1')
                 p_detail.save()
                 return redirect('http://localhost:5173/detalleEnvio/correct')
             else:
