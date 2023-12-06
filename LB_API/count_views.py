@@ -91,7 +91,7 @@ def retorno_pago_contador(request):
             if p_detail.book.seller.id == user:
                 p_detail.purchase_detail_state = pdetail
                 p_detail.save()
-            return redirect('http://localhost:5173/detalleEnvio/correct')
+                return redirect('http://localhost:5173/detalleEnvio/correct')
         except Exception as e:
             return Response({'errorRetorno': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
