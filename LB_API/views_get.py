@@ -564,7 +564,7 @@ def get_my_purchases(request):
                     'id': purchase.book.id,
                     'name': purchase.book.name,
                     'price': purchase.book.price,
-                    'state': PurchaseDetailStateSerializer(purchase.purchase_detail_state.state).data,
+                    'state': purchase.purchase_detail_state.state,
                     'format': get_image_format('media/' + str(purchase.book.book_img)),
                     'book_img': base64_image('media/' + str(purchase.book.book_img))
                 },
@@ -622,7 +622,7 @@ def get_my_sales(request):
                     'id': sale.book.id,
                     'name': sale.book.name,
                     'price': sale.book.price,
-                    'state': PurchaseDetailStateSerializer(sale.purchase_detail_state.state).data,
+                    'state': sale.purchase_detail_state.state,
                     'format': get_image_format('media/' + str(sale.book.book_img)),
                     'book_img': base64_image('media/' + str(sale.book.book_img))
                 },
