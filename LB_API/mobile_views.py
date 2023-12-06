@@ -21,6 +21,8 @@ def productReceived(request, id):
             purchase.purchase_detail_state = state
             purchase.save()
             return Response({'Ok': "El pedido fue confirmado correctamente"}, status=status.HTTP_200_OK)
+        else:
+            return Response({'Error': "El codigo es incorrecto"}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return Response({"Error": e}, status=status.HTTP_400_BAD_REQUEST)
     
