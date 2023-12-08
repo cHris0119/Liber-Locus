@@ -346,7 +346,7 @@ def create_discussion(request):
                 id=int_id(),
                 title=title,
                 description=description,
-                created_by=user,  # Asigna al usuario actual como el creador
+                created_by=f'{user.first_name} {user.last_name}',  # Asigna al usuario actual como el creador
                 created_at=datetime.now(),
                 forum_user=ForumUser.objects.get(user=user, forum=forum)
             )
