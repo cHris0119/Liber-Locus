@@ -139,8 +139,8 @@ class ForumUserSerializer(serializers.ModelSerializer):
         fields = ['user']
 
 class DiscussionSerializer(serializers.ModelSerializer):
-    forum_user = ForumUserSerializer(many=False, read_only=True)  # Usamos el serializador de ForumUser
-
+    forum_user = ForumUserSerializer(many=False, read_only=True) # Usamos el serializador de ForumUser
+    created_by = sellerSerializer(many=False, read_only=True)  #
     class Meta:
         model = Discussion
         fields = ['id', 'title', 'description', 'created_by', 'created_at', 'forum_user']
