@@ -73,6 +73,7 @@ urlpatterns = [
     path('api/chatroom/get_msg/<int:chat_id>/', vg.get_messages_chatroom, name='get_messages_chat'),
     path('api/forums/get_popular_forums/', vg.get_popular_forums, name='get_popular_forums'),
     path('api/notifications/get_user_notifications/<int:user_id>/', vg.get_user_notifications, name='get_user_notifications'),
+    path('api/chatroom/book_data/<int:chat_id>', vg.get_chatroom_books, name='get_chatroom_books'),
     # Vistas con metodo PUT
     path('api/editDirection/<int:id>/', vpu.editDirection, name='editDirection'), # editar direccion
     path('api/editUser/<int:id>/', vpu.editUser, name='editUser'), # editar usuario

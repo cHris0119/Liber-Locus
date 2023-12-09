@@ -1,8 +1,8 @@
 import os
 from .functions import get_image_format, base64_image
 from django_backend import settings
-from .serializer import CommuneSerializer, AuctionStateSerializer, PurchaseDetailStateSerializer , PurchaseDetailSerializer, BookStateSerializer, buyerSerializer, BookCategorySerializer, ReviewSerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer, SubscriptionSerializer
-from .models import Commune, BookCategory, Notification, UserRole, Auction, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer, ChatRoom, Message, Subscription
+from .serializer import CommuneSerializer, AuctionStateSerializer , BookStateSerializer, BookCategorySerializer, userSerializer, DirectionSerializer, BookSerializer, ReviewLikeSerializer, ForumSerializer, ForumCategorySerializer, ForumUserSerializer, FollowSerializer, FollowedSerializer, QuestionSerializer, DiscussionSerializer, sellerSerializer, CommentsSerializer, AnswerSerializer, SubscriptionSerializer
+from .models import Commune, BookCategory, Notification, UserRole, UserRoom,Auction, PurchaseDetail, Review, User, Direction, Book, ReviewLike, Forum, ForumUser, ForumCategory, Follow, Followed, Discussion, Question, Comments, Answer, ChatRoom, Message, Subscription
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
@@ -741,5 +741,43 @@ def get_user_notifications(request, user_id):
 
     except User.DoesNotExist:
         return Response({'error': 'El usuario no existe.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_chatroom_books(request, chat_id):
+    try:
+        # Obtén el usuario autenticado
+        user = User.objects.get(email=request.user.username)
+        
+        def buyer(chatroom, user):
+            userroom = UserRoom.objects.filter(chat_room=chatroom).first()
+            userroom1 = UserRoom.objects.filter(chat_room=chatroom).last()
+            if userroom.user.id != user.id:
+                user = User.objects.get(id = userroom.user.id)
+                return user
+            elif userroom1.user.id != user.id:
+                user = User.objects.get(id = userroom1.user.id)
+                return user
+
+        # Obtén todos los libros creados por el usuario
+        purchase = PurchaseDetail.objects.get(chat_room = chat_id)
+
+        # Serializa los libros y convierte las imágenes en base64
+        book_data_list = list(
+            map(lambda purchases: {
+                'id': purchases.id,
+                'book': BookSerializer(purchases.book).data,
+                'seller': sellerSerializer(purchases.book.seller).data,
+                'buyer': sellerSerializer(buyer(purchases.chat_room, purchases.book.seller)).data,
+            }, purchase)
+        )
+
+        return Response({'books': book_data_list}, status=status.HTTP_200_OK)
+    except Book.DoesNotExist:
+        return Response({'error': 'No se encontraron libros para este usuario.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

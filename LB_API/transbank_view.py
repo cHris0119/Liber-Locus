@@ -10,7 +10,10 @@ from .functions import int_id, generar_codigo
 from rest_framework import status
 from datetime import datetime
 from django.shortcuts import redirect
-
+from dotenv import load_dotenv
+import os
+load_dotenv()
+Host = os.environ.get('URL_HOST')
 
 @api_view(['POST'])
 def iniciar_pago(request):
@@ -18,7 +21,7 @@ def iniciar_pago(request):
         # Obtén los datos de la solicitud, como el monto a pagar y la orden de compra
         amount = request.data.get('monto')
         buy_order = str(request.data.get('orden_compra'))
-        return_url = 'http://127.0.0.1:8000/LB_API/api/transbank/retorno/'
+        return_url = f'http://{Host}:8000/LB_API/api/transbank/retorno/'
         session_id = str(request.data.get('user_id'))
         
         tx = Transaction(WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST))
@@ -114,7 +117,7 @@ def iniciar_pago_suscripcion(request):
         # Obtén los datos de la solicitud, como el monto a pagar y la orden de compra
         amount = request.data.get('monto')
         buy_order = str(request.data.get('orden_compra'))
-        return_url = 'http://127.0.0.1:8000/LB_API/api/transbank/retorno_suscripcion/'  # Asegúrate de cambiar esto a la URL de tu nueva vista de retorno
+        return_url = f'http://{Host}:8000/LB_API/api/transbank/retorno_suscripcion/'  # Asegúrate de cambiar esto a la URL de tu nueva vista de retorno
         session_id = str(request.data.get('user_id'))
         
         tx = Transaction(WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST))

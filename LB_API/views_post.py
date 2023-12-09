@@ -21,7 +21,10 @@ from .functions import *
 from django.db import transaction
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-
+from dotenv import load_dotenv
+import os
+load_dotenv()
+Host = os.environ.get('URL_HOST')
 
 
 def int_id():
@@ -296,7 +299,7 @@ def send_email(email):
         user.confirm_key = token
         user.save()
         mail = user.email
-        url = f'http://127.0.0.1:8000/LB_API/api/users/confirm_email/{token}/'
+        url = f'http://{Host}:8000/LB_API/api/users/confirm_email/{token}/'
         email = EmailMessage(
         f'Bienvenido a LiberLocus {mail}',
         f'Para continuar con el inicio de sesión debemos verificar su correo\n\n {url} \n\n',
