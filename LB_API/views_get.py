@@ -752,7 +752,6 @@ def get_chatroom_books(request, chat_id):
     try:
         # Obtén el usuario autenticado
         user = User.objects.get(email=request.user.username)
-        
         def buyer(chatroom, user):
             userroom = UserRoom.objects.filter(chat_room=chatroom).first()
             userroom1 = UserRoom.objects.filter(chat_room=chatroom).last()
@@ -767,17 +766,16 @@ def get_chatroom_books(request, chat_id):
         purchase = PurchaseDetail.objects.get(chat_room = chat_id)
 
         # Serializa los libros y convierte las imágenes en base64
-        book_data_list = list(
-            map(lambda purchases: {
-                'id': purchases.id,
-                'book': BookSerializer(purchases.book).data,
-                'seller': sellerSerializer(purchases.book.seller).data,
-                'buyer': sellerSerializer(buyer(purchases.chat_room, purchases.book.seller)).data,
-            }, purchase)
-        )
+        book_data_list ={
+                'id': purchase.id,
+                'book': BookSerializer(purchase.book).data,
+                'seller': sellerSerializer(purchase.book.seller).data,
+                'buyer': sellerSerializer(buyer(purchase.chat_room, purchase.book.seller)).data,
+            }
 
         return Response({'books': book_data_list}, status=status.HTTP_200_OK)
     except Book.DoesNotExist:
         return Response({'error': 'No se encontraron libros para este usuario.'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
+        print(e)
         return Response({'error': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
