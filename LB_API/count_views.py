@@ -104,6 +104,6 @@ def retorno_pago_contador(request):
             return Response({'errorRetorno': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         # La transacción fue rechazada
-        return Response({'message': 'La transacción fue rechazada'})
+        return redirect('http://localhost:5173/detalleEnvio/incorrect')
 
 

@@ -40,75 +40,81 @@ def retorno_pago(request):
         try:
             book = Book.objects.get(id = response.get('buy_order'))
             bookC = BookState.objects.get(id = 1)
-            user = User.objects.get(id = response.get('session_id'))
-            chatroom = ChatRoom.objects.create(
-                id = int(response.get('buy_order')),
-                book = book     
-            )
-            userRoom = UserRoom.objects.create(
-                id = int(response.get('buy_order')),
-                user= user,
-                chat_room=chatroom
-            )
-            userroom1 = UserRoom.objects.create(
-                id = int_id(),
-                user= book.seller,
-                chat_room=chatroom
-            )
             try:
-                auc = Auction.objects.get(id = response.get('buy_order'))
-                if auc:
+                 chatroom = ChatRoom.objects.get(id =int(response.get('buy_order')))
+                 if chatroom:
+                     return redirect('http://localhost:5173/detalleEnvio/correct')
+            except:
+                user = User.objects.get(id = response.get('session_id'))
+                chatroom = ChatRoom.objects.create(
+                    id = int(response.get('buy_order')),
+                    book = book     
+                )
+                userRoom = UserRoom.objects.create(
+                    id = int(response.get('buy_order')),
+                    user= user,
+                    chat_room=chatroom
+                )
+                userroom1 = UserRoom.objects.create(
+                    id = int_id(),
+                    user= book.seller,
+                    chat_room=chatroom
+                )
+                try:
+                    auc = Auction.objects.get(id = response.get('buy_order'))
+                    if auc:
+                        purchase = PurchaseDetail.objects.create(
+                            id = response.get('buy_order'),
+                            purchase_date=datetime.now(),
+                            amount=response.get('amount'),
+                            created_at=datetime.now(),
+                            chat_room=chatroom,
+                            auction=auc,
+                            purchase_detail_state=pdetail,
+                            book=book,
+                            code_verify = generar_codigo()
+                        )
+                        message = Notification.objects.create(
+                            id = response.get('buy_order'),
+                            message = f'Su subasta ha sido vendida por el precio {auc.final_price}, el dia {datetime.now()}',
+                            created_at = datetime.now(),
+                            is_read = 'no',
+                            user = book.seller
+                        )
+                        book.book_state = bookC
+                        book.save()
+                        return redirect('http://localhost:5173/detalleEnvio/correct')
+                except:
                     purchase = PurchaseDetail.objects.create(
                         id = response.get('buy_order'),
                         purchase_date=datetime.now(),
                         amount=response.get('amount'),
                         created_at=datetime.now(),
                         chat_room=chatroom,
-                        auction=auc,
+                        auction=None,
                         purchase_detail_state=pdetail,
                         book=book,
                         code_verify = generar_codigo()
+                        
                     )
+                    
                     message = Notification.objects.create(
-                        id = response.get('buy_order'),
-                        message = f'Su subasta ha sido vendida por el precio {auc.final_price}, el dia {datetime.now()}',
-                        created_at = datetime.now(),
-                        is_read = 'no',
-                        user = book.seller
+                            id = response.get('buy_order'),
+                            message = f'Su libro ha sido vendida por el precio {book.price}, el dia {datetime.now()}',
+                            created_at = datetime.now(),
+                            is_read = 'no',
+                            user = book.seller
                     )
+                    
                     book.book_state = bookC
                     book.save()
                     return redirect('http://localhost:5173/detalleEnvio/correct')
-            except:
-                purchase = PurchaseDetail.objects.create(
-                    id = response.get('buy_order'),
-                    purchase_date=datetime.now(),
-                    amount=response.get('amount'),
-                    created_at=datetime.now(),
-                    chat_room=chatroom,
-                    auction=None,
-                    purchase_detail_state=pdetail,
-                    book=book,
-                    code_verify = generar_codigo()
-                    
-                )
-                
-                message = Notification.objects.create(
-                        id = response.get('buy_order'),
-                        message = f'Su libro ha sido vendida por el precio {book.price}, el dia {datetime.now()}',
-                        created_at = datetime.now(),
-                        is_read = 'no',
-                        user = book.seller
-                )
-                
-                book.book_state = bookC
-                book.save()
-                return redirect('http://localhost:5173/detalleEnvio/correct')
         except Exception as e:
-            return Response({'errorRetorno': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return redirect('http://localhost:5173/detalleEnvio/incorrect')
+        
     else:
         # La transacción fue rechazada
-        return Response({'message': 'La transacción fue rechazada'})
+        return redirect('http://localhost:5173/detalleEnvio/incorrect')
     
     
 @api_view(['POST'])
@@ -149,7 +155,7 @@ def retorno_pago_suscripcion(request):
             return Response({'errorRetorno': 'Ha ocurrido un error: {}'.format(str(e))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         # La transacción fue rechazada
-        return Response({'message': 'La transacción fue rechazada'})
+        return redirect('http://localhost:5173/detalleEnvio/incorrect')
 
 
 
