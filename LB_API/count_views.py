@@ -70,7 +70,7 @@ def iniciar_pago_contador(request):
         # Obtén los datos de la solicitud, como el monto a pagar y la orden de compra
         amount = request.data.get('monto')
         buy_order = str(request.data.get('orden_compra'))
-        return_url = 'http://{Host}:8000/LB_API/api/transbank/retorno_contador/'  # Asegúrate de cambiar esto a la URL de tu nueva vista de retorno
+        return_url = f'http://{Host}:8000/LB_API/api/transbank/retorno_contador/'  # Asegúrate de cambiar esto a la URL de tu nueva vista de retorno
         session_id = str(request.data.get('user_id'))
         
         tx = Transaction(WebpayOptions(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, IntegrationType.TEST))
