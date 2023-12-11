@@ -94,7 +94,7 @@ def book_update(request, pk):
                 'created_at': serializer.data['created_at'],
                 'seller': sellerSerializer(book.seller).data,
                 'book_category': BookCategorySerializer(book.book_category).data,
-                'state': BookStateSerializer(book.book_state).data,
+                'book_state': BookStateSerializer(book.book_state).data,
                 'book_img': base64_image('media/' + str(book.book_img)),
                 'format': get_image_format('media/' + str(book.book_img))
             }
