@@ -15,6 +15,7 @@ from django.shortcuts import redirect
 import base64
 from django.core.serializers import serialize
 import json
+from datetime import datetime
 from django.db.models import Count
 
 
@@ -728,7 +729,7 @@ def get_user_notifications(request, user_id):
                 map(lambda user_notification: {
                     'id': user_notification.id,
                     'message': user_notification.message,
-                    'created_at': user_notification.created_at,
+                    'created_at': user_notification.created_at.strftime("%Y-%m-%d"),
                     'is_read': user_notification.is_read,
                     'user': user_notification.user.id
                 }, user_notifications)

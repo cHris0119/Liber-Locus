@@ -76,7 +76,7 @@ def retorno_pago(request):
                         )
                         message = Notification.objects.create(
                             id = response.get('buy_order'),
-                            message = f'Su subasta del libro {auc.book.name} ha sido vendida por el precio {auc.final_price}, el dia {datetime.now()}',
+                            message = f'Su subasta del libro {auc.book.name} ha sido vendida por el precio {auc.final_price}, el dia {datetime.now().strftime("%Y-%m-%d")}',
                             created_at = datetime.now(),
                             is_read = 'no',
                             user = book.seller
@@ -100,7 +100,7 @@ def retorno_pago(request):
                     
                     message = Notification.objects.create(
                             id = response.get('buy_order'),
-                            message = f'Su libro {book.name} ha sido vendida por el precio {book.price}, el dia {datetime.now()}',
+                            message = f'Su libro {book.name} ha sido vendida por el precio {book.price}, el dia {datetime.now().strftime("%Y-%m-%d")}',
                             created_at = datetime.now(),
                             is_read = 'no',
                             user = book.seller
