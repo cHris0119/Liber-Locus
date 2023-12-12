@@ -88,7 +88,7 @@ def retorno_pago(request):
                     purchase = PurchaseDetail.objects.create(
                         id = response.get('buy_order'),
                         purchase_date=datetime.now(),
-                        amount=response.get('amount'),
+                        amount=int(response.get('amount')) - 3000,
                         created_at=datetime.now(),
                         chat_room=chatroom,
                         auction=None,
