@@ -88,7 +88,7 @@ class AuctionConsumer(AsyncWebsocketConsumer):
             self.auction_group_name,
                 {
                     'type': 'send_price_update',
-                    'message': int(subasta.final_price),
+                    'message': subasta.final_price,
                 }
             )
         
