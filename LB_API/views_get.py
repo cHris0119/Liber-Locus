@@ -501,7 +501,7 @@ def get_comments(request, discussion_id):
             comment_serializer = CommentsSerializer(comments, many=True)  # Serializar todos los comentarios en una lista
             return Response({'Comments': comment_serializer.data}, status=status.HTTP_200_OK)
         else:
-            return Response({'message': 'No hay comentarios para esta discusión'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'Comments': []}, status=status.HTTP_200_OK)
     except Discussion.DoesNotExist:
         return Response({'error': 'La discusión no existe'}, status=status.HTTP_404_NOT_FOUND)
     except Comments.DoesNotExist:
